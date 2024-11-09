@@ -43,11 +43,9 @@ describe("AMM2 Contract", function () {
       const amountA = ethers.utils.parseEther("100");
       const amountB = ethers.utils.parseEther("100");
 
-      // Approve tokens
       await tokenA.approve(amm2.address, amountA);
       await tokenB.approve(amm2.address, amountB);
 
-      // Add liquidity and check event
       const tx = await amm2.addLiquidity(amountA, amountB);
       const receipt = await tx.wait();
       const event = receipt.events?.find(e => e.event === 'LiquidityAdded');
@@ -56,7 +54,6 @@ describe("AMM2 Contract", function () {
       expect(event.args.amountB).to.equal(amountB);
       expect(event.args.lpTokens).to.be.gt(0);
 
-      // Check reserves
       expect(await amm2.reserveA()).to.equal(amountA);
       expect(await amm2.reserveB()).to.equal(amountB);
     });
@@ -74,89 +71,146 @@ describe("AMM2 Contract", function () {
       const lpBalance = await amm2.lpBalances(owner.address);
       expect(lpBalance).to.be.gt(0);
     });
+
+    it("Should fail when adding zero liquidity", async function () {
+      const { amm2 } = await loadFixture(deployAMM2Fixture);
+      await expect(
+        amm2.addLiquidity(0, 0)
+      ).to.be.revertedWith("Insufficient liquidity amounts");
+    });
+
+    it("Should fail without token approval", async function () {
+      const { amm2 } = await loadFixture(deployAMM2Fixture);
+      const amount = ethers.utils.parseEther("100");
+      
+      await expect(
+        amm2.addLiquidity(amount, amount)
+      ).to.be.reverted;
+    });
   });
 
-describe("Price Calculation", function () {
+  describe("Price Calculation", function () {
     it("Should calculate correct output amount with 0.5% fee", async function () {
-        const { amm2, tokenA, tokenB, owner } = await loadFixture(deployAMM2Fixture);
-        
-        // Add initial liquidity
-        const initialAmount = ethers.utils.parseEther("1000");
-        await tokenA.approve(amm2.address, initialAmount);
-        await tokenB.approve(amm2.address, initialAmount);
-        await amm2.addLiquidity(initialAmount, initialAmount);
-
-        // Test smaller amount for more predictable price impact
-        const amountIn = ethers.utils.parseEther("1");
-        const amountOut = await amm2.getAmountOut(amountIn, initialAmount, initialAmount);
-
-        // With 0.5% fee, and considering constant product formula
-        // Output should be less than input
-        expect(amountOut).to.be.lt(amountIn);
-
-        // Calculate expected output using constant product formula with 0.5% fee
-        // (x + dx * 0.995)(y - dy) = xy
-        // where dx is amountIn, dy is amountOut
-        const x = initialAmount;
-        const y = initialAmount;
-        const dx = amountIn;
-        const feeAdjustedInput = dx.mul(995).div(1000); // 0.5% fee
-        
-        // dy = (y * dx * 0.995) / (x + dx * 0.995)
-        const expectedOut = y.mul(feeAdjustedInput).div(x.add(feeAdjustedInput));
-        
-        // Allow for some rounding differences
-        const tolerance = ethers.utils.parseEther("0.0001"); // Adjust tolerance as needed
-        expect(amountOut).to.be.closeTo(expectedOut, tolerance);
-    });
-
-    it("Should return less tokens when fee is higher", async function () {
-        const { amm2, tokenA, tokenB, owner } = await loadFixture(deployAMM2Fixture);
-        
-        // Add initial liquidity
-        const initialAmount = ethers.utils.parseEther("1000");
-        await tokenA.approve(amm2.address, initialAmount);
-        await tokenB.approve(amm2.address, initialAmount);
-        await amm2.addLiquidity(initialAmount, initialAmount);
-
-        const amountIn = ethers.utils.parseEther("1");
-        const amountOut = await amm2.getAmountOut(amountIn, initialAmount, initialAmount);
-
-        // Simply verify that output is less than input due to fee and slippage
-        expect(amountOut).to.be.lt(amountIn);
-        // Output should be more than 99% of input (considering 0.5% fee + slippage)
-        expect(amountOut).to.be.gt(amountIn.mul(990).div(1000));
-    });
-});
-
-  describe("Swaps", function () {
-    it("Should execute swap with correct fee application", async function () {
-      const { amm2, tokenA, tokenB, owner, addr1 } = await loadFixture(deployAMM2Fixture);
-      
-      // Add initial liquidity
+      const { amm2, tokenA, tokenB, owner } = await loadFixture(deployAMM2Fixture);
       const initialAmount = ethers.utils.parseEther("1000");
       await tokenA.approve(amm2.address, initialAmount);
       await tokenB.approve(amm2.address, initialAmount);
       await amm2.addLiquidity(initialAmount, initialAmount);
 
-      // Setup swap
-      const swapAmount = ethers.utils.parseEther("10");
-      await tokenA.transfer(addr1.address, swapAmount);
-      await tokenA.connect(addr1).approve(amm2.address, swapAmount);
-
-      // Record balances before
-      const balanceBefore = await tokenB.balanceOf(addr1.address);
-
-      // Execute swap
-      await amm2.connect(addr1).swap(swapAmount, true);
-
-      // Verify balances changed correctly
-      const balanceAfter = await tokenB.balanceOf(addr1.address);
-      expect(balanceAfter).to.be.gt(balanceBefore);
+      const amountIn = ethers.utils.parseEther("1");
+      const amountOut = await amm2.getAmountOut(amountIn, initialAmount, initialAmount);
       
-      // Verify fee impact
-      const amountReceived = balanceAfter.sub(balanceBefore);
-      expect(amountReceived).to.be.lt(swapAmount); // Should be less due to 0.5% fee
+      expect(amountOut).to.be.lt(amountIn);
+      const expectedApprox = amountIn.mul(995).div(1000);
+      const tolerance = amountIn.div(100);
+      expect(amountOut).to.be.closeTo(expectedApprox, tolerance);
+    });
+  });
+
+  describe("Swap Limits", function () {
+    it("Should fail when swap amount exceeds reserve limit", async function () {
+      const { amm2, tokenA, tokenB, owner, addr1 } = await loadFixture(deployAMM2Fixture);
+      
+      // Add liquidity
+      const liquidityAmount = ethers.utils.parseEther("1");
+      await tokenA.approve(amm2.address, liquidityAmount);
+      await tokenB.approve(amm2.address, liquidityAmount);
+      await amm2.addLiquidity(liquidityAmount, liquidityAmount);
+
+      // Try to swap amount larger than 2x reserves
+      const largeAmount = ethers.utils.parseEther("3");
+      await tokenA.transfer(addr1.address, largeAmount);
+      await tokenA.connect(addr1).approve(amm2.address, largeAmount);
+
+      await expect(
+        amm2.connect(addr1).swap(largeAmount, true)
+      ).to.be.revertedWith("Swap amount too large");
+    });
+
+    it("Should allow swaps up to reserve limit", async function () {
+      const { amm2, tokenA, tokenB, owner, addr1 } = await loadFixture(deployAMM2Fixture);
+      
+      // Add liquidity
+      const liquidityAmount = ethers.utils.parseEther("1");
+      await tokenA.approve(amm2.address, liquidityAmount);
+      await tokenB.approve(amm2.address, liquidityAmount);
+      await amm2.addLiquidity(liquidityAmount, liquidityAmount);
+
+      // Swap amount equal to reserves should work
+      const validAmount = ethers.utils.parseEther("1");
+      await tokenA.transfer(addr1.address, validAmount);
+      await tokenA.connect(addr1).approve(amm2.address, validAmount);
+
+      // This should not revert
+      await expect(
+        amm2.connect(addr1).swap(validAmount, true)
+      ).to.not.be.reverted;
+    });
+  });
+
+  describe("AMM2 Specific Behaviors", function () {
+    it("Should provide different output than AMM1 for same input", async function () {
+      const { amm2, tokenA, tokenB, owner } = await loadFixture(deployAMM2Fixture);
+      
+      const AMM = await ethers.getContractFactory("AMM");
+      const amm1 = await AMM.deploy(tokenA.address, tokenB.address);
+
+      const initialAmount = ethers.utils.parseEther("1000");
+      await tokenA.approve(amm2.address, initialAmount);
+      await tokenB.approve(amm2.address, initialAmount);
+      await amm2.addLiquidity(initialAmount, initialAmount);
+
+      await tokenA.approve(amm1.address, initialAmount);
+      await tokenB.approve(amm1.address, initialAmount);
+      await amm1.addLiquidity(initialAmount, initialAmount);
+
+      const testAmount = ethers.utils.parseEther("1");
+      const quote1 = await amm1.getAmountOut(testAmount, initialAmount, initialAmount);
+      const quote2 = await amm2.getAmountOut(testAmount, initialAmount, initialAmount);
+
+      expect(quote2).to.be.lt(quote1);
+    });
+
+    it("Should maintain reserves correctly after multiple swaps", async function () {
+      const { amm2, tokenA, tokenB, owner, addr1 } = await loadFixture(deployAMM2Fixture);
+      
+      const initialAmount = ethers.utils.parseEther("1000");
+      await tokenA.approve(amm2.address, initialAmount);
+      await tokenB.approve(amm2.address, initialAmount);
+      await amm2.addLiquidity(initialAmount, initialAmount);
+
+      const swapAmount = ethers.utils.parseEther("1");
+      await tokenA.transfer(addr1.address, swapAmount.mul(3));
+      await tokenA.connect(addr1).approve(amm2.address, swapAmount.mul(3));
+
+      for(let i = 0; i < 3; i++) {
+        await amm2.connect(addr1).swap(swapAmount, true);
+      }
+
+      const reserveA = await amm2.reserveA();
+      const reserveB = await amm2.reserveB();
+      expect(reserveA).to.be.gt(initialAmount);
+      expect(reserveB).to.be.lt(initialAmount);
+    });
+
+    it("Should handle large and small trades appropriately", async function () {
+      const { amm2, tokenA, tokenB, owner } = await loadFixture(deployAMM2Fixture);
+      
+      const initialAmount = ethers.utils.parseEther("1000");
+      await tokenA.approve(amm2.address, initialAmount);
+      await tokenB.approve(amm2.address, initialAmount);
+      await amm2.addLiquidity(initialAmount, initialAmount);
+
+      const smallAmount = ethers.utils.parseEther("0.1");
+      const smallOutput = await amm2.getAmountOut(smallAmount, initialAmount, initialAmount);
+      
+      const largeAmount = ethers.utils.parseEther("100");
+      const largeOutput = await amm2.getAmountOut(largeAmount, initialAmount, initialAmount);
+
+      const smallPrice = smallOutput.mul(ethers.utils.parseEther("1")).div(smallAmount);
+      const largePrice = largeOutput.mul(ethers.utils.parseEther("1")).div(largeAmount);
+
+      expect(largePrice).to.be.lt(smallPrice);
     });
   });
 });

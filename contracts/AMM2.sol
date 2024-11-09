@@ -52,28 +52,33 @@ contract AMM2 is ReentrancyGuard {
         emit LiquidityAdded(msg.sender, amountA, amountB, lpTokens);
     }
 
-    function swap(uint256 amountIn, bool isAtoB) external nonReentrant returns (uint256 amountOut) {
-        require(amountIn > 0, "Invalid input amount");
-        require(reserveA > 0 && reserveB > 0, "Insufficient liquidity");
+function swap(uint256 amountIn, bool isAtoB) external nonReentrant returns (uint256 amountOut) {
+    require(amountIn > 0, "Invalid input amount");
+    require(reserveA > 0 && reserveB > 0, "Insufficient liquidity");
 
-        if (isAtoB) {
-            tokenA.transferFrom(msg.sender, address(this), amountIn);
-            amountOut = getAmountOut(amountIn, reserveA, reserveB);
-            require(amountOut > 0 && amountOut <= reserveB, "Invalid output amount");
-            tokenB.transfer(msg.sender, amountOut);
-            reserveA += amountIn;
-            reserveB -= amountOut;
-        } else {
-            tokenB.transferFrom(msg.sender, address(this), amountIn);
-            amountOut = getAmountOut(amountIn, reserveB, reserveA);
-            require(amountOut > 0 && amountOut <= reserveA, "Invalid output amount");
-            tokenA.transfer(msg.sender, amountOut);
-            reserveB += amountIn;
-            reserveA -= amountOut;
-        }
+    // Add protection against extreme price impact
+    require(amountIn <= reserveA * 2, "Swap amount too large"); // Limit swap to 200% of reserve
 
-        emit Swap(msg.sender, amountIn, amountOut, isAtoB);
+    if (isAtoB) {
+        tokenA.transferFrom(msg.sender, address(this), amountIn);
+        amountOut = getAmountOut(amountIn, reserveA, reserveB);
+        require(amountOut > 0 && amountOut <= reserveB, "Invalid output amount");
+        require(reserveB - amountOut >= MINIMUM_LIQUIDITY, "Insufficient remaining liquidity");
+        tokenB.transfer(msg.sender, amountOut);
+        reserveA += amountIn;
+        reserveB -= amountOut;
+    } else {
+        tokenB.transferFrom(msg.sender, address(this), amountIn);
+        amountOut = getAmountOut(amountIn, reserveB, reserveA);
+        require(amountOut > 0 && amountOut <= reserveA, "Invalid output amount");
+        require(reserveA - amountOut >= MINIMUM_LIQUIDITY, "Insufficient remaining liquidity");
+        tokenA.transfer(msg.sender, amountOut);
+        reserveB += amountIn;
+        reserveA -= amountOut;
     }
+
+    emit Swap(msg.sender, amountIn, amountOut, isAtoB);
+}
 
     function getAmountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut) public pure returns (uint256) {
         require(amountIn > 0, "Invalid input amount");
