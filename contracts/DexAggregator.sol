@@ -6,111 +6,92 @@ import "./AMM.sol";
 import "./AMM2.sol";
 
 contract DexAggregator {
+    // State Variables
     AMM public amm1;
     AMM2 public amm2;
-    
+    mapping(address => PricePoint[]) public priceHistory;
+    uint256 public constant PRICE_HISTORY_LENGTH = 10;
+    mapping(address => uint256) public estimatedGasCosts;
+    uint256 public constant BASE_GAS_COST = 100000;
+
+    // Structs
+    struct PricePoint {
+        uint256 timestamp;
+        uint256 price;
+    }
+
+    // Events
     event BestQuoteFound(address amm, uint256 outputAmount);
     event SwapExecuted(address amm, uint256 amountIn, uint256 amountOut);
+    event PriceUpdated(address amm, uint256 price, uint256 timestamp);
 
+    // Constructor
     constructor(address _amm1, address _amm2) {
         require(_amm1 != address(0) && _amm2 != address(0), "Invalid AMM addresses");
         amm1 = AMM(_amm1);
         amm2 = AMM2(_amm2);
     }
 
-    // Get best quote for a swap
+    // External/Public Functions
     function getBestQuote(
         uint256 amountIn,
         bool isAtoB
     ) public view returns (address bestAMM, uint256 bestOutput) {
-        // Get quotes from both AMMs
-        uint256 quote1;
-        uint256 quote2;
-
-        // Try to get quote from AMM1
-        try amm1.getAmountOut(
-            amountIn,
-            isAtoB ? amm1.reserveA() : amm1.reserveB(),
-            isAtoB ? amm1.reserveB() : amm1.reserveA()
-        ) returns (uint256 amount) {
-            quote1 = amount;
-        } catch {
-            quote1 = 0;
-        }
-
-        // Try to get quote from AMM2
-        try amm2.getAmountOut(
-            amountIn,
-            isAtoB ? amm2.reserveA() : amm2.reserveB(),
-            isAtoB ? amm2.reserveB() : amm2.reserveA()
-        ) returns (uint256 amount) {
-            quote2 = amount;
-        } catch {
-            quote2 = 0;
-        }
-
-        // Compare quotes
-        if (quote1 > quote2) {
-            bestAMM = address(amm1);
-            bestOutput = quote1;
-        } else {
-            bestAMM = address(amm2);
-            bestOutput = quote2;
-        }
+        // ... existing function code ...
     }
 
-    // Check quote and emit event
     function checkAndEmitQuote(
         uint256 amountIn,
         bool isAtoB
     ) external returns (address bestAMM, uint256 bestOutput) {
-        (bestAMM, bestOutput) = getBestQuote(amountIn, isAtoB);
-        emit BestQuoteFound(bestAMM, bestOutput);
+        // ... existing function code ...
     }
 
-    // Execute swap on best AMM
     function executeSwap(
         uint256 amountIn,
         bool isAtoB,
         uint256 minOutput
     ) external returns (uint256 amountOut) {
-        // Get best quote
-        (address bestAMM, uint256 expectedOutput) = getBestQuote(amountIn, isAtoB);
-        require(expectedOutput >= minOutput, "Insufficient output amount");
-
-        // Transfer tokens from user to this contract
-        IERC20 tokenIn = IERC20(isAtoB ? amm1.tokenA() : amm1.tokenB());
-        require(tokenIn.transferFrom(msg.sender, address(this), amountIn), "Transfer failed");
-
-        // Approve tokens to best AMM
-        require(tokenIn.approve(bestAMM, amountIn), "Approval failed");
-
-        // Execute swap on best AMM
-        if (bestAMM == address(amm1)) {
-            amountOut = amm1.swap(amountIn, isAtoB);
-        } else {
-            amountOut = amm2.swap(amountIn, isAtoB);
-        }
-
-        // Transfer output tokens to user
-        IERC20 tokenOut = IERC20(isAtoB ? amm1.tokenB() : amm1.tokenA());
-        require(tokenOut.transfer(msg.sender, amountOut), "Output transfer failed");
-
-        emit SwapExecuted(bestAMM, amountIn, amountOut);
+        // ... existing function code ...
     }
 
-    // View function to check reserves of both AMMs
     function getReserves() external view returns (
         uint256 amm1ReserveA,
         uint256 amm1ReserveB,
         uint256 amm2ReserveA,
         uint256 amm2ReserveB
     ) {
-        return (
-            amm1.reserveA(),
-            amm1.reserveB(),
-            amm2.reserveA(),
-            amm2.reserveB()
-        );
+        // ... existing function code ...
+    }
+
+    function getPriceHistory(address amm) external view returns (PricePoint[] memory) {
+        return priceHistory[amm];
+    }
+
+    function getBestQuoteWithGas(
+        uint256 amountIn,
+        bool isAtoB,
+        uint256 gasPrice
+    ) public view returns (
+        address bestAMM,
+        uint256 bestOutput,
+        uint256 estimatedGas
+    ) {
+        // ... new function code as shown above ...
+    }
+
+    // Internal Functions
+    function updatePriceHistory(address amm, uint256 price) internal {
+        // ... existing function code ...
+    }
+
+    function updateGasEstimate(address amm, uint256 gasUsed) internal {
+        // Simple moving average
+        uint256 currentEstimate = estimatedGasCosts[amm];
+        if (currentEstimate == 0) {
+            estimatedGasCosts[amm] = gasUsed;
+        } else {
+            estimatedGasCosts[amm] = (currentEstimate + gasUsed) / 2;
+        }
     }
 }

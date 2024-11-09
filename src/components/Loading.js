@@ -1,12 +1,13 @@
-import Spinner from 'react-bootstrap/Spinner';
+import React from 'react';
 
 const Loading = () => {
-    return (
-        <div className='text-center my-5'>
-            <Spinner animation="grow" />
-            <p className='my-2'>Loading Data...</p>
-        </div>
-    );
-}
+  return (
+    <div className="d-flex justify-content-center align-items-center" style={{height: '300px'}}>
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  );
+};
 
-export default Loading
+export default Loading;
