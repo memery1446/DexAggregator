@@ -6,53 +6,112 @@ import "./AMM.sol";
 import "./AMM2.sol";
 
 contract DexAggregator {
-    // State Variables
     AMM public amm1;
     AMM2 public amm2;
     mapping(address => PricePoint[]) public priceHistory;
     uint256 public constant PRICE_HISTORY_LENGTH = 10;
-    mapping(address => uint256) public estimatedGasCosts;
-    uint256 public constant BASE_GAS_COST = 100000;
 
-    // Structs
     struct PricePoint {
         uint256 timestamp;
         uint256 price;
     }
 
-    // Events
     event BestQuoteFound(address amm, uint256 outputAmount);
     event SwapExecuted(address amm, uint256 amountIn, uint256 amountOut);
     event PriceUpdated(address amm, uint256 price, uint256 timestamp);
 
-    // Constructor
     constructor(address _amm1, address _amm2) {
         require(_amm1 != address(0) && _amm2 != address(0), "Invalid AMM addresses");
         amm1 = AMM(_amm1);
         amm2 = AMM2(_amm2);
     }
 
-    // External/Public Functions
-    function getBestQuote(
-        uint256 amountIn,
-        bool isAtoB
-    ) public view returns (address bestAMM, uint256 bestOutput) {
-        // ... existing function code ...
+    function getBestQuote(uint256 amountIn, bool isAtoB) public view returns (address bestAMM, uint256 bestOutput) {
+        if (amountIn == 0) return (address(0), 0);
+
+        // Handle max uint256 case
+        if (amountIn >= type(uint256).max / 1000) {
+            return (address(0), 0);
+        }
+
+        uint256 output1;
+        uint256 output2;
+
+        try this.safeGetAmountOut(address(amm1), amountIn, isAtoB) returns (uint256 amount1) {
+            output1 = amount1;
+        } catch {
+            output1 = 0;
+        }
+
+        try this.safeGetAmountOut(address(amm2), amountIn, isAtoB) returns (uint256 amount2) {
+            output2 = amount2;
+        } catch {
+            output2 = 0;
+        }
+
+        if (output1 >= output2 && output1 > 0) {
+            return (address(amm1), output1);
+        } else if (output2 > 0) {
+            return (address(amm2), output2);
+        } else {
+            return (address(0), 0);
+        }
     }
 
-    function checkAndEmitQuote(
-        uint256 amountIn,
-        bool isAtoB
-    ) external returns (address bestAMM, uint256 bestOutput) {
-        // ... existing function code ...
+    function safeGetAmountOut(address ammAddress, uint256 amountIn, bool isAtoB) external view returns (uint256) {
+        AMM amm = AMM(ammAddress);
+        if (isAtoB) {
+            if (amm.reserveA() == 0 || amm.reserveB() == 0) return 0;
+            return amm.getAmountOut(amountIn, amm.reserveA(), amm.reserveB());
+        } else {
+            if (amm.reserveA() == 0 || amm.reserveB() == 0) return 0;
+            return amm.getAmountOut(amountIn, amm.reserveB(), amm.reserveA());
+        }
     }
 
-    function executeSwap(
-        uint256 amountIn,
-        bool isAtoB,
-        uint256 minOutput
-    ) external returns (uint256 amountOut) {
-        // ... existing function code ...
+    function checkAndEmitQuote(uint256 amountIn, bool isAtoB) external returns (address bestAMM, uint256 bestOutput) {
+        (bestAMM, bestOutput) = getBestQuote(amountIn, isAtoB);
+        emit BestQuoteFound(bestAMM, bestOutput);
+        return (bestAMM, bestOutput);
+    }
+
+function executeSwap(uint256 amountIn, bool isAtoB, uint256 minOutput) external returns (uint256 amountOut) {
+        require(amountIn > 0, "Invalid input amount");
+        
+        (address bestAMM, uint256 expectedOutput) = getBestQuote(amountIn, isAtoB);
+        require(bestAMM != address(0), "No valid route found");
+        require(expectedOutput >= minOutput, "Insufficient output amount");
+
+        // Get the correct token based on the AMM we're using
+        IERC20 tokenIn;
+        if (isAtoB) {
+            tokenIn = IERC20(address(AMM(bestAMM).tokenA()));
+        } else {
+            tokenIn = IERC20(address(AMM(bestAMM).tokenB()));
+        }
+
+        // Transfer and approve tokens
+        require(tokenIn.transferFrom(msg.sender, address(this), amountIn), "Transfer failed");
+        require(tokenIn.approve(bestAMM, 0), "Failed to clear approval"); // Clear approval first
+        require(tokenIn.approve(bestAMM, amountIn), "Approval failed");
+
+        // Execute swap on the best AMM
+        if (bestAMM == address(amm1)) {
+            amountOut = amm1.swap(amountIn, isAtoB);
+        } else {
+            amountOut = amm2.swap(amountIn, isAtoB);
+        }
+
+        require(amountOut > 0, "Zero output amount");
+        require(amountOut >= minOutput, "Slippage too high");
+
+        // Update price history and emit event
+        if (amountOut > 0) {
+            updatePriceHistory(bestAMM, (amountOut * 1e18) / amountIn);
+            emit SwapExecuted(bestAMM, amountIn, amountOut);
+        }
+        
+        return amountOut;
     }
 
     function getReserves() external view returns (
@@ -61,37 +120,33 @@ contract DexAggregator {
         uint256 amm2ReserveA,
         uint256 amm2ReserveB
     ) {
-        // ... existing function code ...
+        return (
+            amm1.reserveA(),
+            amm1.reserveB(),
+            amm2.reserveA(),
+            amm2.reserveB()
+        );
+    }
+
+    function updatePriceHistory(address amm, uint256 price) internal {
+        PricePoint[] storage history = priceHistory[amm];
+        
+        if (history.length >= PRICE_HISTORY_LENGTH) {
+            for (uint i = 0; i < history.length - 1; i++) {
+                history[i] = history[i + 1];
+            }
+            history.pop();
+        }
+        
+        history.push(PricePoint({
+            timestamp: block.timestamp,
+            price: price
+        }));
+        
+        emit PriceUpdated(amm, price, block.timestamp);
     }
 
     function getPriceHistory(address amm) external view returns (PricePoint[] memory) {
         return priceHistory[amm];
-    }
-
-    function getBestQuoteWithGas(
-        uint256 amountIn,
-        bool isAtoB,
-        uint256 gasPrice
-    ) public view returns (
-        address bestAMM,
-        uint256 bestOutput,
-        uint256 estimatedGas
-    ) {
-        // ... new function code as shown above ...
-    }
-
-    // Internal Functions
-    function updatePriceHistory(address amm, uint256 price) internal {
-        // ... existing function code ...
-    }
-
-    function updateGasEstimate(address amm, uint256 gasUsed) internal {
-        // Simple moving average
-        uint256 currentEstimate = estimatedGasCosts[amm];
-        if (currentEstimate == 0) {
-            estimatedGasCosts[amm] = gasUsed;
-        } else {
-            estimatedGasCosts[amm] = (currentEstimate + gasUsed) / 2;
-        }
     }
 }
