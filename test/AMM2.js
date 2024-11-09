@@ -212,5 +212,34 @@ describe("AMM2 Contract", function () {
 
       expect(largePrice).to.be.lt(smallPrice);
     });
+    it("Should show different price impacts between AMMs", async function () {
+    const { amm2, tokenA, tokenB } = await loadFixture(deployAMM2Fixture);
+    const AMM = await ethers.getContractFactory("AMM");
+    const amm1 = await AMM.deploy(tokenA.address, tokenB.address);
+
+    // Add different liquidity amounts to each AMM
+    const amm1Liquidity = ethers.utils.parseEther("100");
+    const amm2Liquidity = ethers.utils.parseEther("50");
+
+    // Setup AMM1
+    await tokenA.approve(amm1.address, amm1Liquidity);
+    await tokenB.approve(amm1.address, amm1Liquidity);
+    await amm1.addLiquidity(amm1Liquidity, amm1Liquidity);
+
+    // Setup AMM2
+    await tokenA.approve(amm2.address, amm2Liquidity);
+    await tokenB.approve(amm2.address, amm2Liquidity);
+    await amm2.addLiquidity(amm2Liquidity, amm2Liquidity);
+
+    // Test same swap amount on both
+    const swapAmount = ethers.utils.parseEther("10");
+    const output1 = await amm1.getAmountOut(swapAmount, amm1Liquidity, amm1Liquidity);
+    const output2 = await amm2.getAmountOut(swapAmount, amm2Liquidity, amm2Liquidity);
+
+    // AMM2 should have higher price impact due to lower liquidity
+    const priceImpact1 = output1.mul(ethers.utils.parseEther("1")).div(swapAmount);
+    const priceImpact2 = output2.mul(ethers.utils.parseEther("1")).div(swapAmount);
+    expect(priceImpact2).to.be.lt(priceImpact1);
+});
   });
 });
