@@ -1,92 +1,74 @@
-//SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
 
-import "hardhat/console.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract Token {
-    string public name;
-    string public symbol;
-    uint256 public decimals = 18;
-    uint256 public totalSupply;
+contract Token is ERC20, ERC20Burnable, ReentrancyGuard, AccessControl {
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
-    mapping(address => uint256) public balanceOf;
-    mapping(address => mapping(address => uint256)) public allowance;
+    uint256 public constant MAX_SUPPLY = 1000000000 * 10**18; // 1 billion tokens
+    
+    mapping(address => uint256) private _lastTransferTimestamp;
+    uint256 public constant TRANSFER_COOLDOWN = 1 minutes;
 
-    event Transfer(
-        address indexed from,
-        address indexed to,
-        uint256 value
-    );
+    event RateLimit(address indexed from, address indexed to, uint256 amount);
 
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 value
-    );
-
-    constructor(
-        string memory _name,
-        string memory _symbol,
-        uint256 _totalSupply
-    ) {
-        name = _name;
-        symbol = _symbol;
-        totalSupply = _totalSupply * (10**decimals);
-        balanceOf[msg.sender] = totalSupply;
+    constructor(string memory name, string memory symbol) ERC20(name, symbol) {
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(MINTER_ROLE, msg.sender);
+        _setupRole(BURNER_ROLE, msg.sender);
+        
+        // Mint initial supply to the deployer
+        _mint(msg.sender, 1000000 * 10**decimals());
     }
 
-    function transfer(address _to, uint256 _value)
-        public
-        returns (bool success)
-    {
-        require(balanceOf[msg.sender] >= _value);
+    function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
+        require(totalSupply() + amount <= MAX_SUPPLY, "Exceeds max supply");
+        _mint(to, amount);
+    }
 
-        _transfer(msg.sender, _to, _value);
+    function burn(uint256 amount) public override onlyRole(BURNER_ROLE) {
+        _burn(_msgSender(), amount);
+    }
 
+    function burnFrom(address account, uint256 amount) public override onlyRole(BURNER_ROLE) {
+        _spendAllowance(account, _msgSender(), amount);
+        _burn(account, amount);
+    }
+
+    function transfer(address to, uint256 amount) public virtual override nonReentrant returns (bool) {
+        address owner = _msgSender();
+        _transfer(owner, to, amount);
         return true;
     }
 
-    function _transfer(
-        address _from,
-        address _to,
-        uint256 _value
-    ) internal {
-        require(_to != address(0));
-
-        balanceOf[_from] = balanceOf[_from] - _value;
-        balanceOf[_to] = balanceOf[_to] + _value;
-
-        emit Transfer(_from, _to, _value);
-    }
-
-    function approve(address _spender, uint256 _value)
-        public
-        returns(bool success)
-    {
-        require(_spender != address(0));
-
-        allowance[msg.sender][_spender] = _value;
-
-        emit Approval(msg.sender, _spender, _value);
+    function transferFrom(address from, address to, uint256 amount) public virtual override nonReentrant returns (bool) {
+        address spender = _msgSender();
+        _spendAllowance(from, spender, amount);
+        _transfer(from, to, amount);
         return true;
     }
 
-    function transferFrom(
-        address _from,
-        address _to,
-        uint256 _value
-    )
-        public
-        returns (bool success)
-    {
-        require(_value <= balanceOf[_from]);
-        require(_value <= allowance[_from][msg.sender]);
+    function _transfer(address from, address to, uint256 amount) internal virtual override {
+        require(from != address(0), "ERC20: transfer from the zero address");
+        require(to != address(0), "ERC20: transfer to the zero address");
 
-        allowance[_from][msg.sender] = allowance[_from][msg.sender] - _value;
+        uint256 currentTimestamp = block.timestamp;
+        if (currentTimestamp - _lastTransferTimestamp[from] < TRANSFER_COOLDOWN) {
+            emit RateLimit(from, to, amount);
+            return;
+        }
+        _lastTransferTimestamp[from] = currentTimestamp;
 
-        _transfer(_from, _to, _value);
-
-        return true;
+        super._transfer(from, to, amount);
     }
 
+    // Function to check the cooldown status
+    function canTransfer(address from) public view returns (bool) {
+        return block.timestamp - _lastTransferTimestamp[from] >= TRANSFER_COOLDOWN;
+    }
 }
