@@ -175,4 +175,94 @@ describe("DexAggregator", function () {
                 .to.emit(aggregator, "SwapExecuted");
         });
     });
+
+    describe("Advanced Scenarios", function () {
+        it("Should handle different reserve ratios correctly", async function () {
+            const { aggregator, amm1, amm2, tokenA, tokenB, owner } = await loadFixture(deployDexAggregatorFixture);
+            
+            // Add more liquidity to AMM1 to create different ratios
+            const additionalLiquidity = ethers.utils.parseEther("1000");
+            await tokenA.approve(amm1.address, additionalLiquidity);
+            await tokenB.approve(amm1.address, additionalLiquidity);
+            await amm1.addLiquidity(additionalLiquidity, additionalLiquidity);
+
+            const swapAmount = ethers.utils.parseEther("1");
+            const [bestAMM, bestOutput] = await aggregator.getBestQuote(swapAmount, true);
+
+            // AMM1 should still be better due to both higher liquidity and lower fees
+            expect(bestAMM).to.equal(amm1.address);
+        });
+
+        it("Should find best AMM when prices differ significantly", async function () {
+            const { aggregator, amm1, amm2, tokenA, tokenB, owner, user1 } = await loadFixture(deployDexAggregatorFixture);
+            
+            // Create price disparity by making several swaps on AMM2
+            const swapAmount = ethers.utils.parseEther("100");
+            await tokenA.approve(amm2.address, swapAmount);
+            await amm2.swap(swapAmount, true); // This will impact AMM2's prices
+
+            // Now check which AMM offers better price for a small swap
+            const testAmount = ethers.utils.parseEther("1");
+            const [bestAMM, bestOutput] = await aggregator.getBestQuote(testAmount, true);
+
+            // AMM1 should offer better price as it hasn't been impacted by large swaps
+            expect(bestAMM).to.equal(amm1.address);
+        });
+
+        it("Should handle consecutive swaps maintaining best price selection", async function () {
+            const { aggregator, tokenA, tokenB, user1 } = await loadFixture(deployDexAggregatorFixture);
+            
+            const swapAmount = ethers.utils.parseEther("10");
+            await tokenA.transfer(user1.address, swapAmount.mul(3)); // Fund for multiple swaps
+            await tokenA.connect(user1).approve(aggregator.address, swapAmount.mul(3));
+
+            // Execute three consecutive swaps
+            for(let i = 0; i < 3; i++) {
+                const [bestAMMBefore] = await aggregator.getBestQuote(swapAmount, true);
+                await aggregator.connect(user1).executeSwap(swapAmount, true, 0);
+                const [bestAMMAfter] = await aggregator.getBestQuote(swapAmount, true);
+
+                // Best AMM might change after swaps due to changing reserves
+                console.log(`Swap ${i + 1} - Best AMM before: ${bestAMMBefore}, after: ${bestAMMAfter}`);
+            }
+        });
+
+        it("Should handle token approval resets correctly", async function () {
+            const { aggregator, tokenA, user1 } = await loadFixture(deployDexAggregatorFixture);
+            
+            const swapAmount = ethers.utils.parseEther("10");
+            await tokenA.transfer(user1.address, swapAmount);
+            
+            // Approve, then reset approval to 0, then approve again
+            await tokenA.connect(user1).approve(aggregator.address, swapAmount);
+            await tokenA.connect(user1).approve(aggregator.address, 0);
+            await tokenA.connect(user1).approve(aggregator.address, swapAmount);
+            
+            // Should still execute successfully
+            await expect(
+                aggregator.connect(user1).executeSwap(swapAmount, true, 0)
+            ).to.not.be.reverted;
+        });
+
+        it("Should verify reserves match after swaps", async function () {
+            const { aggregator, tokenA, tokenB, user1 } = await loadFixture(deployDexAggregatorFixture);
+            
+            const swapAmount = ethers.utils.parseEther("10");
+            await tokenA.transfer(user1.address, swapAmount);
+            await tokenA.connect(user1).approve(aggregator.address, swapAmount);
+            
+            // Get reserves before
+            const reservesBefore = await aggregator.getReserves();
+            
+            // Execute swap
+            await aggregator.connect(user1).executeSwap(swapAmount, true, 0);
+            
+            // Get reserves after
+            const reservesAfter = await aggregator.getReserves();
+            
+            // Verify reserves changed appropriately
+            expect(reservesAfter.amm1ReserveA.add(reservesAfter.amm2ReserveA))
+                .to.be.gt(reservesBefore.amm1ReserveA.add(reservesBefore.amm2ReserveA));
+        });
+    });
 });
