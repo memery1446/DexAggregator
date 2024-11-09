@@ -91,4 +91,74 @@ describe("AMM Contract", function () {
       ).to.be.reverted;
     });
   });
+  describe("Price Calculation", function () {
+    it("Should calculate correct output amount", async function () {
+      const { amm, tokenA, tokenB, owner } = await loadFixture(deployAMMFixture);
+      // Add initial liquidity
+      const initialAmount = ethers.utils.parseEther("1000");
+      await tokenA.approve(amm.address, initialAmount);
+      await tokenB.approve(amm.address, initialAmount);
+      await amm.addLiquidity(initialAmount, initialAmount);
+
+      // Test price calculation
+      const amountIn = ethers.utils.parseEther("1");
+      const expectedOutput = await amm.getAmountOut(amountIn, initialAmount, initialAmount);
+      expect(expectedOutput).to.be.lt(amountIn); // Due to fee
+    });
+
+    it("Should consider fees in price calculation", async function () {
+      const { amm } = await loadFixture(deployAMMFixture);
+      const reserveIn = ethers.utils.parseEther("1000");
+      const reserveOut = ethers.utils.parseEther("1000");
+      const amountIn = ethers.utils.parseEther("1");
+      
+      const amountOut = await amm.getAmountOut(amountIn, reserveIn, reserveOut);
+      // Should be less than 1:1 due to 0.3% fee
+      expect(amountOut).to.be.lt(amountIn);
+    });
+  });
+
+  describe("Swaps", function () {
+    it("Should execute swap A to B correctly", async function () {
+      const { amm, tokenA, tokenB, owner, addr1 } = await loadFixture(deployAMMFixture);
+      
+      // Add initial liquidity
+      const initialAmount = ethers.utils.parseEther("1000");
+      await tokenA.approve(amm.address, initialAmount);
+      await tokenB.approve(amm.address, initialAmount);
+      await amm.addLiquidity(initialAmount, initialAmount);
+
+      // Setup swap
+      const swapAmount = ethers.utils.parseEther("1");
+      await tokenA.transfer(addr1.address, swapAmount);
+      await tokenA.connect(addr1).approve(amm.address, swapAmount);
+
+      // Record balances before
+      const addr1TokenBBefore = await tokenB.balanceOf(addr1.address);
+
+      // Execute swap
+      await amm.connect(addr1).swap(swapAmount, true); // true for A to B
+
+      // Verify balances changed correctly
+      const addr1TokenBAfter = await tokenB.balanceOf(addr1.address);
+      expect(addr1TokenBAfter).to.be.gt(addr1TokenBBefore);
+    });
+
+    it("Should fail swap with insufficient input", async function () {
+      const { amm, tokenA, tokenB, owner, addr1 } = await loadFixture(deployAMMFixture);
+      
+      // Add initial liquidity
+      const initialAmount = ethers.utils.parseEther("1000");
+      await tokenA.approve(amm.address, initialAmount);
+      await tokenB.approve(amm.address, initialAmount);
+      await amm.addLiquidity(initialAmount, initialAmount);
+
+      // Try to swap without having tokens
+      await expect(
+        amm.connect(addr1).swap(ethers.utils.parseEther("1"), true)
+      ).to.be.reverted;
+    });
+  });
 });
+
+
