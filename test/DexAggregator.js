@@ -85,4 +85,94 @@ describe("DexAggregator", function () {
             expect(bestAMM).to.equal(amm1.address); // AMM1 has 0.3% fee vs AMM2's 0.5%
         });
     });
+
+    describe("Swap Execution", function () {
+        it("Should execute swap on AMM with better quote", async function () {
+            const { aggregator, tokenA, tokenB, user1 } = await loadFixture(deployDexAggregatorFixture);
+            
+            // Give user1 some tokens to swap
+            const swapAmount = ethers.utils.parseEther("10");
+            await tokenA.transfer(user1.address, swapAmount);
+            
+            // Get initial balances
+            const initialTokenABalance = await tokenA.balanceOf(user1.address);
+            const initialTokenBBalance = await tokenB.balanceOf(user1.address);
+            
+            // Approve aggregator to spend tokens
+            await tokenA.connect(user1).approve(aggregator.address, swapAmount);
+            
+            // Execute swap
+            const minOutput = ethers.utils.parseEther("9"); // Expecting at least 9 tokens due to fees
+            await aggregator.connect(user1).executeSwap(swapAmount, true, minOutput);
+            
+            // Check balances after swap
+            const finalTokenABalance = await tokenA.balanceOf(user1.address);
+            const finalTokenBBalance = await tokenB.balanceOf(user1.address);
+            
+            expect(finalTokenABalance).to.be.lt(initialTokenABalance);
+            expect(finalTokenBBalance).to.be.gt(initialTokenBBalance);
+        });
+
+        it("Should fail when output is less than minOutput", async function () {
+            const { aggregator, tokenA, user1 } = await loadFixture(deployDexAggregatorFixture);
+            
+            const swapAmount = ethers.utils.parseEther("10");
+            await tokenA.transfer(user1.address, swapAmount);
+            await tokenA.connect(user1).approve(aggregator.address, swapAmount);
+            
+            // Set unrealistically high minOutput
+            const unrealisticMinOutput = ethers.utils.parseEther("11");
+            
+            await expect(
+                aggregator.connect(user1).executeSwap(swapAmount, true, unrealisticMinOutput)
+            ).to.be.revertedWith("Insufficient output amount");
+        });
+
+        it("Should fail when user has insufficient balance", async function () {
+            const { aggregator, tokenA, user1 } = await loadFixture(deployDexAggregatorFixture);
+            
+            const swapAmount = ethers.utils.parseEther("10");
+            // Don't transfer any tokens to user1
+            await tokenA.connect(user1).approve(aggregator.address, swapAmount);
+            
+            await expect(
+                aggregator.connect(user1).executeSwap(swapAmount, true, 0)
+            ).to.be.reverted;
+        });
+
+        it("Should fail when not approved", async function () {
+            const { aggregator, tokenA, user1 } = await loadFixture(deployDexAggregatorFixture);
+            
+            const swapAmount = ethers.utils.parseEther("10");
+            await tokenA.transfer(user1.address, swapAmount);
+            // Don't approve the aggregator
+            
+            await expect(
+                aggregator.connect(user1).executeSwap(swapAmount, true, 0)
+            ).to.be.reverted;
+        });
+    });
+
+    describe("Quote Events", function () {
+        it("Should emit BestQuoteFound event with correct values", async function () {
+            const { aggregator, amm1 } = await loadFixture(deployDexAggregatorFixture);
+            
+            const swapAmount = ethers.utils.parseEther("1");
+            
+            await expect(aggregator.checkAndEmitQuote(swapAmount, true))
+                .to.emit(aggregator, "BestQuoteFound")
+                .withArgs(amm1.address, await aggregator.getBestQuote(swapAmount, true).then(r => r.bestOutput));
+        });
+
+        it("Should emit SwapExecuted event after successful swap", async function () {
+            const { aggregator, tokenA, user1 } = await loadFixture(deployDexAggregatorFixture);
+            
+            const swapAmount = ethers.utils.parseEther("1");
+            await tokenA.transfer(user1.address, swapAmount);
+            await tokenA.connect(user1).approve(aggregator.address, swapAmount);
+            
+            await expect(aggregator.connect(user1).executeSwap(swapAmount, true, 0))
+                .to.emit(aggregator, "SwapExecuted");
+        });
+    });
 });
