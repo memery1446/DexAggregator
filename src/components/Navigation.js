@@ -26,7 +26,7 @@ const Navigation = () => {
           <div className="col-12" style={{ height: '40px', backgroundColor: 'white' }}></div>
         </div>
       </div>
-      <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#7F7D9C' }}>
+      <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#594D5B' }}>
         <div className="container">
           <a className="navbar-brand" href="/">
             <img src={logo} alt="URDEX Logo" height="40" className="d-inline-block align-top" />

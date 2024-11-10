@@ -12,13 +12,13 @@ function App() {
     <div className="d-flex flex-column min-vh-100">
       <Navigation />
       <main className="flex-grow-1 d-flex align-items-center justify-content-center py-5" style={{
-        background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+        background: 'linear-gradient(135deg, #7F7D9C 0%, #d6b85a 100%)',
         paddingTop: '80px !important'
       }}>
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-md-5 col-lg-4">
-              <div className="card shadow-lg mb-5" style={{ borderRadius: '1.25rem', backgroundColor: '#7F7D9C' }}>
+              <div className="card shadow-lg mb-5" style={{ borderRadius: '1.25rem', backgroundColor: '#594D5B' }}>
                 <div className="card-body p-4">
                   {isLoading ? <Loading /> : <SwapCard />}
                 </div>

@@ -158,7 +158,7 @@ const SwapCard = () => {
             className="btn btn-primary w-100" 
             disabled={!isWalletConnected || isProcessing}
             style={{
-              background: isWalletConnected ? 'linear-gradient(45deg, #7F7D9C, #9E9CB2)' : '#6c757d',
+              background: isWalletConnected ? 'linear-gradient(45deg, #e3b778, #7F7D9C)' : '#6c757d',
               border: 'none',
               padding: '0.75rem',
               fontSize: '1.1rem',
