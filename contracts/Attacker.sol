@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
-
 import "./Token.sol";
-
 contract Attacker {
     Token public token;
     uint256 public count;
+    bool private locked;
 
     constructor(address _token) {
         token = Token(_token);
@@ -13,8 +12,12 @@ contract Attacker {
 
     function attack() external {
         require(token.balanceOf(address(this)) > 0, "Need tokens to attack");
+        require(!locked, "Attack in progress");
+        
+        locked = true;
         count = 0;  // Reset count before attack
         receiveTokens(1);  // Start with initial call
+        locked = false;
     }
 
     function receiveTokens(uint256 amount) public {
