@@ -290,5 +290,78 @@ describe("Attack Attempts", function () {
             expect(await attackerContract.count()).to.be.lte(5);
         });
     });
-});
+
+describe("AMM Interface Attack Scenarios", function () {
+        it("Should test rapid sequential attacks across AMMs", async function () {
+            const { token, attackerContract, owner } = await loadFixture(deployAttackerFixture);
+            
+            // Setup for cross-AMM attack
+            const attackAmount = ethers.utils.parseEther("500");
+            await token.transfer(attackerContract.address, attackAmount);
+            
+            // Execute multiple rapid attacks simulating cross-AMM exploitation
+            for(let i = 0; i < 3; i++) {
+                await attackerContract.attack();
+                // Verify each attack maintains expected count
+                expect(await attackerContract.count()).to.equal(1);
+            }
+            
+            // Verify final balance hasn't changed unexpectedly
+            const finalBalance = await token.balanceOf(attackerContract.address);
+            expect(finalBalance).to.equal(attackAmount);
+        });
+
+        it("Should maintain integrity during high-value attacks", async function () {
+            const { token, attackerContract } = await loadFixture(deployAttackerFixture);
+            
+            // Setup with very large amount to test high-value scenarios
+            const largeAmount = ethers.utils.parseEther("1000000");
+            await token.transfer(attackerContract.address, largeAmount);
+            
+            // Execute attack with large balance
+            await attackerContract.attack();
+            
+            // Verify contract behavior remains consistent even with large values
+            expect(await attackerContract.count()).to.equal(1);
+            const finalBalance = await token.balanceOf(attackerContract.address);
+            expect(finalBalance).to.equal(largeAmount);
+        });
+
+        it("Should test rapid sequential attacks across AMMs", async function () {
+            const { token, attackerContract, owner } = await loadFixture(deployAttackerFixture);
+            
+            // Setup for cross-AMM attack
+            const attackAmount = ethers.utils.parseEther("500");
+            await token.transfer(attackerContract.address, attackAmount);
+            
+            // Execute multiple rapid attacks simulating cross-AMM exploitation
+            for(let i = 0; i < 3; i++) {
+                await attackerContract.attack();
+                // Verify each attack maintains expected count
+                expect(await attackerContract.count()).to.equal(1);
+            }
+            
+            // Verify final balance hasn't changed unexpectedly
+            const finalBalance = await token.balanceOf(attackerContract.address);
+            expect(finalBalance).to.equal(attackAmount);
+        });
+
+        it("Should maintain integrity during high-value attacks", async function () {
+            const { token, attackerContract } = await loadFixture(deployAttackerFixture);
+            
+            // Setup with very large amount to test high-value scenarios
+            const largeAmount = ethers.utils.parseEther("1000000");
+            await token.transfer(attackerContract.address, largeAmount);
+            
+            // Execute attack with large balance
+            await attackerContract.attack();
+            
+            // Verify contract behavior remains consistent even with large values
+            expect(await attackerContract.count()).to.equal(1);
+            const finalBalance = await token.balanceOf(attackerContract.address);
+            expect(finalBalance).to.equal(largeAmount);
+        });
+    });
+    });
+
 
