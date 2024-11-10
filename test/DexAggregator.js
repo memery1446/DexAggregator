@@ -447,4 +447,81 @@ it("Should maintain price history correctly", async function () {
         }
     });
 });
+
+// Add these tests to your existing test suite
+
+describe("Gas Optimization and Events", function () {
+    it("Should execute swaps within reasonable gas limits", async function () {
+        const { aggregator, tokenA, user1 } = await loadFixture(deployDexAggregatorFixture);
+        
+        const swapAmount = ethers.utils.parseEther("1");
+        await tokenA.transfer(user1.address, swapAmount);
+        await tokenA.connect(user1).approve(aggregator.address, swapAmount);
+
+        // Test gas usage for swap
+        const tx = await aggregator.connect(user1).executeSwap(swapAmount, true, 0);
+        const receipt = await tx.wait();
+        
+        expect(receipt.gasUsed).to.be.lt(500000); // Reasonable gas limit for a swap
+    });
+
+    it("Should emit swap events with exact values", async function () {
+        const { aggregator, tokenA, user1 } = await loadFixture(deployDexAggregatorFixture);
+        
+        const swapAmount = ethers.utils.parseEther("1");
+        await tokenA.transfer(user1.address, swapAmount);
+        await tokenA.connect(user1).approve(aggregator.address, swapAmount);
+
+        // Get expected values
+        const [expectedAMM, expectedOutput] = await aggregator.getBestQuote(swapAmount, true);
+
+        // Test exact event parameters
+        await expect(aggregator.connect(user1).executeSwap(swapAmount, true, 0))
+            .to.emit(aggregator, "SwapExecuted")
+            .withArgs(expectedAMM, swapAmount, expectedOutput);
+    });
+
+    it("Should emit price update events with correct chronological data", async function () {
+        const { aggregator, tokenA, user1 } = await loadFixture(deployDexAggregatorFixture);
+        
+        const swapAmount = ethers.utils.parseEther("1");
+        await tokenA.transfer(user1.address, swapAmount);
+        await tokenA.connect(user1).approve(aggregator.address, swapAmount);
+
+        // Execute swap and get block timestamp
+        const tx = await aggregator.connect(user1).executeSwap(swapAmount, true, 0);
+        const receipt = await tx.wait();
+        const block = await ethers.provider.getBlock(receipt.blockNumber);
+
+        // Get the emitted event
+        const event = receipt.events?.find(e => e.event === "PriceUpdated");
+        expect(event?.args?.timestamp).to.equal(block.timestamp);
+        expect(event?.args?.price).to.be.gt(0);
+    });
+
+it("Should maintain consistent gas costs across different input sizes", async function () {
+        const { aggregator, tokenA, user1 } = await loadFixture(deployDexAggregatorFixture);
+        
+        const smallAmount = ethers.utils.parseEther("0.1");
+        const largeAmount = ethers.utils.parseEther("10");
+        const totalAmount = largeAmount.add(smallAmount);
+        
+        // Transfer total needed amount
+        await tokenA.transfer(user1.address, totalAmount);
+        
+        // First swap with small amount
+        await tokenA.connect(user1).approve(aggregator.address, smallAmount);
+        const smallTx = await aggregator.connect(user1).executeSwap(smallAmount, true, 0);
+        const smallReceipt = await smallTx.wait();
+
+        // Reset approval and do large swap
+        await tokenA.connect(user1).approve(aggregator.address, largeAmount);
+        const largeTx = await aggregator.connect(user1).executeSwap(largeAmount, true, 0);
+        const largeReceipt = await largeTx.wait();
+
+        // Gas shouldn't vary too much based on input size
+        const gasDiff = Math.abs(largeReceipt.gasUsed.sub(smallReceipt.gasUsed).toNumber());
+        expect(gasDiff).to.be.lt(50000); // Maximum acceptable gas difference
+    });
+});
 });
