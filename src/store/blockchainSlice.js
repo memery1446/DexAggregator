@@ -1,122 +1,221 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { ethers } from 'ethers';
-import { TK1_ABI, TK2_ABI, AMM_ABI, AMM2_ABI } from '../contracts/contractABIs';
-import { TK1_ADDRESS, TK2_ADDRESS, AMM_ADDRESS, AMM2_ADDRESS } from '../contracts/contractAddresses';
-import { getHardhatSigner, getHardhatAccounts } from '../utils/hardhatHelper';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Alert, Spinner } from 'react-bootstrap';
+import { connectWallet, fetchBalances } from '../store/blockchainSlice';
 
-export const connectWallet = createAsyncThunk(
-  'blockchain/connectWallet',
-  async (_, { rejectWithValue }) => {
+const SwapCard = () => {
+  const dispatch = useDispatch();
+  const [inputToken, setInputToken] = useState('TK1');
+  const [outputToken, setOutputToken] = useState('TK2');
+  const [inputAmount, setInputAmount] = useState('');
+  const [outputAmount, setOutputAmount] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [alertInfo, setAlertInfo] = useState(null);
+  const { address, balances, isLoading, error } = useSelector((state) => state.blockchain);
+
+  const tokens = ['TK1', 'TK2'];
+
+  useEffect(() => {
+    if (address) {
+      dispatch(fetchBalances(address));
+    }
+  }, [address, dispatch]);
+
+  const handleConnectWallet = () => {
+    dispatch(connectWallet());
+  };
+
+  const handleSwap = async (e) => {
+    e.preventDefault();
+    if (!address) {
+      setAlertInfo({ type: 'warning', message: 'Please connect your wallet first.' });
+      return;
+    }
+    setIsProcessing(true);
+    setAlertInfo(null);
+
     try {
-      const signer = await getHardhatSigner();
-      const address = await signer.getAddress();
-      const accounts = await getHardhatAccounts();
-      return { address, signer, accounts };
+      // Simulating a transaction
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Simulating a successful transaction
+      setAlertInfo({ type: 'success', message: 'Swap completed successfully!' });
+      setInputAmount('');
+      setOutputAmount('');
+      dispatch(fetchBalances(address));
     } catch (error) {
-      return rejectWithValue(error.message);
+      setAlertInfo({ type: 'danger', message: 'Transaction failed. Please try again.' });
+    } finally {
+      setIsProcessing(false);
     }
-  }
-);
+  };
 
-export const getBalances = createAsyncThunk(
-  'blockchain/getBalances',
-  async (_, { getState, rejectWithValue }) => {
-    try {
-      const { signer } = getState().blockchain;
-      const tk1Contract = new ethers.Contract(TK1_ADDRESS, TK1_ABI, signer);
-      const tk2Contract = new ethers.Contract(TK2_ADDRESS, TK2_ABI, signer);
-      const tk1Balance = await tk1Contract.balanceOf(await signer.getAddress());
-      const tk2Balance = await tk2Contract.balanceOf(await signer.getAddress());
-      return {
-        TK1: ethers.utils.formatUnits(tk1Balance, 18),
-        TK2: ethers.utils.formatUnits(tk2Balance, 18)
-      };
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
+  return (
+    <div style={{
+      background: 'linear-gradient(145deg, #ffffff, #FBE790)',
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '20px'
+    }}>
+      <div className="card shadow-lg" style={{ 
+        borderRadius: '1rem', 
+        overflow: 'hidden', 
+        background: '#ffffff',
+        width: '100%',
+        maxWidth: '400px'
+      }}>
+        <div className="card-body p-4">
+          <h5 className="card-title text-center mb-4">Swap Tokens</h5>
+          {alertInfo && (
+            <Alert variant={alertInfo.type} onClose={() => setAlertInfo(null)} dismissible>
+              {alertInfo.message}
+            </Alert>
+          )}
+          <form onSubmit={handleSwap}>
+            <div className="mb-3">
+              <label htmlFor="inputToken" className="form-label">From</label>
+              <div className="input-group">
+                <select
+                  className="form-select"
+                  id="inputToken"
+                  value={inputToken}
+                  onChange={(e) => setInputToken(e.target.value)}
+                  disabled={isProcessing}
+                  style={{
+                    borderTopRightRadius: 0,
+                    borderBottomRightRadius: 0,
+                    borderRight: 'none',
+                    transition: 'all 0.3s ease',
+                    ...(address && {
+                      ':hover': {
+                        backgroundColor: '#f8f9fa',
+                        borderColor: '#ced4da',
+                        boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)'
+                      }
+                    })
+                  }}
+                >
+                  {tokens.map(token => (
+                    <option key={token} value={token}>{token}</option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="0.0"
+                  value={inputAmount}
+                  onChange={(e) => setInputAmount(e.target.value)}
+                  required
+                  disabled={isProcessing}
+                  style={{
+                    borderTopLeftRadius: 0,
+                    borderBottomLeftRadius: 0,
+                    borderLeft: 'none'
+                  }}
+                />
+              </div>
+              <small className="form-text text-muted">
+                Balance: {address ? `${balances[inputToken]} ${inputToken}` : '-- --'}
+              </small>
+            </div>
 
-export const swapTokens = createAsyncThunk(
-  'blockchain/swapTokens',
-  async ({ inputToken, outputToken, inputAmount, useAMM2 }, { getState, rejectWithValue }) => {
-    try {
-      const { signer } = getState().blockchain;
-      const ammContract = new ethers.Contract(useAMM2 ? AMM2_ADDRESS : AMM_ADDRESS, useAMM2 ? AMM2_ABI : AMM_ABI, signer);
-      const inputTokenContract = new ethers.Contract(
-        inputToken === 'TK1' ? TK1_ADDRESS : TK2_ADDRESS,
-        inputToken === 'TK1' ? TK1_ABI : TK2_ABI,
-        signer
-      );
+            <div className="text-center mb-3">
+              <i className="bi bi-arrow-down-up swap-icon" style={{ fontSize: '1.5rem', color: '#7F7D9C' }}></i>
+            </div>
 
-      // Approve AMM to spend tokens
-      const approveTx = await inputTokenContract.approve(useAMM2 ? AMM2_ADDRESS : AMM_ADDRESS, ethers.utils.parseUnits(inputAmount, 18));
-      await approveTx.wait();
+            <div className="mb-3">
+              <label htmlFor="outputToken" className="form-label">To</label>
+              <div className="input-group">
+                <select
+                  className="form-select"
+                  id="outputToken"
+                  value={outputToken}
+                  onChange={(e) => setOutputToken(e.target.value)}
+                  disabled={isProcessing}
+                  style={{
+                    borderTopRightRadius: 0,
+                    borderBottomRightRadius: 0,
+                    borderRight: 'none',
+                    transition: 'all 0.3s ease',
+                    ...(address && {
+                      ':hover': {
+                        backgroundColor: '#f8f9fa',
+                        borderColor: '#ced4da',
+                        boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)'
+                      }
+                    })
+                  }}
+                >
+                  {tokens.map(token => (
+                    <option key={token} value={token}>{token}</option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="0.0"
+                  value={outputAmount}
+                  onChange={(e) => setOutputAmount(e.target.value)}
+                  readOnly
+                  disabled={isProcessing}
+                  style={{
+                    borderTopLeftRadius: 0,
+                    borderBottomLeftRadius: 0,
+                    borderLeft: 'none'
+                  }}
+                />
+              </div>
+              <small className="form-text text-muted">
+                Balance: {address ? `${balances[outputToken]} ${outputToken}` : '-- --'}
+              </small>
+            </div>
+            <button 
+              type="submit" 
+              className="btn btn-primary w-100" 
+              disabled={!address || isProcessing}
+              style={{
+                background: address ? 'linear-gradient(45deg, #7F7D9C, #9E9CB2)' : '#6c757d',
+                border: 'none',
+                padding: '0.75rem',
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                transition: 'all 0.3s ease',
+                ...(address && {
+                  ':hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                  }
+                })
+              }}
+            >
+              {isProcessing ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  Processing...
+                </>
+              ) : address ? (
+                'Swap'
+              ) : (
+                'Connect Wallet'
+              )}
+            </button>
+          </form>
+          {!address && (
+            <button 
+              onClick={handleConnectWallet} 
+              className="btn btn-secondary w-100 mt-3"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Connecting...' : 'Connect Wallet'}
+            </button>
+          )}
+          {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+        </div>
+      </div>
+    </div>
+  );
+};
 
-      // Perform swap
-      const swapTx = await ammContract.swap(
-        inputToken === 'TK1' ? TK1_ADDRESS : TK2_ADDRESS,
-        outputToken === 'TK1' ? TK1_ADDRESS : TK2_ADDRESS,
-        ethers.utils.parseUnits(inputAmount, 18)
-      );
-      await swapTx.wait();
-
-      return { success: true };
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-const blockchainSlice = createSlice({
-  name: 'blockchain',
-  initialState: {
-    address: null,
-    signer: null,
-    accounts: [],
-    balances: { TK1: '0', TK2: '0' },
-    isLoading: false,
-    error: null,
-    useAMM2: false
-  },
-  reducers: {
-    toggleAMM: (state) => {
-      state.useAMM2 = !state.useAMM2;
-    },
-    setSelectedAccount: (state, action) => {
-      state.address = action.payload;
-    }
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(connectWallet.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(connectWallet.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.address = action.payload.address;
-        state.signer = action.payload.signer;
-        state.accounts = action.payload.accounts;
-      })
-      .addCase(connectWallet.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      .addCase(getBalances.fulfilled, (state, action) => {
-        state.balances = action.payload;
-      })
-      .addCase(swapTokens.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(swapTokens.fulfilled, (state) => {
-        state.isLoading = false;
-      })
-      .addCase(swapTokens.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      });
-  }
-});
-
-export const { toggleAMM, setSelectedAccount } = blockchainSlice.actions;
-export default blockchainSlice.reducer;
+export default SwapCard;
