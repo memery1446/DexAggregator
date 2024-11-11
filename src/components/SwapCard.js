@@ -1,7 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { createSelector } from '@reduxjs/toolkit';
 import { Alert, Spinner } from 'react-bootstrap';
 import { connectWallet, fetchBalances } from '../store/blockchainSlice';
+import TokenBalance from './TokenBalance';
+
+// Memoized selectors
+const selectBlockchainState = (state) => state.blockchain;
+
+const selectIsWalletConnected = createSelector(
+  [selectBlockchainState],
+  (blockchain) => blockchain?.address !== null
+);
+
+const selectAddress = createSelector(
+  [selectBlockchainState],
+  (blockchain) => blockchain?.address
+);
+
+const selectBalances = createSelector(
+  [selectBlockchainState],
+  (blockchain) => blockchain?.balances || {}
+);
+
+const selectIsLoading = createSelector(
+  [selectBlockchainState],
+  (blockchain) => blockchain?.isLoading || false
+);
+
+const selectError = createSelector(
+  [selectBlockchainState],
+  (blockchain) => blockchain?.error || null
+);
 
 const SwapCard = () => {
   const dispatch = useDispatch();
@@ -10,14 +40,19 @@ const SwapCard = () => {
   const [inputAmount, setInputAmount] = useState('');
   const [outputAmount, setOutputAmount] = useState('');
   const [alertInfo, setAlertInfo] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false); // Added state for processing
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const isWalletConnected = useSelector((state) => state.blockchain?.address !== null);
-  const balances = useSelector((state) => state.blockchain?.balances || {});
-  const isLoading = useSelector((state) => state.blockchain?.isLoading || false);
-  const error = useSelector((state) => state.blockchain?.error || null);
+  const isWalletConnected = useSelector(selectIsWalletConnected);
+  const address = useSelector(selectAddress);
+  const balances = useSelector(selectBalances);
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
 
-  const tokens = ['TK1', 'TK2'];
+  const tokens = useMemo(() => ['TK1', 'TK2'], []);
+
+  useEffect(() => {
+    dispatch(connectWallet());
+  }, [dispatch]);
 
   useEffect(() => {
     if (isWalletConnected) {
@@ -43,12 +78,7 @@ const SwapCard = () => {
   const handleSwap = async (e) => {
     e.preventDefault();
     if (!isWalletConnected) {
-      try {
-        await dispatch(connectWallet()).unwrap();
-        setAlertInfo({ type: 'success', message: 'Wallet connected successfully!' });
-      } catch (error) {
-        setAlertInfo({ type: 'danger', message: 'Failed to connect wallet: ' + error.message });
-      }
+      await handleConnectWallet();
       return;
     }
     setIsProcessing(true);
@@ -83,6 +113,7 @@ const SwapCard = () => {
             {alertInfo.message}
           </Alert>
         )}
+        {isWalletConnected && <TokenBalance />}
         <form onSubmit={handleSwap}>
           <div className="mb-3">
             <label htmlFor="inputToken" className="form-label">From</label>
@@ -98,13 +129,6 @@ const SwapCard = () => {
                   borderBottomRightRadius: 0,
                   borderRight: 'none',
                   transition: 'all 0.3s ease',
-                  ...(isWalletConnected && {
-                    ':hover': {
-                      backgroundColor: '#f8f9fa',
-                      borderColor: '#ced4da',
-                      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)'
-                    }
-                  })
                 }}
               >
                 {tokens.map(token => (
@@ -132,7 +156,10 @@ const SwapCard = () => {
           </div>
 
           <div className="text-center mb-3">
-            <i className="bi bi-arrow-down-up swap-icon" style={{ fontSize: '1.5rem', color: '#7F7D9C' }}></i>
+            <i 
+              className="bi bi-arrow-down-up swap-icon" 
+              style={{ fontSize: '1.5rem', color: '#7F7D9C' }}
+            ></i>
           </div>
 
           <div className="mb-3">
@@ -149,13 +176,6 @@ const SwapCard = () => {
                   borderBottomRightRadius: 0,
                   borderRight: 'none',
                   transition: 'all 0.3s ease',
-                  ...(isWalletConnected && {
-                    ':hover': {
-                      backgroundColor: '#f8f9fa',
-                      borderColor: '#ced4da',
-                      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)'
-                    }
-                  })
                 }}
               >
                 {tokens.map(token => (
@@ -192,12 +212,6 @@ const SwapCard = () => {
               fontSize: '1.1rem',
               fontWeight: 'bold',
               transition: 'all 0.3s ease',
-              ...(isWalletConnected && {
-                ':hover': {
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-                }
-              })
             }}
           >
             {isProcessing ? (
