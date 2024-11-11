@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Alert, Spinner } from 'react-bootstrap';
+import { connectWallet, fetchBalances } from '../store/blockchainSlice';
 
 const SwapCard = () => {
   const dispatch = useDispatch();
@@ -8,20 +9,46 @@ const SwapCard = () => {
   const [outputToken, setOutputToken] = useState('TK2');
   const [inputAmount, setInputAmount] = useState('');
   const [outputAmount, setOutputAmount] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
   const [alertInfo, setAlertInfo] = useState(null);
-  const isWalletConnected = useSelector((state) => state.wallet.isConnected);
+  const [isProcessing, setIsProcessing] = useState(false); // Added state for processing
+
+  const isWalletConnected = useSelector((state) => state.blockchain?.address !== null);
+  const balances = useSelector((state) => state.blockchain?.balances || {});
+  const isLoading = useSelector((state) => state.blockchain?.isLoading || false);
+  const error = useSelector((state) => state.blockchain?.error || null);
 
   const tokens = ['TK1', 'TK2'];
-  const balances = {
-    TK1: '1000',
-    TK2: '2000'
+
+  useEffect(() => {
+    if (isWalletConnected) {
+      dispatch(fetchBalances());
+    }
+  }, [isWalletConnected, dispatch]);
+
+  useEffect(() => {
+    if (error) {
+      setAlertInfo({ type: 'danger', message: error });
+    }
+  }, [error]);
+
+  const handleConnectWallet = async () => {
+    try {
+      await dispatch(connectWallet()).unwrap();
+      setAlertInfo({ type: 'success', message: 'Wallet connected successfully!' });
+    } catch (error) {
+      setAlertInfo({ type: 'danger', message: error.message });
+    }
   };
 
   const handleSwap = async (e) => {
     e.preventDefault();
     if (!isWalletConnected) {
-      setAlertInfo({ type: 'warning', message: 'Please connect your wallet first.' });
+      try {
+        await dispatch(connectWallet()).unwrap();
+        setAlertInfo({ type: 'success', message: 'Wallet connected successfully!' });
+      } catch (error) {
+        setAlertInfo({ type: 'danger', message: 'Failed to connect wallet: ' + error.message });
+      }
       return;
     }
     setIsProcessing(true);
@@ -35,6 +62,7 @@ const SwapCard = () => {
       setAlertInfo({ type: 'success', message: 'Swap completed successfully!' });
       setInputAmount('');
       setOutputAmount('');
+      dispatch(fetchBalances()); // Fetch updated balances after swap
     } catch (error) {
       setAlertInfo({ type: 'danger', message: 'Transaction failed. Please try again.' });
     } finally {
@@ -64,7 +92,7 @@ const SwapCard = () => {
                 id="inputToken"
                 value={inputToken}
                 onChange={(e) => setInputToken(e.target.value)}
-                disabled={isProcessing}
+                disabled={isLoading}
                 style={{
                   borderTopRightRadius: 0,
                   borderBottomRightRadius: 0,
@@ -90,7 +118,7 @@ const SwapCard = () => {
                 value={inputAmount}
                 onChange={(e) => setInputAmount(e.target.value)}
                 required
-                disabled={isProcessing}
+                disabled={isLoading}
                 style={{
                   borderTopLeftRadius: 0,
                   borderBottomLeftRadius: 0,
@@ -99,7 +127,7 @@ const SwapCard = () => {
               />
             </div>
             <small className="form-text text-muted">
-              Balance: {isWalletConnected ? `${balances[inputToken]} ${inputToken}` : '-- --'}
+              Balance: {isWalletConnected && balances[inputToken] ? `${balances[inputToken]} ${inputToken}` : '-- --'}
             </small>
           </div>
 
@@ -115,7 +143,7 @@ const SwapCard = () => {
                 id="outputToken"
                 value={outputToken}
                 onChange={(e) => setOutputToken(e.target.value)}
-                disabled={isProcessing}
+                disabled={isLoading}
                 style={{
                   borderTopRightRadius: 0,
                   borderBottomRightRadius: 0,
@@ -141,7 +169,7 @@ const SwapCard = () => {
                 value={outputAmount}
                 onChange={(e) => setOutputAmount(e.target.value)}
                 readOnly
-                disabled={isProcessing}
+                disabled={isLoading}
                 style={{
                   borderTopLeftRadius: 0,
                   borderBottomLeftRadius: 0,
@@ -150,13 +178,13 @@ const SwapCard = () => {
               />
             </div>
             <small className="form-text text-muted">
-              Balance: {isWalletConnected ? `${balances[outputToken]} ${outputToken}` : '-- --'}
+              Balance: {isWalletConnected && balances[outputToken] ? `${balances[outputToken]} ${outputToken}` : '-- --'}
             </small>
           </div>
           <button 
             type="submit" 
             className="btn btn-primary w-100" 
-            disabled={!isWalletConnected || isProcessing}
+            disabled={isLoading}
             style={{
               background: isWalletConnected ? 'linear-gradient(45deg, #e3b778, #7F7D9C)' : '#6c757d',
               border: 'none',
@@ -180,7 +208,7 @@ const SwapCard = () => {
             ) : isWalletConnected ? (
               'Swap'
             ) : (
-              'Connect Wallet to Swap'
+              'Connect Wallet'
             )}
           </button>
         </form>
