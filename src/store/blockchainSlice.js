@@ -192,5 +192,5 @@ const blockchainSlice = createSlice({
 });
 
 
-export const { clearSwapStatus, clearBestQuote } = blockchainSlice.actions;
+export const { clearSwapStatus, clearBestQuote, resetLoading, resetError } = blockchainSlice.actions;
 export default blockchainSlice.reducer;
