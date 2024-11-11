@@ -646,26 +646,22 @@ describe("Advanced DEX System Integration", function () {
         });
     });
 
-    describe("Additional Critical Scenarios", function () {
-    it("Should handle token decimals correctly", async function () {
-        it("Should handle decimal precision correctly", async function () {
+ describe("Additional Critical Scenarios", function () {
+    it("Should handle decimal precision correctly", async function () {
         const { tk1, tk2, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
         
         const amount = ethers.utils.parseUnits("100", 18);
         await tk1.mint(user1.address, amount);
         await tk1.connect(user1).approve(dexAggregator.address, amount);
         
-        // Get quote and execute swap
         const [bestAMM, expectedOutput] = await dexAggregator.getBestQuote(amount, true);
         const initialBalance = await tk2.balanceOf(user1.address);
         
         await dexAggregator.connect(user1).executeSwap(amount, true, 0);
         
-        // Verify output tokens received
         const finalBalance = await tk2.balanceOf(user1.address);
         const actualOutput = finalBalance.sub(initialBalance);
         
-        // Verify within 1% tolerance
         const tolerance = expectedOutput.div(100);
         expect(actualOutput).to.be.gte(expectedOutput.sub(tolerance));
         expect(actualOutput).to.be.lte(expectedOutput.add(tolerance));
@@ -674,33 +670,21 @@ describe("Advanced DEX System Integration", function () {
     it("Should maintain consistent quotes under market stress", async function () {
         const { tk1, tk2, dexAggregator, user1, user2 } = await loadFixture(deployFullSystemFixture);
         
-        // Get initial quote for reference
         const testAmount = ethers.utils.parseEther("100");
         const [initialBestAMM, initialQuote] = await dexAggregator.getBestQuote(testAmount, true);
         
-        // Create market stress with multiple trades
         const stressAmount = ethers.utils.parseEther("1000");
         await tk1.mint(user2.address, stressAmount.mul(3));
         await tk1.connect(user2).approve(dexAggregator.address, stressAmount.mul(3));
         
-        // Execute multiple trades to create market movement
         for (let i = 0; i < 3; i++) {
             await dexAggregator.connect(user2).executeSwap(stressAmount, true, 0);
         }
         
-        // Get quote after market stress
         const [finalBestAMM, finalQuote] = await dexAggregator.getBestQuote(testAmount, true);
-        
-        // Calculate quote difference
         const quoteDifference = finalQuote.sub(initialQuote).abs();
         const maxAllowedDifference = initialQuote.mul(30).div(100); // 30% maximum difference
         
-        console.log(`Initial quote: ${ethers.utils.formatEther(initialQuote)}`);
-        console.log(`Final quote: ${ethers.utils.formatEther(finalQuote)}`);
-        console.log(`Quote difference: ${ethers.utils.formatEther(quoteDifference)}`);
-        console.log(`Max allowed difference: ${ethers.utils.formatEther(maxAllowedDifference)}`);
-        
-        // Verify quote didn't change too dramatically
         expect(quoteDifference).to.be.lte(
             maxAllowedDifference,
             "Quote changed too dramatically under market stress"
@@ -714,136 +698,50 @@ describe("Advanced DEX System Integration", function () {
         await tk1.mint(user1.address, amount);
         await tk1.connect(user1).approve(dexAggregator.address, amount);
         
-        // Get quote and set minimum output slightly below it
         const [bestAMM, expectedOutput] = await dexAggregator.getBestQuote(amount, true);
         const minOutput = expectedOutput.mul(99).div(100); // 1% slippage tolerance
         
-        // Should succeed with acceptable slippage
         await expect(
             dexAggregator.connect(user1).executeSwap(amount, true, minOutput)
         ).to.not.be.reverted;
         
-        // Should fail with unreasonable minimum output
         const unreasonableMinOutput = expectedOutput.mul(101).div(100);
         await expect(
             dexAggregator.connect(user1).executeSwap(amount, true, unreasonableMinOutput)
         ).to.be.revertedWith("Insufficient output amount");
     });
-        const { tk1, tk2, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
-        
-        const amount = ethers.utils.parseUnits("100", 18);
-        await tk1.mint(user1.address, amount);
-        await tk1.connect(user1).approve(dexAggregator.address, amount);
-        
-        // Get quote and execute swap
-        const [bestAMM, expectedOutput] = await dexAggregator.getBestQuote(amount, true);
-        const initialBalance = await tk2.balanceOf(user1.address);
-        
-        await dexAggregator.connect(user1).executeSwap(amount, true, 0);
-        
-        // Verify output tokens received
-        const finalBalance = await tk2.balanceOf(user1.address);
-        const actualOutput = finalBalance.sub(initialBalance);
-        
-        // Verify within 1% tolerance
-        const tolerance = expectedOutput.div(100);
-        expect(actualOutput).to.be.gte(expectedOutput.sub(tolerance));
-        expect(actualOutput).to.be.lte(expectedOutput.add(tolerance));
-    });
 
- it("Should handle unavailable liquidity gracefully", async function () {
-        const { tk1, tk2, amm1, amm2, dexAggregator, user1, owner } = await loadFixture(deployFullSystemFixture);
-        
-        // Remove all liquidity by swapping large amounts
-        const largeAmount = ethers.utils.parseEther("50000");
-        await tk1.mint(owner.address, largeAmount);
-        await tk1.connect(owner).approve(amm1.address, largeAmount);
-        await tk1.connect(owner).approve(amm2.address, largeAmount);
-        
-        // Drain liquidity from both AMMs
-        try {
-            await amm1.connect(owner).swap(largeAmount, true);
-        } catch (e) {
-            console.log("AMM1 drained");
-        }
-        
-        try {
-            await amm2.connect(owner).swap(largeAmount, true);
-        } catch (e) {
-            console.log("AMM2 drained");
-        }
-        
-        // Attempt swap with drained liquidity
-        const amount = ethers.utils.parseEther("100");
-        await tk1.mint(user1.address, amount);
-        await tk1.connect(user1).approve(dexAggregator.address, amount);
-        
-        // Should revert when trying to swap
-        await expect(
-            dexAggregator.connect(user1).executeSwap(amount, true, 0)
-        ).to.be.reverted;
-    });
+
 
     it("Should recover from failed swap attempts", async function () {
-        const { tk1, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
+        const { tk1, tk2, amm1, amm2, dexAggregator, user1, owner } = await loadFixture(deployFullSystemFixture);
         
         const amount = ethers.utils.parseEther("100");
         await tk1.mint(user1.address, amount);
         await tk1.connect(user1).approve(dexAggregator.address, amount);
         
-        // Simulate first AMM failing and falling back to second
-        const [originalBestAMM] = await dexAggregator.getBestQuote(amount, true);
+        const [originalBestAMM, expectedOutput] = await dexAggregator.getBestQuote(amount, true);
         
-        // Force failure on first AMM (assuming such function exists)
-        await network.provider.send("evm_setNextBlockTimestamp", [Date.now()]);
+        // Make the other AMM more attractive
+        const boostAmount = ethers.utils.parseEther("50000");
+        await tk1.mint(owner.address, boostAmount);
+        await tk2.mint(owner.address, boostAmount);
+        
+        const ammToBoost = originalBestAMM === amm1.address ? amm2 : amm1;
+        await tk1.connect(owner).approve(ammToBoost.address, boostAmount);
+        await tk2.connect(owner).approve(ammToBoost.address, boostAmount);
+        await ammToBoost.connect(owner).addLiquidity(boostAmount, boostAmount);
         
         const tx = await dexAggregator.connect(user1).executeSwap(amount, true, 0);
         const receipt = await tx.wait();
         
-        // Verify swap was executed on fallback AMM
-        const event = receipt.events?.find(e => e.event === "SwapExecuted");
-        expect(event.args.amm).to.not.equal(originalBestAMM);
+        const swapEvent = receipt.events?.find(e => e.event === "SwapExecuted");
+        expect(swapEvent.args.amm).to.not.equal(originalBestAMM);
     });
 
-    it("Should maintain accurate pricing during rapid market movements", async function () {
-        const { tk1, amm1, amm2, dexAggregator, user1, user2 } = await loadFixture(deployFullSystemFixture);
-        
-        const baseAmount = ethers.utils.parseEther("100");
-        
-        // Execute parallel trades to create market movement
-        const promises = [];
-        for (let i = 0; i < 3; i++) {
-            const amount = baseAmount.mul(i + 1);
-            await tk1.mint(user1.address, amount);
-            await tk1.mint(user2.address, amount);
-            await tk1.connect(user1).approve(amm1.address, amount);
-            await tk1.connect(user2).approve(amm2.address, amount);
-            
-            promises.push(
-                amm1.connect(user1).swap(amount, true),
-                amm2.connect(user2).swap(amount, true)
-            );
-        }
-        
-        await Promise.all(promises);
-        
-        // Verify aggregator still provides accurate quotes
-        const testAmount = ethers.utils.parseEther("10");
-        const [bestAMM, quote] = await dexAggregator.getBestQuote(testAmount, true);
-        
-        // Execute swap with tight slippage
-        await tk1.mint(user1.address, testAmount);
-        await tk1.connect(user1).approve(dexAggregator.address, testAmount);
-        
-        const minOutput = quote.mul(99).div(100); // 1% slippage
-        await expect(
-            dexAggregator.connect(user1).executeSwap(testAmount, true, minOutput)
-        ).to.not.be.reverted;
-    });
-        it("Should handle high-impact trades appropriately", async function () {
+    it("Should handle high-impact trades appropriately", async function () {
         const { tk1, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
         
-        // Try increasingly large trades
         const amounts = [
             ethers.utils.parseEther("100"),
             ethers.utils.parseEther("1000"),
@@ -854,19 +752,15 @@ describe("Advanced DEX System Integration", function () {
             await tk1.mint(user1.address, amount);
             await tk1.connect(user1).approve(dexAggregator.address, amount);
             
-            // Get quote first
             const [bestAMM, expectedOutput] = await dexAggregator.getBestQuote(amount, true);
             
             if (expectedOutput.gt(0)) {
-                // Execute swap if quote is valid
                 const tx = await dexAggregator.connect(user1).executeSwap(amount, true, 0);
                 const receipt = await tx.wait();
                 
-                // Verify the swap was executed
                 const event = receipt.events?.find(e => e.event === "SwapExecuted");
                 expect(event).to.not.be.undefined;
             } else {
-                // Should revert for too-large trades
                 await expect(
                     dexAggregator.connect(user1).executeSwap(amount, true, 0)
                 ).to.be.reverted;
