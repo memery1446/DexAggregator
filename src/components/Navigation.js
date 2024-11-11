@@ -1,22 +1,33 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setWalletConnected } from '../store';
+import { connectWallet, fetchBalances } from '../store/blockchainSlice';
 import logo from '../logo.png';
 
 const Navigation = () => {
   const dispatch = useDispatch();
-  const isWalletConnected = useSelector((state) => state.wallet.isConnected);
+  
+  // Safer state selection with default values
+  const blockchainState = useSelector((state) => state.blockchain || {});
+  const isLoading = blockchainState.isLoading || false;
+  const address = blockchainState.address || null;
 
-  const handleConnect = () => {
-    dispatch(setWalletConnected(true));
+  const handleConnect = async () => {
+    try {
+      await dispatch(connectWallet()).unwrap();
+      // Fetch balances right after connecting
+      await dispatch(fetchBalances());
+    } catch (error) {
+      console.error('Failed to connect wallet:', error);
+    }
   };
 
   const handleDisconnect = () => {
-    dispatch(setWalletConnected(false));
+    // We'll implement disconnect functionality if needed
+    console.log('Disconnect requested');
   };
 
   const truncateAddress = (address) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+    return address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '';
   };
 
   return (
@@ -32,16 +43,29 @@ const Navigation = () => {
             <img src={logo} alt="URDEX Logo" height="40" className="d-inline-block align-top" />
           </a>
           <div className="ml-auto">
-            {isWalletConnected ? (
+            {address ? (
               <div className="d-flex align-items-center">
                 <span className="me-2 text-white">Connected:</span>
                 <div className="btn-group">
-                  <button type="button" className="btn btn-light btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  <button 
+                    type="button" 
+                    className="btn btn-light btn-sm dropdown-toggle" 
+                    data-bs-toggle="dropdown" 
+                    aria-expanded="false"
+                  >
                     <span className="badge bg-success me-2"></span>
-                    {truncateAddress('0x1234567890123456789012345678901234567890')}
+                    {truncateAddress(address)}
                   </button>
                   <ul className="dropdown-menu dropdown-menu-end">
-                    <li><button className="dropdown-item" type="button" onClick={handleDisconnect}>Disconnect</button></li>
+                    <li>
+                      <button 
+                        className="dropdown-item" 
+                        type="button" 
+                        onClick={handleDisconnect}
+                      >
+                        Disconnect
+                      </button>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -49,8 +73,9 @@ const Navigation = () => {
               <button
                 onClick={handleConnect}
                 className="btn btn-light"
+                disabled={isLoading}
               >
-                Connect Wallet
+                {isLoading ? 'Connecting...' : 'Connect Wallet'}
               </button>
             )}
           </div>

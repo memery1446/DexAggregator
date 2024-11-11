@@ -1,35 +1,23 @@
-import { configureStore, createSlice } from '@reduxjs/toolkit';
-
-const appSlice = createSlice({
-  name: 'app',
-  initialState: {
-    isLoading: false,
-  },
-  reducers: {
-    setLoading: (state, action) => {
-      state.isLoading = action.payload;
-    },
-  }
-});
-
-const walletSlice = createSlice({
-  name: 'wallet',
-  initialState: {
-    isConnected: false,
-  },
-  reducers: {
-    setWalletConnected: (state, action) => {
-      state.isConnected = action.payload;
-    },
-  }
-});
-
-export const { setLoading } = appSlice.actions;
-export const { setWalletConnected } = walletSlice.actions;
+import { configureStore } from '@reduxjs/toolkit';
+import blockchainReducer from './blockchainSlice';
 
 export const store = configureStore({
   reducer: {
-    app: appSlice.reducer,
-    wallet: walletSlice.reducer,
+    blockchain: blockchainReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['blockchain/connectWallet/fulfilled'],
+      },
+    }),
 });
+
+// Debug logging in development
+if (process.env.NODE_ENV === 'development') {
+  store.subscribe(() => {
+    console.log('Current State:', store.getState());
+  });
+}
+
+export default store;

@@ -2,7 +2,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 import { Alert, Spinner } from 'react-bootstrap';
-import { connectWallet, fetchBalances } from '../store/blockchainSlice';
+import { 
+  connectWallet, 
+  fetchBalances, 
+  getSwapQuote,
+  executeSwap,
+  clearSwapStatus,
+  clearBestQuote 
+} from '../store/blockchainSlice';
 import TokenBalance from './TokenBalance';
 
 // Memoized selectors
@@ -13,14 +20,19 @@ const selectIsWalletConnected = createSelector(
   (blockchain) => blockchain?.address !== null
 );
 
-const selectAddress = createSelector(
-  [selectBlockchainState],
-  (blockchain) => blockchain?.address
-);
-
 const selectBalances = createSelector(
   [selectBlockchainState],
   (blockchain) => blockchain?.balances || {}
+);
+
+const selectBestQuote = createSelector(
+  [selectBlockchainState],
+  (blockchain) => blockchain?.bestQuote
+);
+
+const selectSwapStatus = createSelector(
+  [selectBlockchainState],
+  (blockchain) => blockchain?.swapStatus
 );
 
 const selectIsLoading = createSelector(
@@ -38,21 +50,17 @@ const SwapCard = () => {
   const [inputToken, setInputToken] = useState('TK1');
   const [outputToken, setOutputToken] = useState('TK2');
   const [inputAmount, setInputAmount] = useState('');
-  const [outputAmount, setOutputAmount] = useState('');
+  const [slippage, setSlippage] = useState(0.5); // 0.5% default slippage
   const [alertInfo, setAlertInfo] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
 
   const isWalletConnected = useSelector(selectIsWalletConnected);
-  const address = useSelector(selectAddress);
   const balances = useSelector(selectBalances);
+  const bestQuote = useSelector(selectBestQuote);
+  const swapStatus = useSelector(selectSwapStatus);
   const isLoading = useSelector(selectIsLoading);
   const error = useSelector(selectError);
 
   const tokens = useMemo(() => ['TK1', 'TK2'], []);
-
-  useEffect(() => {
-    dispatch(connectWallet());
-  }, [dispatch]);
 
   useEffect(() => {
     if (isWalletConnected) {
@@ -66,70 +74,96 @@ const SwapCard = () => {
     }
   }, [error]);
 
-  const handleConnectWallet = async () => {
-    try {
-      await dispatch(connectWallet()).unwrap();
-      setAlertInfo({ type: 'success', message: 'Wallet connected successfully!' });
-    } catch (error) {
-      setAlertInfo({ type: 'danger', message: error.message });
+  useEffect(() => {
+    if (swapStatus === 'success') {
+      setAlertInfo({ type: 'success', message: 'Swap completed successfully!' });
+      setInputAmount('');
+      dispatch(clearSwapStatus());
     }
+  }, [swapStatus, dispatch]);
+
+  const handleConnectWallet = async () => {
+  try {
+    await dispatch(connectWallet()).unwrap();
+    // Explicitly fetch balances after connection
+    dispatch(fetchBalances());
+    setAlertInfo({ type: 'success', message: 'Wallet connected successfully!' });
+  } catch (error) {
+    setAlertInfo({ type: 'danger', message: error.message });
+  }
+};
+
+  const handleInputChange = async (value) => {
+    setInputAmount(value);
+    if (value && !isNaN(value) && parseFloat(value) > 0) {
+      const isAtoB = inputToken === 'TK1';
+      dispatch(getSwapQuote({ inputAmount: value, isAtoB }));
+    } else {
+      dispatch(clearBestQuote());
+    }
+  };
+
+  const handleTokenSwap = () => {
+    setInputToken(outputToken);
+    setOutputToken(inputToken);
+    setInputAmount('');
+    dispatch(clearBestQuote());
   };
 
   const handleSwap = async (e) => {
     e.preventDefault();
     if (!isWalletConnected) {
-      await handleConnectWallet();
+      dispatch(connectWallet());
       return;
     }
-    setIsProcessing(true);
-    setAlertInfo(null);
 
-    try {
-      // Simulating a transaction
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Simulating a successful transaction
-      setAlertInfo({ type: 'success', message: 'Swap completed successfully!' });
-      setInputAmount('');
-      setOutputAmount('');
-      dispatch(fetchBalances()); // Fetch updated balances after swap
-    } catch (error) {
-      setAlertInfo({ type: 'danger', message: 'Transaction failed. Please try again.' });
-    } finally {
-      setIsProcessing(false);
+    if (!bestQuote) {
+      setAlertInfo({ type: 'warning', message: 'Please enter an amount to swap' });
+      return;
     }
+
+    const minOutput = parseFloat(bestQuote.expectedOutput) * (1 - slippage / 100);
+    const isAtoB = inputToken === 'TK1';
+
+    dispatch(executeSwap({
+      inputAmount,
+      isAtoB,
+      minOutput: minOutput.toString()
+    }));
   };
 
   return (
-    <div className="card shadow-lg" style={{ 
-      borderRadius: '1rem', 
-      overflow: 'hidden', 
-      background: 'linear-gradient(145deg, #ffffff, #f0f0f0)'
-    }}>
+    <div className="card shadow-lg rounded-xl overflow-hidden bg-gradient-to-br from-white to-gray-50">
       <div className="card-body p-4">
         <h5 className="card-title text-center mb-4">Swap Tokens</h5>
+        
         {alertInfo && (
-          <Alert variant={alertInfo.type} onClose={() => setAlertInfo(null)} dismissible>
+          <Alert 
+            variant={alertInfo.type} 
+            onClose={() => setAlertInfo(null)} 
+            dismissible
+          >
             {alertInfo.message}
           </Alert>
         )}
+
         {isWalletConnected && <TokenBalance />}
+
         <form onSubmit={handleSwap}>
+          {/* Input Token Section */}
           <div className="mb-3">
             <label htmlFor="inputToken" className="form-label">From</label>
             <div className="input-group">
               <select
                 className="form-select"
-                id="inputToken"
                 value={inputToken}
-                onChange={(e) => setInputToken(e.target.value)}
-                disabled={isLoading}
-                style={{
-                  borderTopRightRadius: 0,
-                  borderBottomRightRadius: 0,
-                  borderRight: 'none',
-                  transition: 'all 0.3s ease',
+                onChange={(e) => {
+                  setInputToken(e.target.value);
+                  setOutputToken(e.target.value === 'TK1' ? 'TK2' : 'TK1');
+                  setInputAmount('');
+                  dispatch(clearBestQuote());
                 }}
+                disabled={isLoading}
               >
                 {tokens.map(token => (
                   <option key={token} value={token}>{token}</option>
@@ -140,43 +174,44 @@ const SwapCard = () => {
                 className="form-control"
                 placeholder="0.0"
                 value={inputAmount}
-                onChange={(e) => setInputAmount(e.target.value)}
+                onChange={(e) => handleInputChange(e.target.value)}
+                min="0"
+                step="any"
                 required
                 disabled={isLoading}
-                style={{
-                  borderTopLeftRadius: 0,
-                  borderBottomLeftRadius: 0,
-                  borderLeft: 'none'
-                }}
               />
             </div>
-            <small className="form-text text-muted">
-              Balance: {isWalletConnected && balances[inputToken] ? `${balances[inputToken]} ${inputToken}` : '-- --'}
+            <small className="text-muted">
+              Balance: {balances[inputToken] || '0'} {inputToken}
             </small>
           </div>
 
+          {/* Swap Direction Button */}
           <div className="text-center mb-3">
-            <i 
-              className="bi bi-arrow-down-up swap-icon" 
-              style={{ fontSize: '1.5rem', color: '#7F7D9C' }}
-            ></i>
+            <button 
+              type="button"
+              className="btn btn-outline-secondary rounded-circle p-2"
+              onClick={handleTokenSwap}
+              disabled={isLoading}
+            >
+              ↑↓
+            </button>
           </div>
 
+          {/* Output Token Section */}
           <div className="mb-3">
             <label htmlFor="outputToken" className="form-label">To</label>
             <div className="input-group">
               <select
                 className="form-select"
-                id="outputToken"
                 value={outputToken}
-                onChange={(e) => setOutputToken(e.target.value)}
-                disabled={isLoading}
-                style={{
-                  borderTopRightRadius: 0,
-                  borderBottomRightRadius: 0,
-                  borderRight: 'none',
-                  transition: 'all 0.3s ease',
+                onChange={(e) => {
+                  setOutputToken(e.target.value);
+                  setInputToken(e.target.value === 'TK1' ? 'TK2' : 'TK1');
+                  setInputAmount('');
+                  dispatch(clearBestQuote());
                 }}
+                disabled={isLoading}
               >
                 {tokens.map(token => (
                   <option key={token} value={token}>{token}</option>
@@ -186,25 +221,59 @@ const SwapCard = () => {
                 type="number"
                 className="form-control"
                 placeholder="0.0"
-                value={outputAmount}
-                onChange={(e) => setOutputAmount(e.target.value)}
+                value={bestQuote?.expectedOutput || ''}
                 readOnly
-                disabled={isLoading}
-                style={{
-                  borderTopLeftRadius: 0,
-                  borderBottomLeftRadius: 0,
-                  borderLeft: 'none'
-                }}
+                disabled
               />
             </div>
-            <small className="form-text text-muted">
-              Balance: {isWalletConnected && balances[outputToken] ? `${balances[outputToken]} ${outputToken}` : '-- --'}
+            <small className="text-muted">
+              Balance: {balances[outputToken] || '0'} {outputToken}
             </small>
           </div>
+
+          {/* Slippage Setting */}
+          <div className="mb-3">
+            <label className="form-label">Slippage Tolerance</label>
+            <div className="input-group">
+              <input
+                type="number"
+                className="form-control"
+                value={slippage}
+                onChange={(e) => setSlippage(e.target.value)}
+                min
+                min="0.1"
+                max="5"
+                step="0.1"
+                disabled={isLoading}
+              />
+              <span className="input-group-text">%</span>
+            </div>
+            <small className="text-muted">
+              Minimum output amount: {bestQuote ? (parseFloat(bestQuote.expectedOutput) * (1 - slippage / 100)).toFixed(6) : '0.0'}
+            </small>
+          </div>
+
+          {/* Price Impact and Route Info */}
+          {bestQuote && (
+            <div className="mb-3 p-3 bg-light rounded">
+              <div className="d-flex justify-content-between mb-2">
+                <span>Best Route:</span>
+                <span className="font-monospace">{bestQuote.bestAMM.slice(0, 6)}...{bestQuote.bestAMM.slice(-4)}</span>
+              </div>
+              <div className="d-flex justify-content-between">
+                <span>Rate:</span>
+                <span>
+                  1 {inputToken} ≈ {(bestQuote.expectedOutput / bestQuote.inputAmount).toFixed(6)} {outputToken}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Swap Button */}
           <button 
             type="submit" 
-            className="btn btn-primary w-100" 
-            disabled={isLoading}
+            className="btn btn-primary w-100"
+            disabled={isLoading || !inputAmount || !bestQuote}
             style={{
               background: isWalletConnected ? 'linear-gradient(45deg, #e3b778, #7F7D9C)' : '#6c757d',
               border: 'none',
@@ -214,17 +283,27 @@ const SwapCard = () => {
               transition: 'all 0.3s ease',
             }}
           >
-            {isProcessing ? (
+            {isLoading ? (
               <>
                 <Spinner animation="border" size="sm" className="me-2" />
-                Processing...
+                {swapStatus === 'pending' ? 'Swapping...' : 'Loading...'}
               </>
-            ) : isWalletConnected ? (
-              'Swap'
-            ) : (
+            ) : !isWalletConnected ? (
               'Connect Wallet'
+            ) : !inputAmount || !bestQuote ? (
+              'Enter an amount'
+            ) : (
+              'Swap'
             )}
           </button>
+
+          {/* Warning for insufficient balance */}
+          {inputAmount && balances[inputToken] && 
+           parseFloat(inputAmount) > parseFloat(balances[inputToken]) && (
+            <div className="mt-2 text-danger">
+              Insufficient {inputToken} balance
+            </div>
+          )}
         </form>
       </div>
     </div>
