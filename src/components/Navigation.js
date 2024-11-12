@@ -37,52 +37,64 @@ const Navigation = () => {
           <div className="col-12" style={{ height: '40px', backgroundColor: 'white' }}></div>
         </div>
       </div>
-      <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#594D5B' }}>
-        <div className="container">
-          <a className="navbar-brand" href="/">
-            <img src={logo} alt="URDEX Logo" height="40" className="d-inline-block align-top" />
-          </a>
-          <div className="ml-auto">
-            {address ? (
-              <div className="d-flex align-items-center">
-                <span className="me-2 text-white">Connected:</span>
-                <div className="btn-group">
-                  <button 
-                    type="button" 
-                    className="btn btn-light btn-sm dropdown-toggle" 
-                    data-bs-toggle="dropdown" 
-                    aria-expanded="false"
-                  >
-                    <span className="badge bg-success me-2"></span>
-                    {truncateAddress(address)}
-                  </button>
-                  <ul className="dropdown-menu dropdown-menu-end">
-                    <li>
-                      <button 
-                        className="dropdown-item" 
-                        type="button" 
-                        onClick={handleDisconnect}
-                      >
-                        Disconnect
-                      </button>
-                    </li>
-                  </ul>
+      <div className="container-fluid px-0 position-relative">
+        <div className="row g-0">
+          <div className="col-12">
+            <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#594D5B', height: '60px' }}>
+              <div className="container">
+                <div className="invisible">
+                  {/* This is a placeholder to maintain layout */}
+                  <img src={logo} alt="" height="60" />
+                </div>
+                <div className="ml-auto">
+                  {address ? (
+                    <div className="d-flex align-items-center">
+                      <span className="me-2 text-white">Connected:</span>
+                      <div className="btn-group">
+                        <button 
+                          type="button" 
+                          className="btn btn-light btn-sm dropdown-toggle" 
+                          data-bs-toggle="dropdown" 
+                          aria-expanded="false"
+                        >
+                          <span className="badge bg-success me-2"></span>
+                          {truncateAddress(address)}
+                        </button>
+                        <ul className="dropdown-menu dropdown-menu-end">
+                          <li>
+                            <button 
+                              className="dropdown-item" 
+                              type="button" 
+                              onClick={handleDisconnect}
+                            >
+                              Disconnect
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleConnect}
+                      className="btn btn-light"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Connecting...' : 'Connect Wallet'}
+                    </button>
+                  )}
                 </div>
               </div>
-            ) : (
-              <button
-                onClick={handleConnect}
-                className="btn btn-light"
-                disabled={isLoading}
-              >
-                {isLoading ? 'Connecting...' : 'Connect Wallet'}
-              </button>
-            )}
+            </nav>
           </div>
         </div>
-      </nav>
-      <div className="container text-center mt-4 mb-5">
-        <h1 className="display-4 fw-bold mb-0">URDEX</h1>
+        <div className="position-absolute" style={{ top: '-25px', left: '55px', zIndex: 1000 }}>
+          <a href="/">
+            <img src={logo} alt="URDEX Logo" height="220" className="d-inline-block" />
+          </a>
+        </div>
+      </div>
+      <div className="container text-center mt-3 mb-4">
+        <h1 className="display-2 fw-bold mb-0">URDEX</h1>
         <p className="h3 text-muted mb-0" style={{ marginTop: '-0.5rem' }}>aggregator</p>
       </div>
     </header>
