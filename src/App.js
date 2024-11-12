@@ -10,33 +10,33 @@ const App = () => {
     state.blockchain?.isLoading && !state.blockchain?.address
   );
 
-  // Define a constant for the spacing
-  const SPACING = '15px';
-
   return (
     <div className="d-flex flex-column min-vh-100">
-      <Navigation style={{ marginBottom: SPACING }} />
+      <Navigation />
       <main className="flex-grow-1 d-flex flex-column" 
             style={{ 
               background: 'linear-gradient(225deg, #e3b778, #7F7D9C)',
-              minHeight: 'calc(100vh - 10px)' 
+              minHeight: 'calc(100vh - 10px)',
+              overflowY: 'auto', // Ensure main content is scrollable
+              overflowX: 'hidden' // Prevent horizontal scroll
             }}>
-        <div className="container mt-3">
+        <div className="container py-4">
           <div className="row justify-content-center">
-            <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+            <div className="col-12 col-sm-10 col-md-8 col-lg-8">
               <div style={{ 
-                transform: 'scale(0.85)', 
-                transformOrigin: 'center top',
-                marginTop: SPACING // Add top margin to the scaled container
+                margin: '0 auto',
+                paddingBottom: '2rem' // Add padding at bottom for better scroll visibility
               }}>
-                <div className="card shadow-lg" style={{ 
-                  borderRadius: '1.25rem', 
-                  backgroundColor: '#594D5B',
-                  maxWidth: '450px', 
-                  width: '100%',
-                  margin: '0 auto'
-                }}>
-                  <div className="card-body p-3">
+                <div className="card shadow-lg border-0" 
+                  style={{ 
+                    borderRadius: '24px',
+                    backgroundColor: 'rgba(89, 77, 91, 0.95)',
+                    backdropFilter: 'blur(10px)',
+                    maxWidth: '440px',
+                    margin: '0 auto',
+                    overflow: 'hidden'
+                  }}>
+                  <div className="p-4">
                     {isConnecting ? <Loading /> : <SwapCard />}
                   </div>
                 </div>

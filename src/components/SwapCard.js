@@ -318,7 +318,14 @@ const SwapCard = () => {
               'Swap'
             )}
           </button>
-            <GasEstimator />
+            {bestQuote && inputAmount && (
+  <GasEstimator 
+    fromToken={inputToken}
+    toToken={outputToken}
+    amount={inputAmount}
+    bestQuote={bestQuote}
+  />
+)}
           {/* Warning for insufficient balance */}
           {inputAmount && balances[inputToken] && 
            parseFloat(inputAmount) > parseFloat(balances[inputToken]) && (
