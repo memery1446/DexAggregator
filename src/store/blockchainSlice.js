@@ -16,10 +16,15 @@ const initialState = {
   isLoading: false,
   error: null,
   bestQuote: null,
-  swapStatus: null
+  swapStatus: null,
+  // New state for price history
+  priceHistory: [],
+  isPriceLoading: false,
+  priceError: null
+  
 };
 
-// Thunks
+// Existing thunks remain unchanged
 const connectWallet = createAsyncThunk(
   'blockchain/connectWallet',
   async (_, { rejectWithValue }) => {
@@ -149,6 +154,51 @@ const executeSwap = createAsyncThunk(
   }
 );
 
+// New thunk for price history
+const fetchPriceHistory = createAsyncThunk(
+  'blockchain/fetchPriceHistory',
+  async ({ timeframe }, { rejectWithValue }) => {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const aggregatorContract = new ethers.Contract(
+        DEX_AGGREGATOR_ADDRESS,
+        DEX_AGGREGATOR_ABI,
+        provider
+      );
+
+      // For now, generate sample data while contract method is implemented
+      const generateSampleData = (count) => {
+        const data = [];
+        const basePrice = 1.5;
+        let currentPrice = basePrice;
+        const now = Date.now();
+        
+        for (let i = count; i >= 0; i--) {
+          currentPrice = currentPrice * (1 + (Math.random() * 0.1 - 0.05));
+          data.push({
+            timestamp: now - (i * 3600000), // hourly points
+            price: currentPrice
+          });
+        }
+        return data;
+      };
+
+      // Generate appropriate number of data points based on timeframe
+      const dataPoints = 
+        timeframe === '1H' ? 60 :    // minute intervals
+        timeframe === '24H' ? 24 :   // hourly intervals
+        timeframe === '7D' ? 168 :   // hourly intervals
+        timeframe === '1M' ? 30 :    // daily intervals
+        90;                          // daily intervals for ALL
+
+      return generateSampleData(dataPoints);
+    } catch (error) {
+      console.error('Price history fetch error:', error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const blockchainSlice = createSlice({
   name: 'blockchain',
   initialState,
@@ -169,6 +219,7 @@ const blockchainSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Existing cases remain unchanged
       .addCase(connectWallet.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -219,6 +270,19 @@ const blockchainSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
         state.swapStatus = 'failed';
+      })
+      // New cases for price history
+      .addCase(fetchPriceHistory.pending, (state) => {
+        state.isPriceLoading = true;
+        state.priceError = null;
+      })
+      .addCase(fetchPriceHistory.fulfilled, (state, action) => {
+        state.isPriceLoading = false;
+        state.priceHistory = action.payload;
+      })
+      .addCase(fetchPriceHistory.rejected, (state, action) => {
+        state.isPriceLoading = false;
+        state.priceError = action.payload;
       });
   },
 });
@@ -235,7 +299,8 @@ export {
   connectWallet,
   fetchBalances,
   getSwapQuote,
-  executeSwap
+  executeSwap,
+  fetchPriceHistory
 };
 
 export default blockchainSlice.reducer;
