@@ -10,7 +10,6 @@ import {
   clearSwapStatus,
   clearBestQuote 
 } from '../store/blockchainSlice';
-import TokenBalance from './TokenBalance';
 
 // Memoized selectors
 const selectBlockchainState = (state) => state.blockchain;
@@ -83,20 +82,25 @@ const SwapCard = () => {
   }, [swapStatus, dispatch]);
 
   const handleConnectWallet = async () => {
-  try {
-    await dispatch(connectWallet()).unwrap();
-    // Explicitly fetch balances after connection
-    dispatch(fetchBalances());
-    setAlertInfo({ type: 'success', message: 'Wallet connected successfully!' });
-  } catch (error) {
-    setAlertInfo({ type: 'danger', message: error.message });
-  }
-};
+    try {
+      await dispatch(connectWallet()).unwrap();
+      dispatch(fetchBalances());
+      setAlertInfo({ type: 'success', message: 'Wallet connected successfully!' });
+    } catch (error) {
+      setAlertInfo({ type: 'danger', message: error.message });
+    }
+  };
 
   const handleInputChange = async (value) => {
     setInputAmount(value);
     if (value && !isNaN(value) && parseFloat(value) > 0) {
       const isAtoB = inputToken === 'TK1';
+      console.log('Requesting quote for:', {
+        inputAmount: value,
+        isAtoB,
+        fromToken: inputToken,
+        toToken: outputToken
+      });
       dispatch(getSwapQuote({ inputAmount: value, isAtoB }));
     } else {
       dispatch(clearBestQuote());
@@ -122,14 +126,29 @@ const SwapCard = () => {
       return;
     }
 
-    const minOutput = parseFloat(bestQuote.expectedOutput) * (1 - slippage / 100);
-    const isAtoB = inputToken === 'TK1';
+    try {
+      const minOutput = parseFloat(bestQuote.expectedOutput) * (1 - slippage / 100);
+      const isAtoB = inputToken === 'TK1';
+      
+      console.log('Executing swap with params:', {
+        inputAmount,
+        isAtoB,
+        minOutput: minOutput.toString(),
+        slippage
+      });
 
-    dispatch(executeSwap({
-      inputAmount,
-      isAtoB,
-      minOutput: minOutput.toString()
-    }));
+      await dispatch(executeSwap({
+        inputAmount,
+        isAtoB,
+        minOutput: minOutput.toString()
+      })).unwrap();
+
+      setAlertInfo({ type: 'success', message: 'Swap completed successfully!' });
+      setInputAmount('');
+    } catch (error) {
+      console.error('Swap failed:', error);
+      setAlertInfo({ type: 'danger', message: error.message || 'Swap failed' });
+    }
   };
 
   return (
@@ -146,8 +165,6 @@ const SwapCard = () => {
             {alertInfo.message}
           </Alert>
         )}
-
-        {isWalletConnected && <TokenBalance />}
 
         <form onSubmit={handleSwap}>
           {/* Input Token Section */}
@@ -240,7 +257,6 @@ const SwapCard = () => {
                 className="form-control"
                 value={slippage}
                 onChange={(e) => setSlippage(e.target.value)}
-                min
                 min="0.1"
                 max="5"
                 step="0.1"

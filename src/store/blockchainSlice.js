@@ -19,7 +19,8 @@ const initialState = {
   swapStatus: null
 };
 
-export const connectWallet = createAsyncThunk(
+// Thunks
+const connectWallet = createAsyncThunk(
   'blockchain/connectWallet',
   async (_, { rejectWithValue }) => {
     try {
@@ -32,12 +33,13 @@ export const connectWallet = createAsyncThunk(
         throw new Error('MetaMask is not installed');
       }
     } catch (error) {
+      console.error('Wallet connection error:', error);
       return rejectWithValue(error.message);
     }
   }
 );
 
-export const fetchBalances = createAsyncThunk(
+const fetchBalances = createAsyncThunk(
   'blockchain/fetchBalances',
   async (_, { getState, rejectWithValue }) => {
     const { blockchain } = getState();
@@ -72,7 +74,7 @@ export const fetchBalances = createAsyncThunk(
   }
 );
 
-export const getSwapQuote = createAsyncThunk(
+const getSwapQuote = createAsyncThunk(
   'blockchain/getSwapQuote',
   async ({ inputAmount, isAtoB }, { rejectWithValue }) => {
     try {
@@ -104,7 +106,7 @@ export const getSwapQuote = createAsyncThunk(
   }
 );
 
-export const executeSwap = createAsyncThunk(
+const executeSwap = createAsyncThunk(
   'blockchain/executeSwap',
   async ({ inputAmount, isAtoB, minOutput }, { dispatch, rejectWithValue }) => {
     try {
@@ -156,11 +158,17 @@ const blockchainSlice = createSlice({
     },
     resetError: (state) => {
       state.error = null;
+    },
+    clearSwapStatus: (state) => {
+      state.swapStatus = null;
+      state.error = null;
+    },
+    clearBestQuote: (state) => {
+      state.bestQuote = null;
     }
   },
   extraReducers: (builder) => {
     builder
-      // Connect Wallet
       .addCase(connectWallet.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -174,10 +182,8 @@ const blockchainSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-      // Fetch Balances
       .addCase(fetchBalances.pending, (state) => {
         state.error = null;
-        // Don't set isLoading here to prevent spinner
       })
       .addCase(fetchBalances.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -187,10 +193,49 @@ const blockchainSlice = createSlice({
       .addCase(fetchBalances.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+      .addCase(getSwapQuote.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(getSwapQuote.fulfilled, (state, action) => {
+        state.bestQuote = action.payload;
+        state.error = null;
+      })
+      .addCase(getSwapQuote.rejected, (state, action) => {
+        state.error = action.payload;
+        state.bestQuote = null;
+      })
+      .addCase(executeSwap.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.swapStatus = 'pending';
+      })
+      .addCase(executeSwap.fulfilled, (state) => {
+        state.isLoading = false;
+        state.swapStatus = 'success';
+        state.bestQuote = null;
+      })
+      .addCase(executeSwap.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+        state.swapStatus = 'failed';
       });
   },
 });
 
+export const {
+  resetLoading,
+  resetError,
+  clearSwapStatus,
+  clearBestQuote
+} = blockchainSlice.actions;
 
-export const { clearSwapStatus, clearBestQuote, resetLoading, resetError } = blockchainSlice.actions;
+// Export everything in a single export statement
+export {
+  connectWallet,
+  fetchBalances,
+  getSwapQuote,
+  executeSwap
+};
+
 export default blockchainSlice.reducer;

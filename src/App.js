@@ -4,7 +4,9 @@ import Navigation from './components/Navigation';
 import SwapCard from './components/SwapCard';
 import Loading from './components/Loading';
 import Footer from './components/Footer';
-import StateMonitor from './components/StateMonitor';
+//import StateMonitor from './components/StateMonitor';
+ //{process.env.NODE_ENV === 'development' && <StateMonitor />}
+//Add line above to app in order to display the logging info
 
 const App = () => {
   // Only show loading during initial connection
@@ -29,7 +31,7 @@ const App = () => {
         </div>
       </main>
       <Footer />
-      {process.env.NODE_ENV === 'development' && <StateMonitor />}
+     
     </div>
   );
 };
