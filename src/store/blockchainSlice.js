@@ -17,11 +17,12 @@ const initialState = {
   error: null,
   bestQuote: null,
   swapStatus: null,
-  // New state for price history
   priceHistory: [],
   isPriceLoading: false,
-  priceError: null
-  
+  priceError: null,
+  transactions: [],
+  isTransactionsLoading: false,
+  transactionsError: null
 };
 
 // Existing thunks remain unchanged
@@ -142,8 +143,20 @@ const executeSwap = createAsyncThunk(
 
       console.log('Executing swap transaction...');
       const swapTx = await aggregatorContract.executeSwap(amountIn, isAtoB, minOutputWei);
-      await swapTx.wait();
+      const receipt = await swapTx.wait();
       console.log('Swap completed');
+
+      // Add the new transaction to the store
+      const newTransaction = {
+        hash: swapTx.hash,
+        timestamp: Date.now(),
+        inputAmount: inputAmount,
+        inputToken: isAtoB ? 'TK1' : 'TK2',
+        outputAmount: minOutput,
+        outputToken: isAtoB ? 'TK2' : 'TK1',
+        status: 'confirmed'
+      };
+      dispatch(addTransaction(newTransaction));
 
       dispatch(fetchBalances());
       return { success: true };
@@ -154,7 +167,6 @@ const executeSwap = createAsyncThunk(
   }
 );
 
-// New thunk for price history
 const fetchPriceHistory = createAsyncThunk(
   'blockchain/fetchPriceHistory',
   async ({ timeframe }, { rejectWithValue }) => {
@@ -199,6 +211,44 @@ const fetchPriceHistory = createAsyncThunk(
   }
 );
 
+const fetchRecentTransactions = createAsyncThunk(
+  'blockchain/fetchRecentTransactions',
+  async (_, { getState, rejectWithValue }) => {
+    const { blockchain } = getState();
+    if (!blockchain.address) {
+      return rejectWithValue('Wallet not connected');
+    }
+
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const aggregatorContract = new ethers.Contract(
+        DEX_AGGREGATOR_ADDRESS,
+        DEX_AGGREGATOR_ABI,
+        provider
+      );
+
+      // Assuming there's a method to get recent transactions in the contract
+      const recentTxs = await aggregatorContract.getRecentTransactions(blockchain.address);
+
+      // Process and format the transactions
+      const formattedTxs = recentTxs.map(tx => ({
+        hash: tx.hash,
+        timestamp: new Date(tx.timestamp * 1000).toISOString(),
+        inputAmount: ethers.utils.formatUnits(tx.inputAmount, 18),
+        inputToken: tx.inputToken === TK1_ADDRESS ? 'TK1' : 'TK2',
+        outputAmount: ethers.utils.formatUnits(tx.outputAmount, 18),
+        outputToken: tx.outputToken === TK1_ADDRESS ? 'TK1' : 'TK2',
+        status: tx.status
+      }));
+
+      return formattedTxs;
+    } catch (error) {
+      console.error('Recent transactions fetch error:', error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const blockchainSlice = createSlice({
   name: 'blockchain',
   initialState,
@@ -215,11 +265,14 @@ const blockchainSlice = createSlice({
     },
     clearBestQuote: (state) => {
       state.bestQuote = null;
+    },
+    addTransaction: (state, action) => {
+      state.transactions.unshift(action.payload);
+      state.transactions = state.transactions.slice(0, 10); // Keep only the 10 most recent transactions
     }
   },
   extraReducers: (builder) => {
     builder
-      // Existing cases remain unchanged
       .addCase(connectWallet.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -271,7 +324,6 @@ const blockchainSlice = createSlice({
         state.error = action.payload;
         state.swapStatus = 'failed';
       })
-      // New cases for price history
       .addCase(fetchPriceHistory.pending, (state) => {
         state.isPriceLoading = true;
         state.priceError = null;
@@ -283,6 +335,18 @@ const blockchainSlice = createSlice({
       .addCase(fetchPriceHistory.rejected, (state, action) => {
         state.isPriceLoading = false;
         state.priceError = action.payload;
+      })
+      .addCase(fetchRecentTransactions.pending, (state) => {
+        state.isTransactionsLoading = true;
+        state.transactionsError = null;
+      })
+      .addCase(fetchRecentTransactions.fulfilled, (state, action) => {
+        state.isTransactionsLoading = false;
+        state.transactions = action.payload;
+      })
+      .addCase(fetchRecentTransactions.rejected, (state, action) => {
+        state.isTransactionsLoading = false;
+        state.transactionsError = action.payload;
       });
   },
 });
@@ -291,7 +355,8 @@ export const {
   resetLoading,
   resetError,
   clearSwapStatus,
-  clearBestQuote
+  clearBestQuote,
+  addTransaction
 } = blockchainSlice.actions;
 
 // Export everything in a single export statement
@@ -300,7 +365,8 @@ export {
   fetchBalances,
   getSwapQuote,
   executeSwap,
-  fetchPriceHistory
+  fetchPriceHistory,
+  fetchRecentTransactions
 };
 
 export default blockchainSlice.reducer;

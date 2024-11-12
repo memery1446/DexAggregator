@@ -47,8 +47,36 @@ const App = () => {
             {/* Right side - Price Chart and Recent Transactions */}
             <div className="col-12 col-lg-7 col-xl-8 pe-lg-4">
               <div className="d-flex flex-column h-100">
-                <PriceChart />
-                <RecentTransactions />
+                {/* Price Chart */}
+                <div className="mb-4">
+                  <div className="card shadow-lg border-0" 
+                    style={{ 
+                      borderRadius: '24px',
+                      backgroundColor: 'rgba(89, 77, 91, 0.95)',
+                      backdropFilter: 'blur(10px)',
+                      overflow: 'hidden'
+                    }}>
+                    <div className="p-4">
+                      <PriceChart />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Recent Transactions */}
+                <div>
+                  <div className="card shadow-lg border-0" 
+                    style={{ 
+                      borderRadius: '24px',
+                      backgroundColor: 'rgba(89, 77, 91, 0.95)',
+                      backdropFilter: 'blur(10px)',
+                      overflow: 'hidden'
+                    }}>
+                    <div className="p-4">
+                      <h5 className="card-title text-white mb-3">Recent Transactions</h5>
+                      <RecentTransactions />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
