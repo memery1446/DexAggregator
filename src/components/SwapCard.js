@@ -52,6 +52,7 @@ const SwapCard = () => {
   const [inputAmount, setInputAmount] = useState('');
   const [slippage, setSlippage] = useState(0.5); // 0.5% default slippage
   const [alertInfo, setAlertInfo] = useState(null);
+  const [estimatedGasCost, setEstimatedGasCost] = useState(null);
 
   const isWalletConnected = useSelector(selectIsWalletConnected);
   const balances = useSelector(selectBalances);
@@ -82,6 +83,17 @@ const SwapCard = () => {
     }
   }, [swapStatus, dispatch]);
 
+  // New useEffect for auto-clearing alerts
+  useEffect(() => {
+    if (alertInfo) {
+      const timer = setTimeout(() => {
+        setAlertInfo(null);
+      }, 5000); // Clear alert after 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [alertInfo]);
+
   const handleConnectWallet = async () => {
     try {
       await dispatch(connectWallet()).unwrap();
@@ -107,7 +119,6 @@ const SwapCard = () => {
       dispatch(clearBestQuote());
     }
   };
-    const [estimatedGasCost, setEstimatedGasCost] = useState(null);
 
   const handleGasEstimateComplete = (estimate) => {
     setEstimatedGasCost(estimate);
@@ -318,14 +329,14 @@ const SwapCard = () => {
               'Swap'
             )}
           </button>
-            {bestQuote && inputAmount && (
-  <GasEstimator 
-    fromToken={inputToken}
-    toToken={outputToken}
-    amount={inputAmount}
-    bestQuote={bestQuote}
-  />
-)}
+          {bestQuote && inputAmount && (
+            <GasEstimator 
+              fromToken={inputToken}
+              toToken={outputToken}
+              amount={inputAmount}
+              bestQuote={bestQuote}
+            />
+          )}
           {/* Warning for insufficient balance */}
           {inputAmount && balances[inputToken] && 
            parseFloat(inputAmount) > parseFloat(balances[inputToken]) && (

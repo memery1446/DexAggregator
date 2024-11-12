@@ -23,40 +23,20 @@ const App = () => {
               overflowX: 'hidden'
             }}>
         <div className="container-fluid py-4">
-          <div className="row">
-            {/* Left side - Swap Card */}
-            <div className="col-12 col-lg-5 col-xl-4 ps-lg-4">
-              <div style={{ 
-                paddingBottom: '2rem'
-              }}>
-                <div className="card shadow-lg border-0" 
-                  style={{ 
-                    borderRadius: '24px',
-                    backgroundColor: 'rgba(89, 77, 91, 0.95)',
-                    backdropFilter: 'blur(10px)',
-                    maxWidth: '440px',
-                    overflow: 'hidden'
-                  }}>
-                  <div className="p-4">
-                    {isConnecting ? <Loading /> : <SwapCard />}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right side - Price Chart and Recent Transactions */}
-            <div className="col-12 col-lg-7 col-xl-8 pe-lg-4">
+          <div className="row justify-content-center">
+            {/* Left side - Price Chart and Recent Transactions */}
+            <div className="col-12 col-lg-5 col-xl-6 ps-lg-4 pe-lg-5">
               <div className="d-flex flex-column h-100">
                 {/* Price Chart */}
-                <div className="mb-4">
-                  <div className="card shadow-lg border-0" 
+                <div className="mb-4" style={{ height: '80%' }}>
+                  <div className="card shadow-lg border-0 h-100" 
                     style={{ 
                       borderRadius: '24px',
                       backgroundColor: 'rgba(89, 77, 91, 0.95)',
                       backdropFilter: 'blur(10px)',
                       overflow: 'hidden'
                     }}>
-                    <div className="p-4">
+                    <div className="p-4 h-100">
                       <PriceChart />
                     </div>
                   </div>
@@ -75,6 +55,27 @@ const App = () => {
                       <h5 className="card-title text-white mb-3">Recent Transactions</h5>
                       <RecentTransactions />
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right side - Swap Card */}
+            <div className="col-12 col-lg-5 col-xl-4 pe-lg-4">
+              <div style={{ 
+                paddingBottom: '2rem'
+              }}>
+                <div className="card shadow-lg border-0" 
+                  style={{ 
+                    borderRadius: '24px',
+                    backgroundColor: 'rgba(89, 77, 91, 0.95)',
+                    backdropFilter: 'blur(10px)',
+                    maxWidth: '440px',
+                    overflow: 'hidden',
+                    marginLeft: 'auto'
+                  }}>
+                  <div className="p-4">
+                    {isConnecting ? <Loading /> : <SwapCard />}
                   </div>
                 </div>
               </div>
