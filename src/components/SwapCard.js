@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 import { Alert, Spinner } from 'react-bootstrap';
+import GasEstimator from './GasEstimator';
 import { 
   connectWallet, 
   fetchBalances, 
@@ -105,6 +106,11 @@ const SwapCard = () => {
     } else {
       dispatch(clearBestQuote());
     }
+  };
+    const [estimatedGasCost, setEstimatedGasCost] = useState(null);
+
+  const handleGasEstimateComplete = (estimate) => {
+    setEstimatedGasCost(estimate);
   };
 
   const handleTokenSwap = () => {
@@ -312,7 +318,7 @@ const SwapCard = () => {
               'Swap'
             )}
           </button>
-
+            <GasEstimator />
           {/* Warning for insufficient balance */}
           {inputAmount && balances[inputToken] && 
            parseFloat(inputAmount) > parseFloat(balances[inputToken]) && (

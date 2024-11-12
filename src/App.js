@@ -10,21 +10,24 @@ const App = () => {
     state.blockchain?.isLoading && !state.blockchain?.address
   );
 
+  // Define a constant for the spacing
+  const SPACING = '15px';
+
   return (
     <div className="d-flex flex-column min-vh-100">
-      <Navigation />
-      <main className="flex-grow-1 d-flex align-items-center justify-content-center" 
+      <Navigation style={{ marginBottom: SPACING }} />
+      <main className="flex-grow-1 d-flex flex-column" 
             style={{ 
-              paddingTop: '0.1rem', 
               background: 'linear-gradient(225deg, #e3b778, #7F7D9C)',
               minHeight: 'calc(100vh - 10px)' 
             }}>
-        <div className="container">
+        <div className="container mt-3">
           <div className="row justify-content-center">
             <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
               <div style={{ 
                 transform: 'scale(0.85)', 
-                transformOrigin: 'center top'
+                transformOrigin: 'center top',
+                marginTop: SPACING // Add top margin to the scaled container
               }}>
                 <div className="card shadow-lg" style={{ 
                   borderRadius: '1.25rem', 
