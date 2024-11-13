@@ -9,48 +9,93 @@ const GasEstimator = ({ fromToken, toToken, amount, bestQuote }) => {
 
   useEffect(() => {
     const estimateGas = async () => {
-      if (!bestQuote || !amount) return;
+      // Add validation for required props
+      if (!bestQuote || !amount || !fromToken || !fromToken.address) {
+        console.log("Missing required data:", { bestQuote, amount, fromToken });
+        return;
+      }
 
       setIsLoading(true);
       setError(null);
       
       try {
-        // Hardhat's default provider
-        const provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545');
-        
-        // Get gas price (Hardhat's default is often 8000000000 (8 gwei))
-        const gasPrice = await provider.getGasPrice();
-        
-        // For Hardhat testing, we can use a simpler gas estimation
-        // Typical DEX swap gas ranges from 150,000 to 250,000
-        const estimatedGasLimit = ethers.BigNumber.from('200000');
-        
-        // Calculate total gas cost
-        const gasCost = estimatedGasLimit.mul(gasPrice);
-        
-        // Convert to ETH
-        const gasCostEth = ethers.utils.formatEther(gasCost);
-        
-        setGasEstimate({
-          eth: parseFloat(gasCostEth).toFixed(6),
-          gasLimit: estimatedGasLimit.toString(),
-          gwei: ethers.utils.formatUnits(gasPrice, 'gwei')
+        // Log the input values
+        console.log("Estimation params:", {
+          fromTokenAddress: fromToken.address,
+          amount: amount.toString(),
+          bestQuoteAddress: bestQuote.address
         });
 
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+
+        // Verify token contract
+        if (!ethers.utils.isAddress(fromToken.address)) {
+          throw new Error(`Invalid token address: ${fromToken.address}`);
+        }
+
+        // Simple ERC20 ABI for approval
+        const ERC20_ABI = [
+          "function approve(address spender, uint256 amount) public returns (bool)",
+          "function allowance(address owner, address spender) view returns (uint256)"
+        ];
+
+        // Create token contract instance
+        const tokenContract = new ethers.Contract(
+          fromToken.address,
+          ERC20_ABI,
+          signer
+        );
+
+        // Get fee data for gas calculations
+        const feeData = await provider.getFeeData();
+
+        // Estimate approval gas
+        try {
+          const approvalGas = await tokenContract.estimateGas.approve(
+            bestQuote.address,
+            amount
+          );
+          
+          // Use a safe default for swap gas
+          const swapGasEstimate = ethers.BigNumber.from('250000');
+          
+          // Calculate total gas estimate
+          const totalGasEstimate = approvalGas.add(swapGasEstimate);
+          
+          // Calculate gas cost in ETH
+          const gasCost = totalGasEstimate.mul(feeData.gasPrice);
+          
+          setGasEstimate({
+            eth: ethers.utils.formatEther(gasCost),
+            gasLimit: totalGasEstimate.toString(),
+            gwei: ethers.utils.formatUnits(feeData.gasPrice, 'gwei'),
+            breakdown: {
+              approval: approvalGas.toString(),
+              swap: swapGasEstimate.toString()
+            }
+          });
+        } catch (estimateError) {
+          console.error("Gas estimation failed:", estimateError);
+          throw new Error(`Gas estimation failed: ${estimateError.message}`);
+        }
+
       } catch (error) {
-        console.error('Gas estimation error:', error);
-        setError('Failed to estimate gas on Hardhat network');
+        console.error('Gas estimation error:', {
+          message: error.message,
+          code: error.code,
+          data: error.data
+        });
+        setError(error.message || 'Failed to estimate gas on Sepolia network');
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (bestQuote && amount) {
-      estimateGas();
-    }
-  }, [bestQuote, amount]);
+    estimateGas();
+  }, [fromToken, toToken, amount, bestQuote]);
 
-  // Don't render if no quote or amount
   if (!bestQuote || !amount) {
     return null;
   }
@@ -59,29 +104,51 @@ const GasEstimator = ({ fromToken, toToken, amount, bestQuote }) => {
     <div className="mt-3 bg-light rounded p-3">
       <div className="d-flex align-items-center mb-2">
         <span className="me-2" role="img" aria-label="gas pump">⛽</span>
-        <span className="fw-bold">Network Fee (Hardhat)</span>
+        <span className="fw-bold">Network Fee (Sepolia)</span>
       </div>
       
       {isLoading ? (
         <div className="text-center py-2">
           <Spinner animation="border" size="sm" className="me-2" />
-          <span>Calculating...</span>
+          <span>Calculating gas fees...</span>
         </div>
       ) : error ? (
-        <div className="text-danger small">{error}</div>
+        <div className="text-danger small">
+          <div>{error}</div>
+          <div className="mt-1">
+            <small>Please check console for more details</small>
+          </div>
+        </div>
       ) : gasEstimate && (
         <div className="gas-details">
           <div className="d-flex justify-content-between align-items-center">
             <span>Estimated fee</span>
             <div className="text-end">
-              <div>{gasEstimate.eth} ETH</div>
+              <div>{parseFloat(gasEstimate.eth).toFixed(6)} ETH</div>
               <small className="text-muted">
-                ({gasEstimate.gwei} Gwei)
+                ({parseFloat(gasEstimate.gwei).toFixed(2)} Gwei)
               </small>
             </div>
           </div>
+          
+          <div className="mt-2 small">
+            <div className="d-flex justify-content-between text-muted">
+              <span>Token Approval:</span>
+              <span>{parseInt(gasEstimate.breakdown.approval).toLocaleString()} gas</span>
+            </div>
+            <div className="d-flex justify-content-between text-muted">
+              <span>Swap Execution:</span>
+              <span>{parseInt(gasEstimate.breakdown.swap).toLocaleString()} gas</span>
+            </div>
+            <div className="d-flex justify-content-between text-muted">
+              <span>Total Gas:</span>
+              <span>{parseInt(gasEstimate.gasLimit).toLocaleString()} gas</span>
+            </div>
+          </div>
+
           <div className="mt-2 text-muted small">
-            Estimated gas units: {parseInt(gasEstimate.gasLimit).toLocaleString()}
+            <i className="bi bi-info-circle me-1"></i>
+            Includes token approval and swap execution
           </div>
         </div>
       )}

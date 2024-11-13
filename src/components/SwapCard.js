@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
@@ -11,6 +12,13 @@ import {
   clearSwapStatus,
   clearBestQuote 
 } from '../store/blockchainSlice';
+
+
+const TOKEN_ADDRESSES = {
+TK1: "0x83948078E863965393309B4E9e2C112F91f9fB14",
+TK2: "0xd95E02893187B054dFCb7FAC0862420f727CA484"
+};
+const DEX_AGGREGATOR_ADDRESS = "0x38fDC0538085E1E2c3046e934ceb3C2a1966472C";
 
 // Memoized selectors
 const selectBlockchainState = (state) => state.blockchain;
@@ -332,12 +340,24 @@ const SwapCard = () => {
             )}
           </button>
           {bestQuote && inputAmount && (
-            <GasEstimator 
-              fromToken={inputToken}
-              toToken={outputToken}
-              amount={inputAmount}
-              bestQuote={bestQuote}
-            />
+            <>
+              {console.log('Debug bestQuote:', bestQuote)} {/* Add this debug line */}
+              <GasEstimator 
+                fromToken={{
+                  address: TOKEN_ADDRESSES[inputToken],
+                  symbol: inputToken
+                }}
+                toToken={{
+                  address: TOKEN_ADDRESSES[outputToken],
+                  symbol: outputToken
+                }}
+                amount={ethers.utils.parseEther(inputAmount)}
+                bestQuote={{
+                  ...bestQuote,
+                  address: DEX_AGGREGATOR_ADDRESS // Add the DEX aggregator address
+                }}
+              />
+            </>
           )}
           {/* Warning for insufficient balance */}
           {inputAmount && balances[inputToken] && 
