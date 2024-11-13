@@ -291,7 +291,9 @@ const SwapCard = () => {
             <div className="mb-3 p-3 bg-light rounded">
               <div className="d-flex justify-content-between mb-2">
                 <span>Best Route:</span>
-                <span className="font-monospace">{bestQuote.bestAMM.slice(0, 6)}...{bestQuote.bestAMM.slice(-4)}</span>
+                <span className="font-monospace">
+                  {bestQuote.bestAMM.includes("AMM2") ? "AMM2" : "AMM"}
+                </span>
               </div>
               <div className="d-flex justify-content-between">
                 <span>Rate:</span>
