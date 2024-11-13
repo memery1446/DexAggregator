@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 
-describe("Token Contract", function () {
+describe("Token Contract", () => {
   async function deployTokenFixture() {
     const [owner, addr1, addr2] = await ethers.getSigners();
     const Token = await ethers.getContractFactory("Token");
@@ -10,14 +10,14 @@ describe("Token Contract", function () {
     return { token, owner, addr1, addr2 };
   }
 
-  describe("Basic Transfer", function () {
-    it("Should transfer tokens between accounts", async function () {
+  describe("Basic Transfer", () => {
+    it("Should transfer tokens between accounts", async () => {
       const { token, owner, addr1 } = await loadFixture(deployTokenFixture);
       await token.transfer(addr1.address, 50);
       expect(await token.balanceOf(addr1.address)).to.equal(50);
     });
 
-    it("Should fail if sender does not have enough tokens", async function () {
+    it("Should fail if sender does not have enough tokens", async () => {
       const { token, owner, addr1 } = await loadFixture(deployTokenFixture);
       const initialBalance = await token.balanceOf(addr1.address);
       await expect(
@@ -26,25 +26,25 @@ describe("Token Contract", function () {
     });
   });
 
-  describe("Reentrancy Protection", function () {
-    it("Should detect reentrancy using testReentrancy", async function () {
+  describe("Reentrancy Protection", () => {
+    it("Should detect reentrancy using testReentrancy", async () => {
       const { token } = await loadFixture(deployTokenFixture);
       await expect(token.testReentrancy()).to.be.revertedWith("Reentrant call");
     });
   });
 
-  describe("Access Control", function () {
-    it("Should set the right owner", async function () {
+  describe("Access Control", () => {
+    it("Should set the right owner", async () => {
       const { token, owner } = await loadFixture(deployTokenFixture);
       expect(await token.hasRole(await token.DEFAULT_ADMIN_ROLE(), owner.address)).to.equal(true);
     });
 
-    it("Should assign MINTER_ROLE to owner", async function () {
+    it("Should assign MINTER_ROLE to owner", async () => {
       const { token, owner } = await loadFixture(deployTokenFixture);
       expect(await token.hasRole(await token.MINTER_ROLE(), owner.address)).to.equal(true);
     });
 
-    it("Should prevent non-minters from minting", async function () {
+    it("Should prevent non-minters from minting", async () => {
       const { token, addr1 } = await loadFixture(deployTokenFixture);
       await expect(
         token.connect(addr1).mint(addr1.address, 100)
@@ -52,8 +52,8 @@ describe("Token Contract", function () {
     });
   });
 
-  describe("TransferFrom and Allowance", function () {
-    it("Should allow transferFrom after approval", async function () {
+  describe("TransferFrom and Allowance", () => {
+    it("Should allow transferFrom after approval", async () => {
       const { token, owner, addr1, addr2 } = await loadFixture(deployTokenFixture);
       
       // Owner approves addr1 to spend tokens
@@ -64,7 +64,7 @@ describe("Token Contract", function () {
       expect(await token.balanceOf(addr2.address)).to.equal(50);
     });
 
-    it("Should update allowance after transferFrom", async function () {
+    it("Should update allowance after transferFrom", async () => {
       const { token, owner, addr1, addr2 } = await loadFixture(deployTokenFixture);
       
       await token.approve(addr1.address, 100);
@@ -73,7 +73,7 @@ describe("Token Contract", function () {
       expect(await token.allowance(owner.address, addr1.address)).to.equal(50);
     });
 
-    it("Should not allow transferFrom above allowance", async function () {
+    it("Should not allow transferFrom above allowance", async () => {
       const { token, owner, addr1, addr2 } = await loadFixture(deployTokenFixture);
       
       await token.approve(addr1.address, 100);
@@ -83,14 +83,14 @@ describe("Token Contract", function () {
     });
   });
 
-  describe("Edge Cases", function () {
-    it("Should handle zero value transfers", async function () {
+  describe("Edge Cases", () => {
+    it("Should handle zero value transfers", async () => {
       const { token, owner, addr1 } = await loadFixture(deployTokenFixture);
       await expect(token.transfer(addr1.address, 0)).to.not.be.reverted;
       await expect(token.approve(addr1.address, 0)).to.not.be.reverted;
     });
 
-    it("Should fail on insufficient balance even if approved", async function () {
+    it("Should fail on insufficient balance even if approved", async () => {
       const { token, owner, addr1, addr2 } = await loadFixture(deployTokenFixture);
       
       // addr1 approves addr2 to spend tokens
@@ -102,7 +102,7 @@ describe("Token Contract", function () {
       ).to.be.reverted;
     });
 
-    it("Should not allow approval to zero address", async function () {
+    it("Should not allow approval to zero address", async () => {
       const { token } = await loadFixture(deployTokenFixture);
       await expect(
         token.approve(ethers.constants.AddressZero, 100)
@@ -110,27 +110,27 @@ describe("Token Contract", function () {
     });
   });
 
-  describe("AMM Integration Preparation", function () {
-    it("Should have sufficient decimals for AMM operations", async function () {
+  describe("AMM Integration Preparation", () => {
+    it("Should have sufficient decimals for AMM operations", async () => {
       const { token } = await loadFixture(deployTokenFixture);
       expect(await token.decimals()).to.equal(18);
     });
 
-    it("Should handle large transfers for liquidity provision", async function () {
+    it("Should handle large transfers for liquidity provision", async () => {
       const { token, owner, addr1 } = await loadFixture(deployTokenFixture);
       const largeAmount = ethers.utils.parseEther("1000000");
       await expect(token.transfer(addr1.address, largeAmount)).to.not.be.reverted;
     });
   });
-    describe("Advanced AMM Scenarios", function () {
-    it("Should handle maximum uint256 approvals for DEX router", async function () {
+    describe("Advanced AMM Scenarios", () => {
+    it("Should handle maximum uint256 approvals for DEX router", async () => {
       const { token, owner, addr1 } = await loadFixture(deployTokenFixture);
       const maxUint256 = ethers.constants.MaxUint256;
       await expect(token.approve(addr1.address, maxUint256)).to.not.be.reverted;
       expect(await token.allowance(owner.address, addr1.address)).to.equal(maxUint256);
     });
 
-    it("Should allow multiple transfers in same block", async function () {
+    it("Should allow multiple transfers in same block", async () => {
       const { token, owner, addr1, addr2 } = await loadFixture(deployTokenFixture);
       await token.transfer(addr1.address, 1000);
       await token.transfer(addr2.address, 1000);
@@ -138,7 +138,7 @@ describe("Token Contract", function () {
       expect(await token.balanceOf(addr2.address)).to.equal(1000);
     });
 
-    it("Should maintain accurate balances after multiple operations", async function () {
+    it("Should maintain accurate balances after multiple operations", async () => {
       const { token, owner, addr1, addr2 } = await loadFixture(deployTokenFixture);
       const initialBalance = await token.balanceOf(owner.address);
       

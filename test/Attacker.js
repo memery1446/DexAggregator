@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 
-describe("Attacker Contract", function () {
+describe("Attacker Contract", () => {
     async function deployAttackerFixture() {
         const [owner, attacker] = await ethers.getSigners();
         
@@ -27,25 +27,25 @@ describe("Attacker Contract", function () {
         };
     }
 
-    describe("Deployment", function () {
-        it("Should set the correct token address", async function () {
+    describe("Deployment", () => {
+        it("Should set the correct token address", async () => {
             const { token, attackerContract } = await loadFixture(deployAttackerFixture);
             expect(await attackerContract.token()).to.equal(token.address);
         });
 
-        it("Should initialize count to zero", async function () {
+        it("Should initialize count to zero", async () => {
             const { attackerContract } = await loadFixture(deployAttackerFixture);
             expect(await attackerContract.count()).to.equal(0);
         });
     });
 
-describe("Attack Attempts", function () {
-        it("Should fail to execute attack without token balance", async function () {
+describe("Attack Attempts", () => {
+        it("Should fail to execute attack without token balance", async () => {
             const { attackerContract } = await loadFixture(deployAttackerFixture);
             await expect(attackerContract.attack()).to.be.reverted;
         });
 
-        it("Should limit recursive calls to 5", async function () {
+        it("Should limit recursive calls to 5", async () => {
             const { token, attackerContract, owner } = await loadFixture(deployAttackerFixture);
             
             // Fund attacker contract
@@ -65,7 +65,7 @@ describe("Attack Attempts", function () {
             expect(await attackerContract.count()).to.equal(5);
         });
 
-        it("Should track recursive call count correctly", async function () {
+        it("Should track recursive call count correctly", async () => {
             const { token, attackerContract } = await loadFixture(deployAttackerFixture);
             
             // Fund attacker contract
@@ -79,7 +79,7 @@ describe("Attack Attempts", function () {
             }
         });
 
-        it("Should not allow external count manipulation", async function () {
+        it("Should not allow external count manipulation", async () => {
             const { attackerContract, attacker } = await loadFixture(deployAttackerFixture);
             
             // Verify count is private and can't be manipulated directly
@@ -87,8 +87,8 @@ describe("Attack Attempts", function () {
         });
     });
 
-    describe("Token Interaction", function () {
-        it("Should handle failed token transfers gracefully", async function () {
+    describe("Token Interaction", () => {
+        it("Should handle failed token transfers gracefully", async () => {
             const { attackerContract } = await loadFixture(deployAttackerFixture);
             
             // Attempt transfer with no balance
@@ -96,7 +96,7 @@ describe("Attack Attempts", function () {
                 .to.be.reverted;
         });
 
-        it("Should respect token balance limits", async function () {
+        it("Should respect token balance limits", async () => {
             const { token, attackerContract, owner } = await loadFixture(deployAttackerFixture);
             
             const smallAmount = ethers.utils.parseEther("0.1");
@@ -109,8 +109,8 @@ describe("Attack Attempts", function () {
         });
     });
 
-    describe("Security Properties", function () {
-        it("Should not accept direct ETH transfers", async function () {
+    describe("Security Properties", () => {
+        it("Should not accept direct ETH transfers", async () => {
             const { attackerContract, attacker } = await loadFixture(deployAttackerFixture);
             
             // Try to send ETH to contract
@@ -122,7 +122,7 @@ describe("Attack Attempts", function () {
             ).to.be.reverted;
         });
 
-        it("Should maintain count integrity across multiple attacks", async function () {
+        it("Should maintain count integrity across multiple attacks", async () => {
             const { token, attackerContract, owner } = await loadFixture(deployAttackerFixture);
             
             // Fund contract
@@ -148,8 +148,8 @@ describe("Attack Attempts", function () {
 
    // ... [All existing test code remains exactly the same until the last closing brace]
 
-    describe("Advanced Attack Scenarios", function () {
-        it("Should simulate a sandwich attack pattern", async function () {
+    describe("Advanced Attack Scenarios", () => {
+        it("Should simulate a sandwich attack pattern", async () => {
             const { token, attackerContract, owner, attacker } = await loadFixture(deployAttackerFixture);
             
             // Setup initial liquidity
@@ -167,7 +167,7 @@ describe("Attack Attempts", function () {
             expect(finalBalance).to.be.lte(initialBalance);
         });
 
-        it("Should verify recursive attack depth", async function () {
+        it("Should verify recursive attack depth", async () => {
             const { token, attackerContract, owner } = await loadFixture(deployAttackerFixture);
             
             // Fund the contract
@@ -183,7 +183,7 @@ describe("Attack Attempts", function () {
             expect(transferEvents?.length).to.be.lte(5);
         });
 
-        it("Should test attack under gas stress", async function () {
+        it("Should test attack under gas stress", async () => {
             const { token, attackerContract, owner } = await loadFixture(deployAttackerFixture);
             
             // Fund contract
@@ -200,8 +200,8 @@ describe("Attack Attempts", function () {
     });
     // ... [All existing test code and Advanced Attack Scenarios remain exactly the same until the last closing brace]
 
-    describe("DEX Aggregator Attack Scenarios", function () {
- it("Should simulate price manipulation between AMMs", async function () {
+    describe("DEX Aggregator Attack Scenarios", () => {
+ it("Should simulate price manipulation between AMMs", async () => {
             const { token, attackerContract, owner, attacker } = await loadFixture(deployAttackerFixture);
             
             // Setup initial balance for attack
@@ -223,7 +223,7 @@ describe("Attack Attempts", function () {
             expect(finalBalance).to.equal(initialBalance);
         });
 
-        it("Should test arbitrage opportunity detection", async function () {
+        it("Should test arbitrage opportunity detection", async () => {
             const { token, attackerContract, owner } = await loadFixture(deployAttackerFixture);
             
             // Fund for arbitrage
@@ -241,7 +241,7 @@ describe("Attack Attempts", function () {
             expect(await attackerContract.count()).to.be.lte(5);
         });
 
-     it("Should test cross-AMM recursive attack resistance", async function () {
+     it("Should test cross-AMM recursive attack resistance", async () => {
             const { token, attackerContract } = await loadFixture(deployAttackerFixture);
             
             // Setup significant balance for cross-AMM attacks
@@ -255,7 +255,7 @@ describe("Attack Attempts", function () {
             expect(await attackerContract.count()).to.equal(1);
         });
 
-        it("Should handle flash loan style attacks across AMMs", async function () {
+        it("Should handle flash loan style attacks across AMMs", async () => {
             const { token, attackerContract, owner } = await loadFixture(deployAttackerFixture);
             
             // Setup flash loan amount
@@ -270,7 +270,7 @@ describe("Attack Attempts", function () {
             expect(await attackerContract.count()).to.be.lte(5);
         });
 
-        it("Should test resistance to sandwich attacks across multiple AMMs", async function () {
+        it("Should test resistance to sandwich attacks across multiple AMMs", async () => {
             const { token, attackerContract, owner, attacker } = await loadFixture(deployAttackerFixture);
             
             // Setup moderate balance for sandwich attack
@@ -291,8 +291,8 @@ describe("Attack Attempts", function () {
         });
     });
 
-describe("AMM Interface Attack Scenarios", function () {
-        it("Should test rapid sequential attacks across AMMs", async function () {
+describe("AMM Interface Attack Scenarios", () => {
+        it("Should test rapid sequential attacks across AMMs", async () => {
             const { token, attackerContract, owner } = await loadFixture(deployAttackerFixture);
             
             // Setup for cross-AMM attack
@@ -311,7 +311,7 @@ describe("AMM Interface Attack Scenarios", function () {
             expect(finalBalance).to.equal(attackAmount);
         });
 
-        it("Should maintain integrity during high-value attacks", async function () {
+        it("Should maintain integrity during high-value attacks", async () => {
             const { token, attackerContract } = await loadFixture(deployAttackerFixture);
             
             // Setup with very large amount to test high-value scenarios
@@ -327,7 +327,7 @@ describe("AMM Interface Attack Scenarios", function () {
             expect(finalBalance).to.equal(largeAmount);
         });
 
-        it("Should test rapid sequential attacks across AMMs", async function () {
+        it("Should test rapid sequential attacks across AMMs", async () => {
             const { token, attackerContract, owner } = await loadFixture(deployAttackerFixture);
             
             // Setup for cross-AMM attack
@@ -346,7 +346,7 @@ describe("AMM Interface Attack Scenarios", function () {
             expect(finalBalance).to.equal(attackAmount);
         });
 
-        it("Should maintain integrity during high-value attacks", async function () {
+        it("Should maintain integrity during high-value attacks", async () => {
             const { token, attackerContract } = await loadFixture(deployAttackerFixture);
             
             // Setup with very large amount to test high-value scenarios

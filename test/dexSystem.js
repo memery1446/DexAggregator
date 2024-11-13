@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 
-describe("DEX System Integration", function () {
+describe("DEX System Integration", () => {
     async function deployFullSystemFixture() {
         const [owner, user1, user2, attacker] = await ethers.getSigners();
         
@@ -59,8 +59,8 @@ describe("DEX System Integration", function () {
         };
     }
 
-    describe("Cross-Contract Liquidity", function () {
-        it("Should maintain consistent reserves across AMMs after multiple operations", async function () {
+    describe("Cross-Contract Liquidity", () => {
+        it("Should maintain consistent reserves across AMMs after multiple operations", async () => {
             const { tk1, tk2, amm1, amm2, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
             
             // Get initial reserves
@@ -85,7 +85,7 @@ describe("DEX System Integration", function () {
             expect(amm1ReserveChange.abs()).to.be.gt(amm2ReserveChange.abs());
         });
 
-        it("Should handle simultaneous liquidity changes in both AMMs", async function () {
+        it("Should handle simultaneous liquidity changes in both AMMs", async () => {
             const { tk1, tk2, amm1, amm2, dexAggregator, user1, user2 } = await loadFixture(deployFullSystemFixture);
             
             const addAmount = ethers.utils.parseEther("1000");
@@ -108,8 +108,8 @@ describe("DEX System Integration", function () {
         });
     });
 
-    describe("Price Impact and Routing", function () {
-        it("Should route large trades through AMM with better liquidity", async function () {
+    describe("Price Impact and Routing", () => {
+        it("Should route large trades through AMM with better liquidity", async () => {
             const { tk1, tk2, amm1, amm2, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
             
             // Ensure user has enough tokens
@@ -140,7 +140,7 @@ describe("DEX System Integration", function () {
             expect(swapEvent.args.amm).to.equal(bestAMM);
         });
 
-        it("Should handle price divergence between AMMs", async function () {
+        it("Should handle price divergence between AMMs", async () => {
             const { tk1, tk2, amm1, amm2, dexAggregator, user1, user2 } = await loadFixture(deployFullSystemFixture);
             
             // Create price divergence by swapping in AMM2
@@ -159,8 +159,8 @@ describe("DEX System Integration", function () {
     });
     // Add this new describe block after the existing Price Impact and Routing tests
 
-    describe("Attack Resistance", function () {
-    it("Should limit single-transaction price impact", async function () {
+    describe("Attack Resistance", () => {
+    it("Should limit single-transaction price impact", async () => {
         const { tk1, amm2, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
         
         // Try to swap directly with AMM2 to verify its limit
@@ -176,7 +176,7 @@ describe("DEX System Integration", function () {
         ).to.be.revertedWith("Swap amount too large");
     });
 
-    it("Should prevent profitable sandwich attacks", async function () {
+    it("Should prevent profitable sandwich attacks", async () => {
         const { tk1, tk2, dexAggregator, user1, attacker } = await loadFixture(deployFullSystemFixture);
         
         // Setup amounts
@@ -211,7 +211,7 @@ describe("DEX System Integration", function () {
         expect(profit).to.be.lt(0);
     });
 
-it("Should show diminishing returns on arbitrage attempts", async function () {
+it("Should show diminishing returns on arbitrage attempts", async () => {
         const { tk1, tk2, amm1, amm2, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
         
         // Create smaller initial price discrepancy
@@ -305,7 +305,7 @@ it("Should show diminishing returns on arbitrage attempts", async function () {
             `Final profit margin (${finalProfitMargin}%) should be less than 25%`);
     });
 
-    it("Should maintain reserve stability under trading pressure", async function () {
+    it("Should maintain reserve stability under trading pressure", async () => {
         const { tk1, tk2, amm1, amm2, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
         
         // Get initial reserves
@@ -358,9 +358,9 @@ it("Should show diminishing returns on arbitrage attempts", async function () {
     });
 });
 
-describe("Advanced DEX System Integration", function () {
-    describe("Flash Loan Attack Simulation", function () {
-        it("Should be resistant to flash swap attacks", async function () {
+describe("Advanced DEX System Integration", () => {
+    describe("Flash Loan Attack Simulation", () => {
+        it("Should be resistant to flash swap attacks", async () => {
             const { tk1, tk2, dexAggregator, attacker } = await loadFixture(deployFullSystemFixture);
             
             // Setup large amount for potential attack
@@ -385,8 +385,8 @@ describe("Advanced DEX System Integration", function () {
         });
     });
 
-    describe("Slippage Protection", function () {
-        it("Should respect minimum output amount", async function () {
+    describe("Slippage Protection", () => {
+        it("Should respect minimum output amount", async () => {
             const { tk1, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
             
             const swapAmount = ethers.utils.parseEther("100");
@@ -409,8 +409,8 @@ describe("Advanced DEX System Integration", function () {
         });
     });
 
-    describe("Gas Optimization", function () {
-        it("Should maintain reasonable gas usage for different trade sizes", async function () {
+    describe("Gas Optimization", () => {
+        it("Should maintain reasonable gas usage for different trade sizes", async () => {
             const { tk1, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
             
             // Test different trade sizes
@@ -437,8 +437,8 @@ describe("Advanced DEX System Integration", function () {
         });
     });
 
-    describe("Edge Cases", function () {
-        it("Should handle imbalanced liquidity between AMMs", async function () {
+    describe("Edge Cases", () => {
+        it("Should handle imbalanced liquidity between AMMs", async () => {
             const { tk1, tk2, amm1, amm2, dexAggregator, owner, user1 } = await loadFixture(deployFullSystemFixture);
             
             // Add extra liquidity to AMM2
@@ -460,7 +460,7 @@ describe("Advanced DEX System Integration", function () {
             expect(swapEvent.args.amm).to.equal(amm2.address);
         });
 
-        it("Should handle very small trades efficiently", async function () {
+        it("Should handle very small trades efficiently", async () => {
             const { tk1, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
             
             // Try small but valid trade
@@ -477,8 +477,8 @@ describe("Advanced DEX System Integration", function () {
         });
     });
 
-    describe("Market Dynamics", function () {
- it("Should handle high volume trading periods", async function () {
+    describe("Market Dynamics", () => {
+ it("Should handle high volume trading periods", async () => {
         const { tk1, tk2, dexAggregator, user1, user2 } = await loadFixture(deployFullSystemFixture);
         
         // Setup smaller trade amounts to reduce impact
@@ -527,7 +527,7 @@ describe("Advanced DEX System Integration", function () {
         }
     });
 
-    it("Should maintain price efficiency during volatility", async function () {
+    it("Should maintain price efficiency during volatility", async () => {
         const { tk1, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
         
         // Increased sizes to ensure measurable impact
@@ -595,8 +595,8 @@ describe("Advanced DEX System Integration", function () {
         expect(largeImpact).to.be.lt(50, "Large trade impact should be bounded");
     });
 
-    describe("System Reliability", function () {
-        it("Should handle multiple concurrent quotes", async function () {
+    describe("System Reliability", () => {
+        it("Should handle multiple concurrent quotes", async () => {
             const { tk1, dexAggregator, user1, user2 } = await loadFixture(deployFullSystemFixture);
             
             const amount = ethers.utils.parseEther("100");
@@ -617,7 +617,7 @@ describe("Advanced DEX System Integration", function () {
             });
         });
 
-        it("Should maintain accurate quotes during high traffic", async function () {
+        it("Should maintain accurate quotes during high traffic", async () => {
             const { tk1, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
             
             const amount = ethers.utils.parseEther("100");
@@ -646,8 +646,8 @@ describe("Advanced DEX System Integration", function () {
         });
     });
 
- describe("Additional Critical Scenarios", function () {
-    it("Should handle decimal precision correctly", async function () {
+ describe("Additional Critical Scenarios", () => {
+    it("Should handle decimal precision correctly", async () => {
         const { tk1, tk2, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
         
         const amount = ethers.utils.parseUnits("100", 18);
@@ -667,7 +667,7 @@ describe("Advanced DEX System Integration", function () {
         expect(actualOutput).to.be.lte(expectedOutput.add(tolerance));
     });
 
-    it("Should maintain consistent quotes under market stress", async function () {
+    it("Should maintain consistent quotes under market stress", async () => {
         const { tk1, tk2, dexAggregator, user1, user2 } = await loadFixture(deployFullSystemFixture);
         
         const testAmount = ethers.utils.parseEther("100");
@@ -691,7 +691,7 @@ describe("Advanced DEX System Integration", function () {
         );
     });
 
-    it("Should execute trades with minimum output requirements", async function () {
+    it("Should execute trades with minimum output requirements", async () => {
         const { tk1, tk2, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
         
         const amount = ethers.utils.parseEther("100");
@@ -713,7 +713,7 @@ describe("Advanced DEX System Integration", function () {
 
 
 
-    it("Should recover from failed swap attempts", async function () {
+    it("Should recover from failed swap attempts", async () => {
         const { tk1, tk2, amm1, amm2, dexAggregator, user1, owner } = await loadFixture(deployFullSystemFixture);
         
         const amount = ethers.utils.parseEther("100");
@@ -739,7 +739,7 @@ describe("Advanced DEX System Integration", function () {
         expect(swapEvent.args.amm).to.not.equal(originalBestAMM);
     });
 
-    it("Should handle high-impact trades appropriately", async function () {
+    it("Should handle high-impact trades appropriately", async () => {
         const { tk1, dexAggregator, user1 } = await loadFixture(deployFullSystemFixture);
         
         const amounts = [

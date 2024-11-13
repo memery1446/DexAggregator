@@ -23,22 +23,22 @@ describe("AMM2 Contract", function () {
     return { amm2, tokenA, tokenB, owner, addr1, addr2, mintAmount };
   }
 
-  describe("Deployment", function () {
-    it("Should set the right token addresses", async function () {
+  describe("Deployment", () => {
+    it("Should set the right token addresses", async () => {
       const { amm2, tokenA, tokenB } = await loadFixture(deployAMM2Fixture);
       expect(await amm2.tokenA()).to.equal(tokenA.address);
       expect(await amm2.tokenB()).to.equal(tokenB.address);
     });
 
-    it("Should start with empty reserves", async function () {
+    it("Should start with empty reserves", async () => {
       const { amm2 } = await loadFixture(deployAMM2Fixture);
       expect(await amm2.reserveA()).to.equal(0);
       expect(await amm2.reserveB()).to.equal(0);
     });
   });
 
-  describe("Liquidity", function () {
-    it("Should allow initial liquidity provision", async function () {
+  describe("Liquidity", () => {
+    it("Should allow initial liquidity provision", async () => {
       const { amm2, tokenA, tokenB, owner } = await loadFixture(deployAMM2Fixture);
       const amountA = ethers.utils.parseEther("100");
       const amountB = ethers.utils.parseEther("100");
@@ -58,7 +58,7 @@ describe("AMM2 Contract", function () {
       expect(await amm2.reserveB()).to.equal(amountB);
     });
 
-    it("Should track LP tokens correctly", async function () {
+    it("Should track LP tokens correctly", async () => {
       const { amm2, tokenA, tokenB, owner } = await loadFixture(deployAMM2Fixture);
       const amountA = ethers.utils.parseEther("100");
       const amountB = ethers.utils.parseEther("100");
@@ -72,14 +72,14 @@ describe("AMM2 Contract", function () {
       expect(lpBalance).to.be.gt(0);
     });
 
-    it("Should fail when adding zero liquidity", async function () {
+    it("Should fail when adding zero liquidity", async () => {
       const { amm2 } = await loadFixture(deployAMM2Fixture);
       await expect(
         amm2.addLiquidity(0, 0)
       ).to.be.revertedWith("Insufficient liquidity amounts");
     });
 
-    it("Should fail without token approval", async function () {
+    it("Should fail without token approval", async () => {
       const { amm2 } = await loadFixture(deployAMM2Fixture);
       const amount = ethers.utils.parseEther("100");
       
@@ -89,8 +89,8 @@ describe("AMM2 Contract", function () {
     });
   });
 
-  describe("Price Calculation", function () {
-    it("Should calculate correct output amount with 0.5% fee", async function () {
+  describe("Price Calculation", () => {
+    it("Should calculate correct output amount with 0.5% fee", async () => {
       const { amm2, tokenA, tokenB, owner } = await loadFixture(deployAMM2Fixture);
       const initialAmount = ethers.utils.parseEther("1000");
       await tokenA.approve(amm2.address, initialAmount);
@@ -107,8 +107,8 @@ describe("AMM2 Contract", function () {
     });
   });
 
-  describe("Swap Limits", function () {
-    it("Should fail when swap amount exceeds reserve limit", async function () {
+  describe("Swap Limits", () => {
+    it("Should fail when swap amount exceeds reserve limit", async () => {
       const { amm2, tokenA, tokenB, owner, addr1 } = await loadFixture(deployAMM2Fixture);
       
       // Add liquidity
@@ -127,7 +127,7 @@ describe("AMM2 Contract", function () {
       ).to.be.revertedWith("Swap amount too large");
     });
 
-    it("Should allow swaps up to reserve limit", async function () {
+    it("Should allow swaps up to reserve limit", async () => {
       const { amm2, tokenA, tokenB, owner, addr1 } = await loadFixture(deployAMM2Fixture);
       
       // Add liquidity
@@ -148,8 +148,8 @@ describe("AMM2 Contract", function () {
     });
   });
 
-  describe("AMM2 Specific Behaviors", function () {
-    it("Should provide different output than AMM1 for same input", async function () {
+  describe("AMM2 Specific Behaviors", () => {
+    it("Should provide different output than AMM1 for same input", async () => {
       const { amm2, tokenA, tokenB, owner } = await loadFixture(deployAMM2Fixture);
       
       const AMM = await ethers.getContractFactory("AMM");
@@ -171,7 +171,7 @@ describe("AMM2 Contract", function () {
       expect(quote2).to.be.lt(quote1);
     });
 
-    it("Should maintain reserves correctly after multiple swaps", async function () {
+    it("Should maintain reserves correctly after multiple swaps", async () => {
       const { amm2, tokenA, tokenB, owner, addr1 } = await loadFixture(deployAMM2Fixture);
       
       const initialAmount = ethers.utils.parseEther("1000");
@@ -193,7 +193,7 @@ describe("AMM2 Contract", function () {
       expect(reserveB).to.be.lt(initialAmount);
     });
 
-    it("Should handle large and small trades appropriately", async function () {
+    it("Should handle large and small trades appropriately", async () => {
       const { amm2, tokenA, tokenB, owner } = await loadFixture(deployAMM2Fixture);
       
       const initialAmount = ethers.utils.parseEther("1000");
@@ -212,7 +212,7 @@ describe("AMM2 Contract", function () {
 
       expect(largePrice).to.be.lt(smallPrice);
     });
-    it("Should show different price impacts between AMMs", async function () {
+    it("Should show different price impacts between AMMs", async () => {
     const { amm2, tokenA, tokenB } = await loadFixture(deployAMM2Fixture);
     const AMM = await ethers.getContractFactory("AMM");
     const amm1 = await AMM.deploy(tokenA.address, tokenB.address);

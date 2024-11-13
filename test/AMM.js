@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 
-describe("AMM Contract", function () {
+describe("AMM Contract", () => {
   async function deployAMMFixture() {
     const [owner, addr1, addr2] = await ethers.getSigners();
     
@@ -23,22 +23,22 @@ describe("AMM Contract", function () {
     return { amm, tokenA, tokenB, owner, addr1, addr2, mintAmount };
   }
 
-  describe("Deployment", function () {
-    it("Should set the right token addresses", async function () {
+  describe("Deployment", () => {
+    it("Should set the right token addresses", async () => {
       const { amm, tokenA, tokenB } = await loadFixture(deployAMMFixture);
       expect(await amm.tokenA()).to.equal(tokenA.address);
       expect(await amm.tokenB()).to.equal(tokenB.address);
     });
 
-    it("Should start with empty reserves", async function () {
+    it("Should start with empty reserves", async () => {
       const { amm } = await loadFixture(deployAMMFixture);
       expect(await amm.reserveA()).to.equal(0);
       expect(await amm.reserveB()).to.equal(0);
     });
   });
 
-  describe("Liquidity", function () {
-    it("Should allow initial liquidity provision", async function () {
+  describe("Liquidity", () => {
+    it("Should allow initial liquidity provision", async () => {
       const { amm, tokenA, tokenB, owner } = await loadFixture(deployAMMFixture);
       const amountA = ethers.utils.parseEther("100");
       const amountB = ethers.utils.parseEther("100");
@@ -61,7 +61,7 @@ describe("AMM Contract", function () {
       expect(await amm.reserveB()).to.equal(amountB);
     });
 
-    it("Should track LP tokens correctly", async function () {
+    it("Should track LP tokens correctly", async () => {
       const { amm, tokenA, tokenB, owner } = await loadFixture(deployAMMFixture);
       const amountA = ethers.utils.parseEther("100");
       const amountB = ethers.utils.parseEther("100");
@@ -75,14 +75,14 @@ describe("AMM Contract", function () {
       expect(lpBalance).to.be.gt(0);
     });
 
-    it("Should fail when adding zero liquidity", async function () {
+    it("Should fail when adding zero liquidity", async () => {
       const { amm } = await loadFixture(deployAMMFixture);
       await expect(
         amm.addLiquidity(0, 0)
       ).to.be.revertedWith("Insufficient liquidity amounts");
     });
 
-    it("Should fail without token approval", async function () {
+    it("Should fail without token approval", async () => {
       const { amm } = await loadFixture(deployAMMFixture);
       const amount = ethers.utils.parseEther("100");
       
@@ -91,8 +91,8 @@ describe("AMM Contract", function () {
       ).to.be.reverted;
     });
   });
-  describe("Price Calculation", function () {
-    it("Should calculate correct output amount", async function () {
+  describe("Price Calculation", () => {
+    it("Should calculate correct output amount", async () => {
       const { amm, tokenA, tokenB, owner } = await loadFixture(deployAMMFixture);
       // Add initial liquidity
       const initialAmount = ethers.utils.parseEther("1000");
@@ -106,7 +106,7 @@ describe("AMM Contract", function () {
       expect(expectedOutput).to.be.lt(amountIn); // Due to fee
     });
 
-    it("Should consider fees in price calculation", async function () {
+    it("Should consider fees in price calculation", async () => {
       const { amm } = await loadFixture(deployAMMFixture);
       const reserveIn = ethers.utils.parseEther("1000");
       const reserveOut = ethers.utils.parseEther("1000");
@@ -118,8 +118,8 @@ describe("AMM Contract", function () {
     });
   });
 
-  describe("Swaps", function () {
-    it("Should execute swap A to B correctly", async function () {
+  describe("Swaps", () => {
+    it("Should execute swap A to B correctly", async () => {
       const { amm, tokenA, tokenB, owner, addr1 } = await loadFixture(deployAMMFixture);
       
       // Add initial liquidity
@@ -144,7 +144,7 @@ describe("AMM Contract", function () {
       expect(addr1TokenBAfter).to.be.gt(addr1TokenBBefore);
     });
 
-    it("Should fail swap with insufficient input", async function () {
+    it("Should fail swap with insufficient input", async () => {
       const { amm, tokenA, tokenB, owner, addr1 } = await loadFixture(deployAMMFixture);
       
       // Add initial liquidity
