@@ -30,3 +30,4 @@ contract Token is ERC20, AccessControl {
         this.testReentrancy();
     }
 }
+
