@@ -75,57 +75,57 @@ contract DexAggregator {
         return (bestAMM, bestOutput);
     }
 
-function executeSwap(uint256 amountIn, bool isAtoB, uint256 minOutput) external returns (uint256 amountOut) {
-        require(amountIn > 0, "Invalid input amount");
-        
-        (address bestAMM, uint256 expectedOutput) = getBestQuote(amountIn, isAtoB);
-        require(bestAMM != address(0), "No valid route found");
-        require(expectedOutput >= minOutput, "Insufficient output amount");
+    function executeSwap(uint256 amountIn, bool isAtoB, uint256 minOutput) external returns (uint256 amountOut) {
+            require(amountIn > 0, "Invalid input amount");
+            
+            (address bestAMM, uint256 expectedOutput) = getBestQuote(amountIn, isAtoB);
+            require(bestAMM != address(0), "No valid route found");
+            require(expectedOutput >= minOutput, "Insufficient output amount");
 
-        // Get input and output tokens
-        IERC20 tokenIn;
-        if (isAtoB) {
-            tokenIn = IERC20(address(amm1.tokenA()));
-        } else {
-            tokenIn = IERC20(address(amm1.tokenB()));
+            // Get input and output tokens
+            IERC20 tokenIn;
+            if (isAtoB) {
+                tokenIn = IERC20(address(amm1.tokenA()));
+            } else {
+                tokenIn = IERC20(address(amm1.tokenB()));
+            }
+
+            // Transfer input tokens to this contract
+            require(tokenIn.transferFrom(msg.sender, address(this), amountIn), "Transfer failed");
+            
+            // Approve AMM to spend input tokens
+            require(tokenIn.approve(bestAMM, 0), "Failed to clear approval");
+            require(tokenIn.approve(bestAMM, amountIn), "Approval failed");
+
+            // Execute swap on the chosen AMM
+            if (bestAMM == address(amm1)) {
+                amountOut = amm1.swap(amountIn, isAtoB);
+            } else {
+                amountOut = amm2.swap(amountIn, isAtoB);
+            }
+
+            require(amountOut > 0, "Zero output amount");
+            require(amountOut >= minOutput, "Slippage too high");
+
+            // Get output token
+            IERC20 tokenOut;
+            if (isAtoB) {
+                tokenOut = IERC20(address(amm1.tokenB()));
+            } else {
+                tokenOut = IERC20(address(amm1.tokenA()));
+            }
+
+            // Transfer output tokens to user
+            uint256 outputBalance = tokenOut.balanceOf(address(this));
+            require(outputBalance >= amountOut, "Insufficient output balance");
+            require(tokenOut.transfer(msg.sender, amountOut), "Output transfer failed");
+
+            // Update price history
+            updatePriceHistory(bestAMM, (amountOut * 1e18) / amountIn);
+            emit SwapExecuted(bestAMM, amountIn, amountOut);
+            
+            return amountOut;
         }
-
-        // Transfer input tokens to this contract
-        require(tokenIn.transferFrom(msg.sender, address(this), amountIn), "Transfer failed");
-        
-        // Approve AMM to spend input tokens
-        require(tokenIn.approve(bestAMM, 0), "Failed to clear approval");
-        require(tokenIn.approve(bestAMM, amountIn), "Approval failed");
-
-        // Execute swap on the chosen AMM
-        if (bestAMM == address(amm1)) {
-            amountOut = amm1.swap(amountIn, isAtoB);
-        } else {
-            amountOut = amm2.swap(amountIn, isAtoB);
-        }
-
-        require(amountOut > 0, "Zero output amount");
-        require(amountOut >= minOutput, "Slippage too high");
-
-        // Get output token
-        IERC20 tokenOut;
-        if (isAtoB) {
-            tokenOut = IERC20(address(amm1.tokenB()));
-        } else {
-            tokenOut = IERC20(address(amm1.tokenA()));
-        }
-
-        // Transfer output tokens to user
-        uint256 outputBalance = tokenOut.balanceOf(address(this));
-        require(outputBalance >= amountOut, "Insufficient output balance");
-        require(tokenOut.transfer(msg.sender, amountOut), "Output transfer failed");
-
-        // Update price history
-        updatePriceHistory(bestAMM, (amountOut * 1e18) / amountIn);
-        emit SwapExecuted(bestAMM, amountIn, amountOut);
-        
-        return amountOut;
-    }
 
     function getReserves() external view returns (
         uint256 amm1ReserveA,
