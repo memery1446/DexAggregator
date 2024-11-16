@@ -46,50 +46,62 @@ const Navigation = () => {
                   {/* This is a placeholder to maintain layout */}
                   <img src={logo} alt="" height="60" />
                 </div>
-                <div className="ml-auto">
-                  {address ? (
-                    <div className="d-flex align-items-center">
-                      <span className="me-2 text-white">Connected:</span>
-                      <div className="btn-group">
-                        <button 
-                          type="button" 
-                          className="btn btn-light btn-sm dropdown-toggle" 
-                          data-bs-toggle="dropdown" 
-                          aria-expanded="false"
-                        >
-                          <span className="badge bg-success me-2"></span>
-                          {truncateAddress(address)}
-                        </button>
-                        <ul className="dropdown-menu dropdown-menu-end">
-                          <li>
-                            <button 
-                              className="dropdown-item" 
-                              type="button" 
-                              onClick={handleDisconnect}
-                            >
-                              Disconnect
-                            </button>
-                          </li>
-                        </ul>
+                <div className="d-flex align-items-center justify-content-between w-100">
+                  {/* Updated About link to open in a new tab and moved slightly to the left */}
+                  <a 
+                    href="/about.html" 
+                    className="text-white text-decoration-none me-3 h4" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ marginLeft: '-20px' }}
+                  >
+                    About
+                  </a>
+                  <div>
+                    {address ? (
+                      <div className="d-flex align-items-center">
+                        <span className="me-2 text-white">Connected:</span>
+                        <div className="btn-group">
+                          <button 
+                            type="button" 
+                            className="btn btn-light btn-sm dropdown-toggle" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false"
+                          >
+                            <span className="badge bg-success me-2"></span>
+                            {truncateAddress(address)}
+                          </button>
+                          <ul className="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <button 
+                                className="dropdown-item" 
+                                type="button" 
+                                onClick={handleDisconnect}
+                              >
+                                Disconnect
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={handleConnect}
-                      className="btn btn-light"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? 'Connecting...' : 'Connect Wallet'}
-                    </button>
-                  )}
+                    ) : (
+                      <button
+                        onClick={handleConnect}
+                        className="btn btn-light"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? 'Connecting...' : 'Connect Wallet'}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </nav>
           </div>
         </div>
-        <div className="position-absolute" style={{ top: '-25px', left: '55px', zIndex: 1000 }}>
+        <div className="position-absolute" style={{ top: '66px', left: '55px', zIndex: 1000 }}>
           <a href="/">
-            <img src={logo} alt="URDEX Logo" height="220" className="d-inline-block" />
+            <img src={logo} alt="URDEX Logo" height="140" className="d-inline-block" />
           </a>
         </div>
       </div>

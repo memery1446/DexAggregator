@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About URDEX Aggregator</title>
+    <style>
+        body {
+            background: linear-gradient(225deg, #e3b778, #7F7D9C);
+            min-height: calc(100vh - 10px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin: 0;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 0 auto;
+            max-width: 800px;
+        }
+        h1, h2 {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">About URDEX Aggregator</h1>
+        <h4 class="mb-4">Contact me: markemerydev@gmail.com</h4>
+
+        <section>
+            <h2>DexAggregator Contract</h2>
+            <p>The DexAggregator contract is a price aggregator and router that connects to two different AMM (Automated Market Maker) implementations to find the best trading rates. Key features:</p>
+            <ol>
+                <li>
+                    <h3>Quote Finding:</h3>
+                    <ul>
+                        <li>Compares prices between two AMMs for any given trade</li>
+                        <li>Uses try-catch to handle potential failures in price fetching</li>
+                        <li>Implements maximum input amount checks</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>Swap Execution:</h3>
+                    <ul>
+                        <li>Routes trades to the AMM offering better rates</li>
+                        <li>Handles token approvals and transfers</li>
+                        <li>Includes slippage protection via minOutput parameter</li>
+                        <li>Updates price history after successful swaps</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>Price Tracking:</h3>
+                    <ul>
+                        <li>Maintains a rolling history of last 10 prices per AMM</li>
+                        <li>Records timestamp with each price point</li>
+                        <li>Emits events for price updates</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>Safety Features:</h3>
+                    <ul>
+                        <li>Input validation</li>
+                        <li>Explicit approval resets</li>
+                        <li>Balance checks before transfers</li>
+                        <li>Zero-address validation in constructor</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>AMM and AMM2 Contracts</h2>
+            <p>AMM and AMM2 are Automated Market Maker contracts that facilitate token swaps using a constant product formula (x * y = k). Key differences and similarities:</p>
+            <h3>Similarities:</h3>
+            <ul>
+                <li>Both handle two tokens (tokenA and tokenB)</li>
+                <li>Use liquidity pools with provider tracking</li>
+                <li>Implement ReentrancyGuard</li>
+                <li>Share basic LP token mechanics with MINIMUM_LIQUIDITY</li>
+                <li>Use similar square root calculation for initial LP tokens</li>
+            </ul>
+            <h3>Differences:</h3>
+            <ul>
+                <li>AMM2 has higher fees (0.5% vs 0.3% in AMM)</li>
+                <li>AMM2 implements price impact protection (limits swaps to 200% of reserve)</li>
+                <li>AMM2 has additional liquidity protection in swap function</li>
+                <li>AMM2 includes more extensive validation checks</li>
+            </ul>
+            <p>Both contracts represent standard AMM implementations with minor variations in their risk management and fee structures.</p>
+        </section>
+
+        <section>
+            <h2>Attacker Contract and Testing</h2>
+            <p>The Attacker contract and its tests focus on testing security measures and potential attack vectors. Here's an analysis:</p>
+            <h3>Attacker.sol Features:</h3>
+            <ul>
+                <li>Recursive call counter (max 5 iterations)</li>
+                <li>Locking mechanism</li>
+                <li>Token balance validation</li>
+                <li>Attack initiation function</li>
+            </ul>
+            <h3>Test Suite Structure:</h3>
+            <ol>
+                <li>
+                    <h4>Basic Tests:</h4>
+                    <ul>
+                        <li>Deployment validation</li>
+                        <li>Counter initialization</li>
+                        <li>Token address verification</li>
+                    </ul>
+                </li>
+                <li>
+                    <h4>Attack Simulation Tests:</h4>
+                    <ul>
+                        <li>Recursive call limits</li>
+                        <li>Balance requirements</li>
+                        <li>Count integrity</li>
+                        <li>Token transfer handling</li>
+                    </ul>
+                </li>
+                <li>
+                    <h4>Advanced Tests:</h4>
+                    <ul>
+                        <li>DEX-specific attack scenarios</li>
+                        <li>Cross-AMM attack resistance</li>
+                        <li>Flash loan simulation</li>
+                        <li>Sandwich attack testing</li>
+                        <li>High-value transaction testing</li>
+                    </ul>
+                </li>
+            </ol>
+            <h3>Key Test Categories:</h3>
+            <ul>
+                <li>Basic functionality</li>
+                <li>Security measures</li>
+                <li>Attack vectors</li>
+                <li>Edge cases</li>
+                <li>Gas limitations</li>
+                <li>Cross-contract interactions</li>
+            </ul>
+            <p>The tests comprehensively verify both safety features and potential vulnerabilities in DeFi context.</p>
+        </section>
+
+        <section>
+            <h2>AMM and AMM2 Testing</h2>
+            <p>Both AMM test suites cover similar core functionality but have key differences:</p>
+            <h3>Common Test Categories:</h3>
+            <ul>
+                <li>Deployment verification</li>
+                <li>Reserve tracking</li>
+                <li>Liquidity provision</li>
+                <li>Token approvals</li>
+                <li>Price calculations</li>
+                <li>Basic swap functionality</li>
+            </ul>
+            <h3>AMM2-Specific Tests:</h3>
+            <ul>
+                <li>0.5% fee verification vs AMM's 0.3%</li>
+                <li>Swap amount limits (200% reserve cap)</li>
+                <li>Comparative price impact analysis</li>
+                <li>Cross-AMM behavior testing</li>
+                <li>Large vs small trade handling</li>
+            </ul>
+            <h3>Key Differences:</h3>
+            <ul>
+                <li>AMM2 tests focus more on protective features</li>
+                <li>AMM2 includes direct comparisons with AMM1</li>
+                <li>AMM2 has additional price impact testing across different liquidity depths</li>
+                <li>AMM2 validates specific security constraints like swap limits</li>
+            </ul>
+            <p>The test suites effectively validate both common AMM functionality and the unique characteristics that differentiate AMM2 from AMM1.</p>
+        </section>
+
+        <section>
+            <h2>DexAggregator Testing</h2>
+            <p>The DexAggregator test suite demonstrates comprehensive system testing across several key areas:</p>
+            <ol>
+                <li>
+                    <h3>Cross-Contract Liquidity</h3>
+                    <ul>
+                        <li>Reserve consistency across AMMs</li>
+                        <li>Simultaneous liquidity changes</li>
+                        <li>Multi-operation reserve tracking</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>Price Impact and Routing</h3>
+                    <ul>
+                        <li>Large trade routing optimization</li>
+                        <li>Price divergence handling</li>
+                        <li>Best quote verification</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>Attack Resistance</h3>
+                    <ul>
+                        <li>Price impact limits</li>
+                        <li>Sandwich attack prevention</li>
+                        <li>Arbitrage diminishing returns</li>
+                        <li>Detailed profit tracking</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>Market Dynamics</h3>
+                    <ul>
+                        <li>High volume trading</li>
+                        <li>Price efficiency during volatility</li>
+                        <li>Reserve ratio maintenance</li>
+                        <li>Impact comparison between trade sizes</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>System Reliability</h3>
+                    <ul>
+                        <li>Concurrent quote handling</li>
+                        <li>High traffic quote accuracy</li>
+                        <li>Decimal precision</li>
+                        <li>Market stress testing</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>The tests use a comprehensive fixture setup with tokens, AMMs, and the aggregator, validating both normal operations and edge cases while tracking important metrics like price impacts and reserve ratios.</p>
+        </section>
+
+        <section>
+            <h2>DexSystem Testing</h2>
+            <p>The DEX System Integration tests cover several critical areas:</p>
+            <ol>
+                <li>
+                    <h3>Cross-Contract Liquidity Tests</h3>
+                    <ul>
+                        <li>Reserve consistency across AMMs</li>
+                        <li>Simultaneous liquidity changes</li>
+                        <li>Multiple operation impacts</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>Advanced Attack Resistance</h3>
+                    <ul>
+                        <li>Flash loan attack prevention</li>
+                        <li>Sandwich attack protection</li>
+                        <li>Arbitrage diminishing returns</li>
+                        <li>Price manipulation resistance</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>Market Dynamics</h3>
+                    <ul>
+                        <li>High volume trading periods</li>
+                        <li>Price efficiency during volatility</li>
+                        <li>System stability under stress</li>
+                        <li>Reserve ratio maintenance</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>Edge Cases & Reliability</h3>
+                    <ul>
+                        <li>Decimal precision handling</li>
+                        <li>Concurrent quote consistency</li>
+                        <li>Failed swap recovery</li>
+                        <li>Imbalanced liquidity scenarios</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>Gas & Performance</h3>
+                    <ul>
+                        <li>Gas usage optimization</li>
+                        <li>Trade size scalability</li>
+                        <li>High traffic quote accuracy</li>
+                        <li>System recovery mechanisms</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>The test suite employs detailed logging for performance metrics and uses comprehensive fixtures for system setup. It validates both normal operations and potential attack vectors while ensuring market stability and efficiency.</p>
+        </section>
+
+        <a href="/" class="btn btn-primary mt-4">Back to Home</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
