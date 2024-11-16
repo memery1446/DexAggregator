@@ -9,11 +9,11 @@
   ],
   "routes": [
     {
-      "handle": "filesystem"
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
     },
     {
-      "src": "/manifest.json",
-      "dest": "/manifest.json"
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
