@@ -47,7 +47,6 @@ const Navigation = () => {
                   <img src={logo} alt="" height="60" />
                 </div>
                 <div className="d-flex align-items-center justify-content-between w-100">
-                  {/* Updated About link to open in a new tab and moved slightly to the left */}
                   <a 
                     href="/about.html" 
                     className="text-white text-decoration-none me-3 h4" 
@@ -99,9 +98,22 @@ const Navigation = () => {
             </nav>
           </div>
         </div>
-        <div className="position-absolute" style={{ top: '66px', left: '55px', zIndex: 1000 }}>
+        <div 
+          className="position-absolute d-none d-sm-block d-md-block d-lg-block" 
+          style={{ top: '66px', left: '55px', zIndex: 1000 }}
+        >
           <a href="/">
-            <img src={logo} alt="URDEX Logo" height="140" className="d-inline-block" />
+            <img 
+              src={logo} 
+              alt="URDEX Logo" 
+              height="140" 
+              className="d-inline-block"
+              style={{
+                '@media (orientation: portrait) and (max-width: 576px)': {
+                  display: 'none'
+                }
+              }}
+            />
           </a>
         </div>
       </div>
@@ -114,4 +126,3 @@ const Navigation = () => {
 };
 
 export default Navigation;
-
