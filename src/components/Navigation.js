@@ -43,21 +43,9 @@ const Navigation = () => {
             <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#594D5B', height: '60px' }}>
               <div className="container">
                 <div className="invisible">
-                  {/* This is a placeholder to maintain layout */}
                   <img src={logo} alt="" height="60" />
                 </div>
                 <div className="d-flex align-items-center justify-content-between w-100">
-                  <a 
-                    href="/about.html" 
-                    className="text-white text-decoration-none me-3 h4" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    style={{ marginLeft: '-20px' }}
-                  >
-                    About
-                  </a>
-
-                 <div className="d-flex align-items-center justify-content-between w-100">
                   <a 
                     href="/about.html" 
                     className="text-white text-decoration-none me-3 h4" 
@@ -75,11 +63,6 @@ const Navigation = () => {
                   >
                     Get Tokens for URDEX
                   </a>
-                  <div>
-                    {address ? (
-                      <div className="d-flex align-items-center">
-
-
                   <div>
                     {address ? (
                       <div className="d-flex align-items-center">
@@ -150,3 +133,4 @@ const Navigation = () => {
 };
 
 export default Navigation;
+
