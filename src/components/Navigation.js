@@ -60,43 +60,44 @@ const Navigation = () => {
                   >
                     Get Tokens for URDEX
                   </a>
-              <div>
-                {address ? (
-                  <div className="d-flex align-items-center">
-                    <span className="me-2 text-white">Connected:</span>
-                    <div className="btn-group">
-                      <button 
-                        type="button" 
-                        className="btn btn-light btn-sm dropdown-toggle" 
-                        data-bs-toggle="dropdown" 
-                        aria-expanded="false"
-                      >
-                        <span className="badge bg-success me-2"></span>
-                        {truncateAddress(address)}
-                      </button>
-                      <ul className="dropdown-menu dropdown-menu-end">
-                        <li>
-                          <button 
-                            className="dropdown-item" 
-                            type="button" 
-                            onClick={handleDisconnect}
-                          >
-                            Disconnect
-                          </button>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    onClick={handleConnect}
-                    className="btn btn-light"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Connecting...' : 'Connect Wallet'}
-                  </button>
-                )}
-              </div>
+ <div>
+  {address ? (
+    <div className="d-flex align-items-center">
+      <span className="me-2 text-white">Connected:</span>
+      <div className="btn-group">
+        <button 
+          type="button" 
+          className="btn btn-light btn-sm dropdown-toggle" 
+          data-bs-toggle="dropdown" 
+          aria-expanded="false"
+        >
+          <span className="badge bg-success me-2"></span>
+          {truncateAddress(address)}
+        </button>
+        <ul className="dropdown-menu dropdown-menu-end">
+          <li>
+            <button 
+              className="dropdown-item" 
+              type="button" 
+              onClick={handleDisconnect}
+            >
+              Disconnect
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  ) : (
+    <button
+      onClick={handleConnect}
+      className="btn btn-light"
+      disabled={isLoading}
+    >
+      {isLoading ? 'Connecting...' : 'Connect Wallet'}
+    </button>
+  )}
+</div>
+                </div>
               </div>
             </nav>
           </div>
