@@ -104,13 +104,13 @@ const Navigation = () => {
         </div>
         <div 
           className="position-absolute d-none d-sm-block d-md-block d-lg-block" 
-          style={{ top: '66px', left: '55px', zIndex: 1000 }}
+          style={{ top: '-16px', left: '55px', zIndex: 1000 }}
         >
           <a href="/">
             <img 
-              src={logo} 
+              src={logo}
               alt="URDEX Logo" 
-              height="140" 
+              height="90" 
               className="d-inline-block"
               style={{
                 '@media (orientation: portrait) and (max-width: 576px)': {

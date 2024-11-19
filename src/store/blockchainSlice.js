@@ -25,7 +25,7 @@ const initialState = {
   transactionsError: null
 };
 
-// Existing thunks remain unchanged
+
 const connectWallet = createAsyncThunk(
   'blockchain/connectWallet',
   async (_, { rejectWithValue }) => {
@@ -227,7 +227,7 @@ const fetchRecentTransactions = createAsyncThunk(
         provider
       );
 
-      // Assuming there's a method to get recent transactions in the contract
+     
       const recentTxs = await aggregatorContract.getRecentTransactions(blockchain.address);
 
       // Process and format the transactions

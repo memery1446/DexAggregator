@@ -39,7 +39,7 @@ describe("Attacker Contract", () => {
         });
     });
 
-describe("Attack Attempts", () => {
+    describe("Attack Attempts", () => {
         it("Should fail to execute attack without token balance", async () => {
             const { attackerContract } = await loadFixture(deployAttackerFixture);
             await expect(attackerContract.attack()).to.be.reverted;
@@ -146,7 +146,6 @@ describe("Attack Attempts", () => {
         });
     });
 
-   // ... [All existing test code remains exactly the same until the last closing brace]
 
     describe("Advanced Attack Scenarios", () => {
         it("Should simulate a sandwich attack pattern", async () => {
@@ -198,7 +197,7 @@ describe("Attack Attempts", () => {
             ).to.not.be.reverted;
         });
     });
-    // ... [All existing test code and Advanced Attack Scenarios remain exactly the same until the last closing brace]
+
 
     describe("DEX Aggregator Attack Scenarios", () => {
  it("Should simulate price manipulation between AMMs", async () => {
