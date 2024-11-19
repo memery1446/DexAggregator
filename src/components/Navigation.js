@@ -56,6 +56,27 @@ const Navigation = () => {
                   >
                     About
                   </a>
+
+                  <div className="d-flex align-items-center">  {/* Added this wrapper div */}
+                    <a 
+                      href="/about.html" 
+                      className="text-white text-decoration-none me-3 h4" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      style={{ marginLeft: '-20px' }}
+                    >
+                      About
+                    </a>
+                    <a 
+                      href="/get-tokens"  {https://token-faucet-azure.vercel.app/}
+                      className="btn btn-outline-light h4 mb-0 ms-3"
+                      style={{ padding: '0.375rem 0.75rem' }}
+                    >
+                      Get Tokens to use URDEX
+                    </a>
+                  </div>
+
+
                   <div>
                     {address ? (
                       <div className="d-flex align-items-center">
