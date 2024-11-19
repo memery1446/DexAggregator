@@ -6,7 +6,6 @@ import logo from '../logo.png';
 const Navigation = () => {
   const dispatch = useDispatch();
   
-  // Safer state selection with default values
   const blockchainState = useSelector((state) => state.blockchain || {});
   const isLoading = blockchainState.isLoading || false;
   const address = blockchainState.address || null;
@@ -14,7 +13,6 @@ const Navigation = () => {
   const handleConnect = async () => {
     try {
       await dispatch(connectWallet()).unwrap();
-      // Fetch balances right after connecting
       await dispatch(fetchBalances());
     } catch (error) {
       console.error('Failed to connect wallet:', error);
@@ -22,7 +20,6 @@ const Navigation = () => {
   };
 
   const handleDisconnect = () => {
-    // We'll implement disconnect functionality if needed
     console.log('Disconnect requested');
   };
 
