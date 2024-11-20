@@ -45,7 +45,7 @@ const Navigation = () => {
                 <div className="d-flex align-items-center justify-content-between w-100">
                   <a 
                     href="/about.html" 
-                    className="text-white text-decoration-none me-3 h4" 
+                    className="text-white text-decoration-none me-3 h4 ms-n5 ms-sm-n5 ms-1" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     style={{ marginLeft: '-20px' }}
