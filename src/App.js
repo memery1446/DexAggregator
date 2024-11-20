@@ -22,13 +22,13 @@ const App = () => {
               overflowY: 'auto',
               overflowX: 'hidden'
             }}>
-        <div className="container-fluid py-4 pt-6 pt-sm-4">
+        <div className="container-fluid py-4 pt-5 pt-sm-4">
           <div className="row justify-content-center">
             {/* Left side - Price Chart and Recent Transactions */}
             <div className="col-12 col-lg-5 col-xl-6 ps-lg-4 pe-lg-5">
               <div className="d-flex flex-column h-100">
                 {/* Price Chart */}
-                <div className="mb-4" style={{ height: '80%' }}>
+                <div className="mb-4 mt-5 mt-sm-0" style={{ height: '80%' }}>
                   <div className="card shadow-lg border-0 h-100" 
                     style={{ 
                       borderRadius: '24px',
