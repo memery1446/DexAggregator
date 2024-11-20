@@ -121,7 +121,7 @@ const Navigation = () => {
           </a>
         </div>
       </div>
-      <div className="container text-center mt-3 mb-4">
+      <div className="container text-center mt-3 mb-4 d-none d-sm-block">
         <h1 className="display-2 fw-bold mb-0">URDEX</h1>
         <p className="h3 text-muted mb-0" style={{ marginTop: '-0.5rem' }}>aggregator</p>
       </div>
