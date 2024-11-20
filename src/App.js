@@ -22,7 +22,7 @@ const App = () => {
               overflowY: 'auto',
               overflowX: 'hidden'
             }}>
-        <div className="container-fluid py-4">
+        <div className="container-fluid py-4 pt-sm-2 pt-5">
           <div className="row justify-content-center">
             {/* Left side - Price Chart and Recent Transactions */}
             <div className="col-12 col-lg-5 col-xl-6 ps-lg-4 pe-lg-5">
