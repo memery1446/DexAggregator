@@ -1,92 +1,112 @@
-URDEX Aggregator
+Welcome to URDEX! Thanks for learning more about this Solidity-based DEX aggregator that finds the best trading rates across two Automated Market Makers (AMMs). URDEX executes trades with optimal pricing and features a React frontend for easy interaction. Here's what you will find in this this README:
 
-    Table of Contents:
+1. CONFIG/SECURITY
+2. INSTALLATION - video and step-by-step guide 
+3. PREREQUISITES - w/ links
+4. USAGE - w/ video and step-by-step guide
+5. OPTIONAL DEPLOYMENTS
 
-1. WELCOME
-2. CONFIG/SECURITY
-3. INSTALLATION - video and step-by-step guide 
-4. PREREQUISITES - w/ links
-5. USAGE - w/ video and step-by-step guide
-6. OPTIONAL DEPLOYMENTS
+ ...then some more in-depth info about URDEX...
 
- ...more in-depth info about URDEX...
-
-6. ARCHITECTURE AT A GLANCE
+6. THE URDEX ARCHITECTURE AT A GLANCE
 7. CONTRACTS
 8. FEATURES
 9. FRONTEND
 10. TESTING
 11. CONTRACT INTERACTION
-12. CONTRIBUTING
-13. LISENCE
+12. HOW TO CONTRIBUTE TO URDEX
+13. LISENCE INFO
 
 ==================================
 
-1. WELCOME
-    Thanks for deciding to learn more about URDEX, a Solidity-based DEX aggregator that finds the best trading rates across two Automated Market Makers (AMMs). URDEX executes trades with optimal pricing and features a React frontend for easy interaction. Built by Mark Emery: markemerydev@gmail.com 
-
-2. CONFIG/SECURITY 
-    URDEX uses Hardhat for development and deployment. Configuration is found in, hardhat.config.js, which supports:
+1. CONFIG/SECURITY 
+    URDEX uses Hardhat for development and deployment. Configuration is found in, hardhat.config.js, which supports the following:
             - Local development network
             - Sepolia testnet deployment
             - Solidity version 0.8.19
             - Custom artifact path for frontend integration
 
-3. INSTALLATION 
-    Step-By-Step Video:
-
-    -or- 
+2. INSTALLATION 
+    We'll walk right through each step to get you developing and expanding this aggregator and making it your own.
     
-    Step-By-Step Guide:
-        Note: When running the terminal commands below do not include the surrounding backticks or the containing brackets. (Ex. ``, and < >)
+        Some notes before we get started: 
+            a. When running the terminal commands in this guide, do not include the surrounding backticks or the containing brackets. (Ex. ``, and < >)
+            b. Due to different development environments and operating systems, you may need to do some research to accomplish your version of the steps outlined below.  
+            c. When you need to take an action, you'll see it marked like this: 
 
-        - Clone the repository
+                                    => => ACTION <= <= 
 
-          IN YOUR TERMINAL, RUN: 
-          git clone `https://github.com/memery1446/DexAggregator <name-of-your-choice>`
+        - First we'll clone the repository
 
-          IN YOUR TERMINAL, RUN: `cd dex-aggregator` -or- `cd <your-chosen-name>`  
+          => => IN YOUR TERMINAL, RUN: 
+          git clone `https://github.com/memery1446/DexAggregator <name-of-your-choice>` <= <= 
 
-        - Install dependencies
+        Remember not to include the backtics or <>'s...! You've just created the directory. 
 
-              IN YOUR TERMINAL, RUN: 
-              npm install 
+         => =>  IN YOUR TERMINAL, RUN: `cd dex-aggregator` -or- `cd <your-chosen-name>`  <= <= 
 
-        - Open the project in your text editor
+        Great! You did a change-directory command, or cd and have entered your new project. As an example, if you had named it "Dex2", you should see something like this in your terminal:  
+        `Mark@Marks-MacBook-Pro Dex2 %` 
 
-            Create a `.env` file in the root directory then paste the following text. The needed url and keys will be obtained in the next prerequisite section.
+        - Now it's time to install the dependencies that will allow you to expand and adapt this project to your goals. 
+
+             => => IN YOUR TERMINAL, RUN: 
+              npm install <= <= 
+
+        You'll see downloading progress in the terminal. Even if it pauses for a while or doesn't start right away, keep waiting. It will finish.
+        
+        Seeing several warnings and a lot of info on the terminal is quite normal. Let's proceed.       
+
+            => =>   Open the project in your text editor.   <= <=
+
+            I use Sublime Text so here is a case where you may need to do some intuitive interpreting of the instructions to fit your system. 
+
+          => =>   Once the project is open, create a `.env` file in the root directory then paste the text below into the .env file. Don't worry if you don't have the keys and url that are mentioned. They will be obtained in the next section on prerequisites. The placeholders are fine during local development on Hardhat but need to be replaced with your keys for deployment on Sepolia. For now, get the .env file saved with this info. 
 
                   `ALCHEMY_SEPOLIA_URL=your_alchemy_url
                   PRIVATE_KEY=your_wallet_private_key
-                  ETHERSCAN_API_KEY=your_etherscan_api_key`
+                  ETHERSCAN_API_KEY=your_etherscan_api_key`  <= <=
 
-4. PREREQUISITES
-    Step-By-Step Guide Continued:
+3. PREREQUISITES
 
-        - Verify a version of Node.js 14+ or install
-                    Download Node.js: https://nodejs.org/en/download/package-manager
+        - Now we need to verify a version of Node.js 14+ or install it. 
 
-        - Install Hardhat
-                IN YOUR TERMINAL, open the root directory. (`cd <name>`)
-                IN YOUR TERMINAL, RUN: `npm install --save-dev hardhat`  
+               => =>  Check for the current status of your Node.js - IN YOUR TERMINAL, RUN: `node -v npm -v`
+                    If needed, download Node.js: https://nodejs.org/en/download/package-manager  <= <= 
+
+            There are a host of good videos for this and as many development set-ups. You're best off doing a Google search for your particular system. 
+
+        - Let's now install Hardhat, which is going to make your development process so much easier by offering a local node and easy access to test Ether. 
+
+            If you're not in your project directory, 
+
+            => =>     IN YOUR TERMINAL, open the root directory. `cd <name>`  <= <=
+
+            Once in your project directory, run the following noting the dashes exactly,
+
+            => =>     IN YOUR TERMINAL, RUN: `npm install --save-dev hardhat`  <= <=
 
                     For help or more information: https://hardhat.org/hardhat-runner/docs/getting-started#installation
 
-                The project is now connected with Hardhat
+                Your clone of URDEX is now connected with Hardhat and almost ready for development. 
 
-        - Obtain an API key for Sepolia testnet deployment (ex. Alchemy, Infura), and paste it into the `.env` file, replacing the placeholder text. 
+        - Even though you will develop in Hardhat, let's complete the set-up for Sepolia to save any headaches later, especially after you've changed the project. 
+
+         => =>    Obtain an API key for Sepolia testnet deployment (ex. Alchemy, Infura), and paste it into the `.env` file, replacing the placeholder text.  <= <=
+                    For help: 
                     https://www.alchemy.com/
                     https://www.infura.io/
 
-        - Connect a web3 wallet like Metamask with the Hardhat Network. Note that "show test networks" may need to be selected. 
+        => =>   Connect a web3 wallet like Metamask with the Hardhat Network. Note that "show test networks" may need to be selected.  <= <=
 
-        - Save the wallet private key to the `.env` file, replacing the placeholder text.
-                    For help or more information: https://metamask.io
+        => =>   Save the wallet private key of Hardhat accout -0- to the `.env` file, replacing the placeholder text.    <= <=
+                    For help: https://metamask.io
 
-        - Obtain an Etherscan API key for contract verification, and paste it into the `.env`file, replacing the placeholder text.
+        => =>   Obtain an Etherscan API key for contract verification, and paste it into the `.env`file, replacing the placeholder text.   <= <=
+                    Go to: 
                     https://etherscan.io/
 
-            You are now ready to develop, knowing that URDEX comes with extensive security measures implemented and tested:
+    Congratulations! You are now ready to develop. Rest assured knowing that URDEX comes with extensive security measures implemented and tested:
                     - Reentrancy protection on all critical functions
                     - Slippage protection mechanisms
                     - Price manipulation resistance
@@ -94,73 +114,123 @@ URDEX Aggregator
                     - Sandwich attack protection
                     - Maximum trade size limits
                     - Reserve ratio maintenance
-                    - Decimal precision handling          
+                    - Decimal precision handling  
+                    - Lot of front end testing available        
 
-5. USAGE
-    Step-By-Step Guide Continued:
+4. USAGE
+    You're ready to begin making this aggregator your own. 
 
-        - In your wallet, select the Hardhat Network
+    => =>   Make sure you're project is open in your text editor, and that you have given your terminal the command 'cd <name-of-project>` to open the directory.    <= <=
 
-        - Start a local Hardhat node 
-            IN YOUR TERMINAL, RUN: `npx hardhat node`
+    => =>   In your Web3 wallet, select the Hardhat Network. In Metamask, this is on the upper left  <= <=
 
-        - Deploy contracts locally for development: 
-            (To deploy to Sepolia, skip to "Testnet Deployment on Sepolia") 
+    Start a local Hardhat node 
+            => =>   IN YOUR TERMINAL, RUN: `npx hardhat node`     <= <=
 
-            IN YOUR TERMINAL, RUN: `npx hardhat run scripts/deploy.js --network localhost`
+        - Deploy contracts locally on the Hardhat node for development: 
 
-        - Make note of deployment addresses in the terminal and enter them into 
-            scripts/addliquidity.js
-            scripts/check-balances.js
-            scripts/setup-check.js
-            scripts/verify-deployment.js
+            ***(NOTE: If you want to deploy to Sepolia, skip to "Testnet Deployment on Sepolia")***
 
-        - Add liquidity to the AMMs and user
-            IN YOUR TERMINAL, RUN: `npx hardhat run scripts/add-liquidity.js --network localhost`
+            => =>   IN YOUR TERMINAL, RUN: `npx hardhat run scripts/deploy.js --network localhost`   <= <=
 
-        - Deploy Frontend: 
-            IN YOUR TERMINAL, RUN: `npm run start`
+            => =>   Make note of deployment addresses in the terminal 
+            and enter them into these files:    <= <=
 
-        - Locate the browser, or open a browser to `Localhost 3000`
+                scripts/addliquidity.js
+                scripts/check-balances.js
+                scripts/setup-check.js
+                scripts/verify-deployment.js
+
+        - Now we need to get some liquidity to both you and the two AMMs
+
+            => =>   IN YOUR TERMINAL, RUN: 
+            `npx hardhat run scripts/add-liquidity.js --network localhost`   <= <=
+
+        - To Deploy the Frontend: 
+
+            => =>   IN YOUR TERMINAL, RUN: `npm run start`    <= <=
+
+            => =>   Locate the browser, or open a browser to `Localhost:3000`     <= <=
 
     Testnet Deployment on Sepolia:
-        - Update the `.env` file with the wallet private key (Should not be a Hardhat account)
 
-        - Clear the terminal, close all other terminal windows and save project 
+            => =>   Update the `.env` file with your Ethereum wallet private key 
+            (Should not be a Hardhat account)      <= <=
 
-        - Connect wallet to the Sepolia Network
+            => =>   Get a fresh terminal window, stop any other Hardhat projects, and save    <= <=
 
-        - Verify or obtain Sepolia ETH in order to deploy the contracts 
+            => =>   Connect your wallet to the Sepolia Network  <= <=
+
+            => =>   Verify or obtain Sepolia ETH in order to deploy the contracts     <= <= 
             https://faucets.chain.link/sepolia
 
-        - Deploy to Sepolia testnet 
-            IN YOUR TERMINAL, RUN: `npx hardhat run scripts/deploy.js --network sepolia`
+        - Now you're ready to deploy to the Sepolia testnet
+
+            => =>   IN YOUR TERMINAL, RUN: 
+            `npx hardhat run scripts/deploy.js --network sepolia`      <= <=
          
-        - Make note of deployment addresses and update enter them into
-            scripts/addliquidity.js
-            scripts/check-balances.js
-            scripts/setup-check.js
-            scripts/verify-deployment.js
+            => =>   Make note of deployment addresses and update enter them into  
+                        scripts/addliquidity.js
+                        scripts/check-balances.js
+                        scripts/setup-check.js
+                        scripts/verify-deployment.js  <= <=
 
-        - Access front end via url from Vercel (free account) or similar provider
-            https://vercel.com/ 
+            => =>   Deploy the front end using Vercel 
+            (a free account will do it) or similar provider   <= <=
+                        https://vercel.com/ 
 
+5. OPTIONAL DEPLOYMENTS 
+        - Remember to first manually update contract addresses in the files for these scripts!
+            => =>   IN YOUR TERMINAL, RUN: 
+                `npx hardhat run scripts/check-balance.js
+                npx hardhat run scripts/setup-check.js                       
+                npx hardhat run scripts/verify-deployment.js  --network <localhost or sepolia>`   <= <=
 
+6. OPTIONAL FRONTEND COMPONENTS
+        
+        The frontend includes specialized test utilities for debugging, verification and expansion. To use the front end tests, import the component to App.js and add it to the return statement for visibility. For a good example of this, look at how src/components/PriceChart.js is imported at the top of App.js and included below <like this />.
+
+        Here are the front end extras: 
+
+        Account Verification (`AccountVerify.js`)
+               - Validates wallet connection status
+               - Tests account switching functionality
+               - Verifies account permissions and balances
+               - Checks token allowances
+
+        Connection Testing (`ConnectionTest.js`)
+               - Tests Web3 provider connectivity
+               - Validates network connection stability
+               - Checks RPC endpoint responsiveness
+               - Connection error handling verification
+
+        Contract Debugging (`ContractDebug.js`)
+               - Smart contract interaction testing
+               - Event listener verification
+               - Transaction receipt validation
+               - Gas estimation accuracy checks
+
+        Network Testing (`NetworkTest.js`)
+               - Network switching functionality
+               - Chain ID verification
+               - Network latency testing
+               - Failed network handling
+
+        State Monitoring (`StateMonitor.js`)
+               - Redux state management testing
+               - State update verification
+               - Action dispatch testing
+               - State persistence checks
+
+        Wallet Debugging (`WalletDebug.js`)
+               - Wallet connection edge cases
+               - Transaction signing tests
+               - Message signing verification
+               - Wallet error handling  
 
             \\\\\\\\\\\\\\\\\\\                                  ///////////////////
                                 <<< END OF STEP-BY-STEP GUIDE >>
             ///////////////////                                  \\\\\\\\\\\\\\\\\\\
-
-
-
-6. OPTIONAL DEPLOYMENTS 
-        - Remember to first update contract addresses in these scripts
-            IN YOUR TERMINAL, RUN: 
-                `npx hardhat run scripts/
-                                        check-balance.js
-                                        setup-check.js 
-                                        verify-deployment.js
-                                                             --network <localhost or sepolia>`
 
 7. ARCHITECTURE AT A GLANCE
     URDEX implements a route aggregation pattern where:
@@ -189,7 +259,7 @@ URDEX Aggregator
         event SwapExecuted(address amm, uint256 amountIn, uint256 amountOut);
         event PriceUpdated(address amm, uint256 price, uint256 timestamp);
 
-7. CONTRACTS
+8. CONTRACTS
         - `DexAggregator.sol`: Main aggregator contract that routes trades
         - `AMM.sol`: First AMM implementation with 0.3% fee
         - `AMM2.sol`: Second AMM implementation with 0.5% fee and a trade limit of 200% of reserves
@@ -197,7 +267,7 @@ URDEX Aggregator
         - `Attacker.sol`: URDEX's Attacker tests security measures and potential attack vectors
 
 
-8. FEATURES
+9. FEATURES
         - URDEX compares prices across two AMM protocols, AMM and AMM2, and executes trades through the most efficient route using the safety of try-catch blocks.
 
         - Price history tracking is kept for each AMM. URDEX keeps the histories separate and records prices during actual trades rather than tracking every block. This makes URDEX more gas efficient and provides rich historical data for analytics. Events are emitted for off-chain tracking. 
@@ -217,8 +287,7 @@ URDEX Aggregator
 
         - URDEX has a esponsive UI which includes dark mode.
 
-
-9. FRONTEND
+10. FRONTEND
     Features:
         - Real-time price charts using Recharts
         - Transaction history tracking
@@ -235,8 +304,7 @@ URDEX Aggregator
         - `Loading.js`: Loading state component
         - `Footer.js`: Application footer
 
-
-10. TESTING
+11. TESTING
         To run tests, IN YOUR TERMINAL RUN: `npx hardhat test` 
         To run a particular test, IN YOUR TERMINAL RUN: `npx hardhat test test/<test-name>.js`
 
@@ -411,8 +479,7 @@ URDEX Aggregator
                - Message signing verification
                - Wallet error handling
 
-
-11. CONTRACT INTERACTION
+12. CONTRACT INTERACTION
         Finding Best Quote:
             solidity
                 // Returns the AMM with best price and expected output amount
@@ -434,12 +501,12 @@ URDEX Aggregator
                     uint256 amm2ReserveB
                 )
 
-12. CONTRIBUTING
+13. CONTRIBUTING
         Fork the repository
         Create your feature branch (`git checkout -b feature/amazing-feature`)
         Commit your changes (`git commit -m 'Add some amazing feature'`)
         Push to the branch (`git push origin feature/amazing-feature`)
         Open a Pull Request
 
-13. LICENSE
+14. LICENSE
         This project is licensed under the MIT License.
