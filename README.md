@@ -6,6 +6,9 @@ Currently featuring real-time price tracking, intuitive swap interfaces, and com
 
 ## Quick Start
 
+***Note you need some Sepolia ETH in order to use the Token Faucet and Quick Start***
+Link: https://faucets.chain.link/sepolia
+
 For those wanting to try out URDEX, experience swaps, learn about Dex Aggregator functionality, or perhaps are connecting your first Web3 wallet, it's super easy using the link below. Once there you'll see a token faucet link with easy instructions on how to import and receive tokens TK1 and TK2. 
 
 **Go to URDEX**: [https://dex-aggregator-theta.vercel.app/swap](https://dex-aggregator-theta.vercel.app/swap)
