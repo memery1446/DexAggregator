@@ -4,7 +4,9 @@ URDEX is a sophisticated, extensible decentralized exchange (DEX) aggregator bui
 
 Currently featuring real-time price tracking, intuitive swap interfaces, and comprehensive transaction monitoring, URDEX's design patterns and security measures (including reentrancy protection and slippage controls) provide a solid template for building advanced DEX functionality. Whether you're a user seeking the best swap rates, a developer building on top of the platform, or a project looking to fork and customize the codebase, URDEX offers a battle-tested foundation for decentralized trading infrastructure.
 
-Go try out my deployed URDEX directly using the link below. Once there you'll see a token faucet link with easy instructions on how to import and receive tokens TK1 and TK2. Try URDEX now: https://dex-aggregator-theta.vercel.app/swap
+For those wanting to try out URDEX, experience swaps, learn about Dex Aggregator functionality, or perhaps are connecting your first Web3 wallet, it's super easy using the link below. Once there you'll see a token faucet link with easy instructions on how to import and receive tokens TK1 and TK2. 
+
+Go to URDEX: https://dex-aggregator-theta.vercel.app/swap
 
 Here's how the rest of this README is organized:
 
@@ -14,22 +16,23 @@ Here's how the rest of this README is organized:
 4. USAGE 
 5. OPTIONAL DEPLOYMENTS
 
-By this point you will be up and running. Next sections offer more in-depth info about URDEX:
+By this point cloners are up and running. Next sections offer more in-depth info about URDEX.
 
-6. THE URDEX ARCHITECTURE AT A GLANCE
-7. CONTRACTS
-8. FEATURES
-9. FRONTEND
-10. TESTING
-11. CONTRACT INTERACTION
-12. CONTRIBUTE TO URDEX
-13. LICENSE INFO
+6. OPTIONAL FRONTEND COMPONENTS
+7. URDEX ARCHITECTURE AT A GLANCE
+8. CONTRACTS
+9. FEATURES
+10. RUNNING TESTS
+11. TESTING DESCRIPTION
+12. CONTRACT INTERACTION
+13. CONTRIBUTE TO URDEX
+14. LICENSE INFO
 
 ==================================
 
 1. CONFIG/SECURITY 
     URDEX uses Hardhat for development and deployment. Configuration is found in /hardhat.config.js, which supports the following:
-            - Local development network 
+            - A local development network
             - Sepolia testnet deployment 
             - Solidity version 0.8.19
             - Custom artifact path for frontend integration
@@ -38,48 +41,49 @@ By this point you will be up and running. Next sections offer more in-depth info
     Now we'll walk right through each step to get you using and developing this aggregator.
     
         Some notes before we get started: 
-            a. When running the terminal commands, do not include the surrounding backticks or the containing brackets. (Ex. ``, and < >)
+            - When running the terminal commands, do not include the surrounding backticks or the containing brackets. (Ex. ``, and < >)
 
-            b. Due to different development environments and operating systems, you may need to do some research to accomplish some of the steps outlined below for your particular setup. 
+            - Due to different development environments and operating systems, you may need to do some research to accomplish some of the steps outlined below for your particular setup. 
 
-            c. In these instructions, when you need to take an action, you'll see that action marked like this: 
+            - In these instructions, when you need to take an action, you'll see that action marked like this: 
 
                                     => => action description  <= <= 
 
         - First we'll clone the repository
 
-            => => Open your computer terminal  <= <= 
+            => =>  Open your computer terminal  <= <= 
 
-            => => IN YOUR TERMINAL, RUN: 
-          git clone `https://github.com/memery1446/DexAggregator <name-of-your-choice>` <= <= 
+            => =>  IN YOUR TERMINAL, RUN: 
+          git clone `https://github.com/memery1446/DexAggregator <name-of-your-choice>`   <= <= 
 
-        Remember, do not include the backtics `` or brackets <>...! 
+                ***Remember, do not include the backtics `` or brackets <>...!*** 
 
-        You've just created the directory under your new name. 
+        You've just created a root directory under your new name, with all of the URDEX files. 
 
-         => =>  IN YOUR TERMINAL, RUN: `cd <your-chosen-name>` (ex. cd DexAggregator)    <= <= 
+         => =>  IN YOUR TERMINAL, RUN: `cd <your-chosen-name>` (ex. cd MyDexAggregator)    <= <= 
 
-        Great! You executed a change-directory command (cd) and have now entered the root directory of your new project. As an example, if you had named it "Dex2", you should see something like this in your terminal:  
-        `Mark@Marks-MacBook-Pro Dex2 %`  
+        You executed a change-directory command (cd) and have now entered the root directory of your new project. Verify in your terminal that you see the name of your project before the % symbol. As an example, if you had named it "MyDexAggregator", you should see something like this in your terminal:  
+        `Mark@Marks-MacBook-Pro MyDexAggregator %`  
 
-        One option at this time is to remove origin from any protected documents included. This will keep your git repository clean. It's good to do at the start. 
+        It's optional but I recommend doing a git remove origin. This will keep your git repository clean and not tied to another url. It's good to do at the start. 
 
          => =>  IN YOUR TERMINAL, RUN: `git remote remove origin`  <= <= 
 
          It will look like nothing happened but now all of your files will originate from your git repository.
 
-        - Now it's time to install the dependencies. 
+        - It's time to install dependencies. You can take a look at the package.json to see what this Aggregator requires. 
 
              => => IN YOUR TERMINAL, RUN: npm install <= <= 
 
-        You'll see downloading progress in the terminal. If it pauses for a while or doesn't start right away, keep waiting. It will finish.
+        You'll see downloading progress in the terminal. If it doesn't start right away or ever looks frozen, keep waiting. It will finish.
         
-        Seeing several warnings and a lot of info on the terminal at this point is quite normal. Let's proceed.       
+        Seeing several warnings and a lot of info on the terminal after this is quite normal. Let's proceed.  
+
             => =>   Open the project in your text editor.   <= <=
 
-            I use Sublime Text so here is a case where you may need to do some intuitive interpreting of the instructions to fit your system. 
+        I use Sublime Text so here is a case where you may need to translate certain processes in order to achieve the action goal. 
 
-          => =>   Once the project is open, create a `.env` file in the root directory then paste the text below into the .env file. Don't worry if you don't have the keys and url that are mentioned. They will be obtained in the next section. The placeholders are fine during local development on Hardhat but need to be in place for deployment on Sepolia. For now, get the .env file saved with this info. 
+          => =>   Once the project is open in your text editor, create a .env file in the root directory then paste the text below into the .env file. Don't worry if you don't have the keys and url that are mentioned (currently the placeholder text after the equal signs). They will be obtained in the next section. The placeholders are fine during local development on Hardhat, but we'll be back soon to fill it in. For now, get the .env file created and saved with this info: 
 
                   `ALCHEMY_SEPOLIA_URL=your_alchemy_url
                   PRIVATE_KEY=your_wallet_private_key
@@ -87,18 +91,17 @@ By this point you will be up and running. Next sections offer more in-depth info
 
 3. PREREQUISITES
 
-        - Now we need to verify a version of Node.js 14+ or install it. You can first check for the current status of your Node.js
-
+        - Now it's important to verify you have a version of Node.js 14+ or install it. You can first check for the current status of your Node.js:
 
            => =>  IN YOUR TERMINAL, RUN: `node -v`   <= <= 
                     If needed, download or update Node.js: 
                     https://nodejs.org/en/download/package-manager
 
-            There are a host of good videos for this because there are as many development environments. You're best off doing a Google search highlighting your particular setup. 
+            There are a host of good videos for this because there are just as many development environments. A Google search highlighting your particular setup should lead to several good examples. 
 
         - Let's now install Hardhat, which is going to make the development process easier by offering a local node and easy access to test Ether. 
 
-        Make sure you are in your project directory. Take careful note of the dashes in the next command.
+        Make sure you are in your project directory (ex. `cd MyDexAggregator`). Take careful note of the dashes in the next command.
 
             => =>     IN YOUR TERMINAL, RUN: `npm install --save-dev hardhat`   <= <=
 
@@ -114,19 +117,25 @@ By this point you will be up and running. Next sections offer more in-depth info
                     https://www.alchemy.com/
                     https://www.infura.io/
 
-        => =>   Connect a web3 wallet like Metamask with the Hardhat Network. Note that "show test networks" may need to be selected in order to find the Hardhat Netowork.  <= <=
+        => =>   Connect a web3 wallet like Metamask with the Hardhat Network. Note that "show test networks" may need to be selected in order to find the Hardhat Netowork option.  <= <=
 
-    Be sure you're in your project's root directory, then:
+    Be sure your terminal is in your project's root directory, then:
 
         => =>     IN YOUR TERMINAL, RUN: `npx hardhat node`  <= <=
 
-        => =>   Scroll to the top in that same terminal and copy the private key for account -0-. In zero based accounting, this is the first account and will be your deployment account in Hardhat.  <= <=
+    You'll see a node spin up with lots of addreses and private keys. It will act as your Ethereum node during development and the addresses and keys will remain consistent launch to launch. 
 
-        => =>   Copy the wallet private key of Hardhat accout -0- and paste it to the `.env` file, replacing the placeholder text after the equal sign.    <= <=
+        => =>   Scroll to the top of the node information and copy the private key for account -0-.   <= <=
+
+    In zero based accounting, this is the first account and will be the deployer account in Hardhat.
+
+        => =>   Paste that address into the `.env` file, replacing the placeholder text.    <= <=
                     For help: 
                     https://metamask.io
 
-         => =>   Now go to your Web3 wallet and make sure you're on the Hardhat Network. Select 'add account or hardware wallet'. Follow prommpts to add an account. Paste in the same private key from account -0-, follow prompts, and name the account Hardhat 0, or a name of your choice. I highly advise putting Hardhat in the name of this account to avoid later confusion.    <= <=            
+         => =>   Now go to your Web3 wallet and make sure you're on the Hardhat Network. Select 'add account or hardware wallet.' Follow prommpts to add an account. Paste the same private key from account -0-, follow prompts, and name the account Hardhat 0, or a name of your choice.    <= <=   
+
+    I highly recommend putting Hardhat in the name of this account to avoid later confusion.         
 
         => =>   Obtain an Etherscan API key for contract verification, and paste it into the `.env`file, replacing the placeholder text.   <= <=
                     Go to:
@@ -134,8 +143,7 @@ By this point you will be up and running. Next sections offer more in-depth info
 
       ***WARNING: Never send actual crypto to this or any address on the Hardhat node. Hardhat private keys are known to all and they stay consistent to facilitate easy development.***
 
-
-    Congratulations! You are now ready to develop, expand, or just enjoy URDEX. You can rest assured knowing that URDEX comes with extensive security measures implemented and tested. There's more about testing coming up but here are some key features:
+    Congratulations! You are now ready to develop, expand, or just enjoy your own edition URDEX. You can rest assured knowing that extensive security measures are implemented and tested. There's more about testing coming up but here are some key features:
                     - Reentrancy protection on all critical functions
                     - Slippage protection mechanisms
                     - Price manipulation resistance
@@ -149,40 +157,43 @@ By this point you will be up and running. Next sections offer more in-depth info
 4. USAGE
     It's time to really make this aggregator your own. 
 
-    => =>   Make sure you're project is open in your text editor, and that you have given your terminal the command 'cd <name-of-project>` to open the directory and get to the project root.    <= <=
+            => =>   Make sure you're project is open in your text editor.    <= <=
 
-    => =>   In your Web3 wallet, select the Hardhat Network. In Metamask, this is on the upper left  <= <=
-
-    Start a local Hardhat node 
-            => =>   IN YOUR TERMINAL, RUN: `npx hardhat node`     <= <=
+            => =>   In your Web3 wallet, select the Hardhat Network. In Metamask, this is on the upper left  <= <=
 
     Now we'll deploy contracts locally on the Hardhat node for development: 
 
             ***(NOTE: If you want to deploy to Sepolia, skip from here to "Testnet Deployment on Sepolia")***
 
-
             => =>   Open another terminal window and "cd" into your root directory   <= <= 
+
+    The node keeps going. You could minimize it to clear the screen a bit. 
 
             => =>   IN YOUR TERMINAL, RUN: `npx hardhat run scripts/deploy.js --network localhost`   <= <=
 
-            => =>   Make note of deployment addresses in the terminal 
-            and carefully enter them into these files. While it's normally not advised to cut and paste code, this is a case where it can save you a lot of time: 
+    Note the dashes. Wait for deployment. 
+
+            => =>   Make note of deployment addresses in the terminal and carefully enter them into: 
 
                 scripts/addliquidity.js
                 scripts/check-balances.js
                 scripts/setup-check.js
                 scripts/verify-deployment.js   <= <=
 
-    Now we need to import the TK1 and TK2 addresses into our Web3 wallet so they're recognized and can be imported once deployed. 
+    It's quite obvious to see where the addresses are currently saved. While it's normally not advised to cut and paste code, this is a case where it can save you a lot of time and ensure accuracy. 
 
-        => => In your wallet, select "import token."     -- Note: If you have done other work in Hardhat you may need to "hide" or "forget" previous tokens at these same Hardhat addresses. --      Follow the prompts until both TK1 and TK2 have been imported. You won't see tokens yet...that comes next!      <= <=  
+    Now you need to import the TK1 and TK2 addresses into our Web3 wallet so they're recognized and can be imported once deployed. 
 
-    Now to get some liquidity to both you (the deployer) and the two AMMs so you can make transactions. Literally as their names suggest AMM and AMM2 are making a market for our TK1/TK2 pair. 
+        => => In your wallet, select "import token."     -- Note: If you have done other work in Hardhat you may need to "hide" or "forget" previous tokens at these same Hardhat addresses. --      Enter the addresses and follow the prompts until both TK1 and TK2 have been imported.     <= <=  
+
+    You won't see tokens yet...that comes next! 
+
+    Now to get some liquidity to both you (the deployer) and the two AMMs so you can make transactions. As their names suggest, AMM and AMM2 are making a market with competition for our TK1/TK2 pair. 
 
             => =>   IN YOUR TERMINAL, RUN: 
             `npx hardhat run scripts/add-liquidity.js --network localhost`   <= <=
 
-        Momentarily you see your TK1 and TK2 in your wallet and you are ready to swap! 
+        Momentarily you'll see your TK1 and TK2 in your wallet and you are ready to swap! 
 
     To Deploy the Frontend on Hardhat: 
 
@@ -190,25 +201,33 @@ By this point you will be up and running. Next sections offer more in-depth info
 
             => =>   After a moment of loading, locate the browser, or open a browser to `Localhost:3000`     <= <=
 
+5. OPTIONAL DEPLOYMENTS 
+        These could come in handy during development, offering key information. But they are not necessary for Dex operation. 
+    
+            => =>   Remember to manually update contract addresses in the scripts listed below.    <= <=
 
-    ***For those who skipped to the Sepolia section, continue below.***
+            => =>   IN YOUR TERMINAL, RUN: 
+                `npx hardhat run scripts/check-balance.js  --network <hardhat or sepolia>`
+                `npx hardhat run scripts/setup-check.js  --network <hardhat or sepolia>`                      
+                `npx hardhat run scripts/verify-deployment.js  --network <hardhat or sepolia>`   <= <=
 
+                     ***For those who skipped to the Sepolia section, continue below.***
 
     Testnet Deployment on Sepolia:
 
-            => =>   Connect your wallet to the Sepolia Network  <= <=
+            => =>   Connect your wallet to the Sepolia Network.  <= <=
 
-            => =>   Update the `.env` file with your Ethereum wallet private key 
+            => =>   Update the `.env` file with your Ethereum wallet private key. 
             (Should not be a Hardhat account)      <= <=
 
-            => =>   Get a fresh terminal window, "cd" to your root directory. Be sure to stop any other Hardhat projects, and a fresh save is a good idea.    <= <=
+            => =>   Open a fresh terminal window, "cd" to your root directory. Be sure to stop any other Hardhat projects, and a fresh save is a good idea.    <= <=
 
-            => =>   Verify you hold, or obtain some Sepolia ETH in order to deploy the contracts     <= <= 
+            => =>   Get some Sepolia ETH in order to deploy the contracts.     <= <= 
                         https://faucets.chain.link/sepolia
 
     You're now ready to deploy to the Sepolia testnet
 
-            => =>   Once again be sure you are in your root directory   <= <= 
+            => =>   Once again be sure you are in your root directory.   <= <= 
 
             => =>   IN YOUR TERMINAL, RUN: 
             `npx hardhat run scripts/deploy.js --network sepolia`      <= <=
@@ -223,19 +242,9 @@ By this point you will be up and running. Next sections offer more in-depth info
             (a free account will do it) or similar provider   <= <=
                         https://vercel.com/ 
 
-5. OPTIONAL DEPLOYMENTS 
-        These could come in handy during development, offering key information. 
-    
-            => =>   Remember to manually update contract addresses in the scripts listed below.    <= <=
-
-            => =>   IN YOUR TERMINAL, RUN: 
-                `npx hardhat run scripts/check-balance.js  --network <hardhat or sepolia>`
-                `npx hardhat run scripts/setup-check.js  --network <hardhat or sepolia>`                      
-                `npx hardhat run scripts/verify-deployment.js  --network <hardhat or sepolia>`   <= <=
-
 6. OPTIONAL FRONTEND COMPONENTS
         
-        The frontend includes specialized test utilities for debugging, verification and expansion. To use the front end tests, import the component to App.js and add it to the return statement for visibility. For a good example of this, look at how src/components/PriceChart.js is imported at the top of App.js and included in the return statement <like this />.
+        The frontend includes specialized test utilities for debugging, verification and expansion. To use the front end tests, import the component to App.js and add it to the return statement for visibility. For a good example of this, look at how src/components/PriceChart.js is imported at the top of App.js and included in the return statement like this: <PriceChart />.
 
         Here are the front end extras: 
 
@@ -280,24 +289,28 @@ By this point you will be up and running. Next sections offer more in-depth info
 
     Now you are up and running with your clone of URDEX. As deployer you can execute swaps and watch the DEX work. 
 
-    What's not complete is the TOKEN FAUCET. It can be removed for developers looking to expand on this base toward an actual blockchain. 
+    The TOKEN FAUCET has not been addressed. It can be removed for developers looking to expand on this base toward deployment on an actual blockchain, or if you want to keep it you'll need to clone it by following the link below. 
+
+    The Token Faucet can be removed from URDEX by removing the button and link. Token Faucet is a completely separate APP. 
 
     ***Remember if you navigate to MY token faucet, the TK1 and TK2 addresses will not match your TK1 and TK2 deployment addresses. You will need to deploy your own Token Faucet for your addresses. Feel free to use my Token Faucet and URDEX to try things out.***
 
     To clone and include the Token Faucet in your model, follow this link: https://github.com/memery1446/TokenFaucet
-
 
             \\\\\\\\\\\\\\\\\\\                                  ///////////////////
                                 <<< END OF STEP-BY-STEP GUIDE >>
             ///////////////////                                  \\\\\\\\\\\\\\\\\\\
 
 7. ARCHITECTURE AT A GLANCE
+
+    Sections 7-10 offer a survey of URDEX. More in-depth information is available after the testing section. 
+
     URDEX implements a route aggregation pattern where:
 
-        a. The main contract queries prices from connected AMMs
-        b. Compares output amounts for the same input
-        c. Routes the trade through the most efficient path
-        d. Maintains price history for analysis
+        - The main contract queries prices from connected AMMs
+        - Compares output amounts for the same input
+        - Routes the trade through the most efficient path
+        - Maintains price history for analysis
 
     Key features of the AMMs:
         - AMM1: Uses 0.3% fee structure
@@ -346,7 +359,7 @@ By this point you will be up and running. Next sections offer more in-depth info
 
         - URDEX has a esponsive UI which includes dark mode.
 
-10. FRONTEND
+    FRONTEND
     Features:
         - Real-time price charts using Recharts
         - Transaction history tracking
@@ -363,20 +376,18 @@ By this point you will be up and running. Next sections offer more in-depth info
         - `Loading.js`: Loading state component
         - `Footer.js`: Application footer
 
-11. RUNNING TESTS
+10. RUNNING TESTS
         To run tests, 
 
         => =>   IN YOUR TERMINAL RUN: `npx hardhat test`   <= <=
 
         That will run all tests. 
 
-        To run only a particular test, 
+        To run only a particular test,  
 
         => =>   IN YOUR TERMINAL RUN: `npx hardhat test test/<test-name>.js`    <= <=
 
-            Note: You can run tests without the Hardhat Node running, to make development easier.
-
-12. TESTING 
+11. TESTING 
 Tests:
     DexSystem
     DexAggregator
@@ -393,14 +404,13 @@ Frontend:
     StateMonitor
     WalletDebug
 
-Let's take a look at the backend tests (we covered how to use front end tests earlier) along with the goals I was striving to meet. 
+Let's take a look at the backend tests (using additional front end components was covered earlier). 
 
 Core Test Structure:
         Multiple test suites (AMM.js, AMM2.js, Attacker.js, DexAggregator.js) work together to verify the entire DEX system, using Hardhat's loadFixture pattern to reset state between tests, ensuring test isolation and consistent starting conditions.
 
             GOAL: Prevent test interdependencies and state pollution that could lead to false positives/negatives.
    
-
 AMM Contract Tests:
        Deployment Tests verify token addresses are set correctly because incorrect token addresses would break all swap functionality. Initial reserves are checked for a balance of zero because starting with non-zero reserves could mask later calculation errors.
 
@@ -462,7 +472,6 @@ Edge Cases and Critical Scenarios:
             GOAL: Use edge cases to look for subtle bugs that could be exploited.
 
 The URDEX test suite demonstrates a comprehensive approach to validating both individual components and their interactions, with particular attention to security, efficiency, and reliability under various market conditions. Each test category builds upon the previous ones, creating a layered verification of the system's integrity. 
-
 
 12. CONTRACT INTERACTION
         Finding Best Quote:
