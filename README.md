@@ -1,4 +1,4 @@
-URDEX Aggregator
+Welcome to the URDEX Aggregator
 
 URDEX is a sophisticated, extensible decentralized exchange (DEX) aggregator built on Sepolia testnet that serves both as a production-ready platform and a robust foundation for further development. By comparing prices and liquidity between multiple automated market makers (AMMs) with varying fee structures (0.3% and 0.5%), URDEX automatically routes trades through the most efficient path to ensure optimal exchange rates. The modular architecture and well-documented codebase make it an ideal starting point for developers looking to build their own DeFi applications or extend the platform's capabilities. 
 
