@@ -138,7 +138,7 @@ npx hardhat run scripts/deploy.js --network localhost
    - scripts/setup-check.js
    - scripts/verify-deployment.js
 
-4. Import TK1 and TK2 tokens into your Web3 wallet. The addresses are in the terminal deployment information.
+4. Import TK1 and TK2 tokens into your Web3 wallet. The addresses are in the terminal deployment information. Use symbols TK1 and TK2 and 18 for decimals, should you need to enter the information. 
 
 5. Now it's time to mint tokens and get needed approvals to move liquidity. Run scripts/setup.js:
 ```bash
