@@ -94,15 +94,19 @@ npm install --save-dev hardhat
 ### Sepolia Deployment Setup
 1. Obtain Sepolia testnet URL from [Alchemy](https://www.alchemy.com/) or [Infura](https://www.infura.io/)
 2. Connect a Web3 wallet like [MetaMask](https://metamask.io)
+
+The .env file is 1/3 of the way complete. For local development on Hardhat, the private key for account -0- is needed. In zero-based accounting and to the node this is account 1, also the deployer. Before the next command, be sure your terminal is 'cd'd to the project directory. 
+
 3. Start local Hardhat node:
 ```bash
 npx hardhat node
 ```
-4. Copy the private key for account 0 and add it to your `.env` file
+4. Copy the private key for account 0 and add it to your `.env` file. This will be at the top of the node information in the terminal.
 5. Add the account to your Web3 wallet
 6. Get an [Etherscan API key](https://etherscan.io/) for contract verification
 
 ### Security Features
+The APP is now deployment-ready. While more explanation comes later, it's a great time to review the security features in place:
 - Reentrancy protection on all critical functions
 - Slippage protection mechanisms
 - Price manipulation resistance
