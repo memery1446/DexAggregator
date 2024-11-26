@@ -103,7 +103,7 @@ npx hardhat node
 ```
 5. Find account -0- on the terminal and copy the private key. In zero based accounting this is account -1-. 
 
-6. Add the account to your Web3 wallet by selecting "import tokens" and pasting the private key. 
+6. Add the account to your Web3 wallet by selecting "add an account or hardware wallet" and pasting the private key. 
 
 7. Get an [Etherscan API key](https://etherscan.io/) for contract verification. Enter the API key into the .env file. This completes the .env file. 
 
