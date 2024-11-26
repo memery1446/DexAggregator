@@ -42,7 +42,7 @@ URDEX uses Hardhat for development and deployment. Configuration is found in `/h
 
 ### Important Notes Before Starting
 - When running the terminal commands, do not include any backticks `` or the containing brackets < >
-- Due to different development environments and operating systems, you may need to research some steps for your particular setup. The point is to achieve the goal outlined
+- Due to different development environments and operating systems, you may need to research some steps for your particular setup. The point is to achieve the goal outlined.
 ### Step-by-Step Installation
 
 1. Open your terminal
@@ -55,7 +55,7 @@ git clone https://github.com/memery1446/DexAggregator <name-of-your-choice>
 ```bash
 cd <your-chosen-name>
 ```
-The terminal should look something like: you@Your-MacBook-Pro <name-you-chose> %
+The terminal should look something like: you@Your-MacBook-Pro PROJECTNAME %
     Notice that the project name comes before the % sign. The solution to many errors is to realize that commands are being sent from the main or master branch. 
 
 4. (Optional) Remove git origin to keep your repository clean
