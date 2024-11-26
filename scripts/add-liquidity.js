@@ -24,7 +24,14 @@ async function main() {
 
     const liquidityAmount = ethers.utils.parseEther("1000");
 
-    console.log("Adding liquidity to AMM1...");
+    // First approve AMM1
+    console.log("Approving tokens for AMM1...");
+    await tk1.approve(ADDRESSES.AMM1, liquidityAmount);
+    await tk2.approve(ADDRESSES.AMM1, liquidityAmount);
+    console.log("✓ AMM1 approved");
+
+    // Add liquidity to AMM1
+    console.log("\nAdding liquidity to AMM1...");
     try {
       await amm1.addLiquidity(liquidityAmount, liquidityAmount);
       console.log("✓ Liquidity added to AMM1");
@@ -32,6 +39,13 @@ async function main() {
       console.error("Failed to add liquidity to AMM1:", error.message);
     }
 
+    // Approve AMM2
+    console.log("\nApproving tokens for AMM2...");
+    await tk1.approve(ADDRESSES.AMM2, liquidityAmount);
+    await tk2.approve(ADDRESSES.AMM2, liquidityAmount);
+    console.log("✓ AMM2 approved");
+
+    // Add liquidity to AMM2
     console.log("\nAdding liquidity to AMM2...");
     try {
       await amm2.addLiquidity(liquidityAmount, liquidityAmount);
@@ -72,4 +86,5 @@ main()
     console.error(error);
     process.exit(1);
   });
+
   

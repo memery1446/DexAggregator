@@ -8,11 +8,27 @@ module.exports = {
     artifacts: "./src/artifacts",
   },
   networks: {
+    hardhat: {  // Add this network configuration
+      mining: {
+        auto: true,
+        interval: 1000,
+        mempool: {
+          order: "fifo"
+        }
+      }
+    },
     localhost: {
-      url: "http://127.0.0.1:8545"
+      url: "http://127.0.0.1:8545",
+      mining: {  // Add mining config here too
+        auto: true,
+        interval: 1000,
+        mempool: {
+          order: "fifo"
+        }
+      }
     },
     sepolia: {
-      url: process.env.ALCHEMY_SEPOLIA_URL,  // Changed from Infura to Alchemy
+      url: process.env.ALCHEMY_SEPOLIA_URL,
       accounts: [process.env.PRIVATE_KEY],
       chainId: 11155111
     }
