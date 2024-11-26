@@ -95,20 +95,21 @@ npm install --save-dev hardhat
 1. Obtain Sepolia testnet URL from [Alchemy](https://www.alchemy.com/) or [Infura](https://www.infura.io/)
 2. Connect a Web3 wallet like [MetaMask](https://metamask.io)
 
-3. Connect Web3 wallet with the Hardhat Network. (https://hardhat.org/hardhat-runner/docs/getting-started)
+3. Create a new account or use an existing, but choose which Ethereum account you want as your deployer. Copy the private key and enter in into the .env file and save. 
 
 4. Start local Hardhat node:
 ```bash
 npx hardhat node
 ```
-5. Copy the private key for account 0 and add it to your `.env` file. This will be at the top of the node information in the terminal.
+5. Find account -0- on the terminal and copy the private key. In zero based accounting this is account -1-. 
 
-6. Add the account to your Web3 wallet
+6. Add the account to your Web3 wallet by selecting "import tokens" and pasting the private key. 
 
-7. Get an [Etherscan API key](https://etherscan.io/) for contract verification
+7. Get an [Etherscan API key](https://etherscan.io/) for contract verification. Enter the API key into the .env file. This completes the .env file. 
 
 ### Security Features
-The APP is now deployment-ready. While more explanation comes later, it's a great time to review the security features in place:
+The APP is now deployment-ready. While more explanation comes later, it's a great time to review the security features that can give the developer or user peace of mind:
+
 - Reentrancy protection on all critical functions
 - Slippage protection mechanisms
 - Price manipulation resistance
