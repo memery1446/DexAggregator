@@ -41,29 +41,35 @@ URDEX uses Hardhat for development and deployment. Configuration is found in `/h
 ## 2. Installation
 
 ### Important Notes Before Starting
-- When running the terminal commands, do not include the surrounding backticks or the containing brackets
-- Due to different development environments and operating systems, you may need to research some steps for your particular setup
-- Required actions are marked with `=> => action description <= <=`
-
+- When running the terminal commands, do not include any backticks `` or the containing brackets < >
+- Due to different development environments and operating systems, you may need to research some steps for your particular setup. The point is to achieve the goal outlined
 ### Step-by-Step Installation
 
-1. Clone the repository
+1. Open your terminal
+
+2. Clone the repository
 ```bash
 git clone https://github.com/memery1446/DexAggregator <name-of-your-choice>
+```
+3. cd, or C-hange D-irectory into your project root
+```bash
 cd <your-chosen-name>
 ```
+The terminal should look something like: you@Your-MacBook-Pro <name-you-chose> %
+    Notice that the project name comes before the % sign. The solution to many errors is to realize that commands are being sent from the main or master branch. 
 
-2. (Optional) Remove git origin to keep your repository clean
+4. (Optional) Remove git origin to keep your repository clean
 ```bash
 git remote remove origin
 ```
 
-3. Install dependencies
+5. Install dependencies
 ```bash
 npm install
 ```
+6. Open the project in your text editor
 
-4. Create `.env` file in the root directory with the following content:
+7. Create `.env` file in the root directory with the following content:
 ```
 ALCHEMY_SEPOLIA_URL=your_alchemy_url
 PRIVATE_KEY=your_wallet_private_key
@@ -80,7 +86,7 @@ node -v
 2. If needed, download or update Node.js from [nodejs.org](https://nodejs.org/en/download/package-manager)
 
 ### Hardhat Setup
-1. Install Hardhat:
+1. Install Hardhat, closely noting the dashes in this command:
 ```bash
 npm install --save-dev hardhat
 ```
