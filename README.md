@@ -86,7 +86,7 @@ node -v
 2. If needed, download or update Node.js from [nodejs.org](https://nodejs.org/en/download/package-manager)
 
 ### Hardhat Setup
-1. Install Hardhat, closely noting the dashes in this command:
+1. Install Hardhat:
 ```bash
 npm install --save-dev hardhat
 ```
@@ -95,14 +95,14 @@ npm install --save-dev hardhat
 1. Obtain Sepolia testnet URL from [Alchemy](https://www.alchemy.com/) or [Infura](https://www.infura.io/)
 2. Connect a Web3 wallet like [MetaMask](https://metamask.io)
 
-The .env file is 1/3 of the way complete. For local development on Hardhat, the private key for account -0- is needed. In zero-based accounting and to the node this is account 1, also the deployer. Before the next command, be sure your terminal is 'cd'd to the project directory. 
-
 3. Start local Hardhat node:
 ```bash
 npx hardhat node
 ```
 4. Copy the private key for account 0 and add it to your `.env` file. This will be at the top of the node information in the terminal.
+
 5. Add the account to your Web3 wallet
+
 6. Get an [Etherscan API key](https://etherscan.io/) for contract verification
 
 ### Security Features
@@ -143,7 +143,7 @@ npx hardhat run scripts/add-liquidity.js --network localhost
 ```bash
 npm run start
 ```
-Access at `localhost:3000`
+Access in a web browser at `localhost:3000`
 
 ## 5. Optional Deployments
 
