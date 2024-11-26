@@ -132,6 +132,7 @@ The APP is now deployment-ready. While more explanation comes later, it's a grea
 npx hardhat run scripts/deploy.js --network localhost
 ```
 3. Update deployment addresses in:
+   - scripts/token-setup.js
    - scripts/addliquidity.js
    - scripts/check-balances.js
    - scripts/setup-check.js
