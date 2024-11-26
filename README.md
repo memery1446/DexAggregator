@@ -142,7 +142,7 @@ npx hardhat run scripts/deploy.js --network localhost
 
 5. Now it's time to mint tokens and get needed approvals to move liquidity. Run scripts/setup.js:
 ```bash
-npx hardhat run scripts/token-setup.js --network localhost
+npx hardhat run scripts/setup.js --network localhost
 ```
 
 6. Add liquidity:
