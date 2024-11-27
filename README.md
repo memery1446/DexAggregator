@@ -6,9 +6,9 @@ Currently featuring real-time price tracking, intuitive swap interfaces, and com
 
 ## Quick Start
 
-Go try the deployed URDEX on the Sepolia blockchain! 
-   - Get TK1 and TK2 from the URDEX token faucetand 
-   - Learn how to import tokens into your metamask
+Interact with the deployed URDEX on Sepolia with just a few clicks: 
+   - Get TK1 and TK2 from the URDEX token faucet 
+   - Import the tokens into your metamask
    - Exetute and observe swaps
    - Observe pricechanges, market dynamics and transaction history
    - See a breakdown of where the gas fee is spent
@@ -16,7 +16,7 @@ Go try the deployed URDEX on the Sepolia blockchain!
 
 **Go to URDEX**: [URDEX](https://dex-aggregator-theta.vercel.app/swap)
 
-***Note: A bit of Sepolia ETH is needed in order to use the Token Faucet and Quick Start***
+***Note: A bit of free Sepolia ETH is needed***
 ***Optional Link***: [Chainlink Sepolia Faucet](https://faucets.chain.link/sepolia)
 
 ## Table of Contents
@@ -39,7 +39,7 @@ Go try the deployed URDEX on the Sepolia blockchain!
 ## 1. Config/Security
 
 URDEX uses Hardhat for development and deployment. Configuration is found in `/hardhat.config.js`, which supports the following:
-- A local development network
+- A local development network from Hardhat
 - Sepolia testnet deployment 
 - Solidity version 0.8.19
 - Custom artifact path for frontend integration
@@ -47,8 +47,8 @@ URDEX uses Hardhat for development and deployment. Configuration is found in `/h
 ## 2. Installation
 
 ### Important Notes 
-- When running the terminal commands, do not include any backticks `` or the containing brackets < >
-- Due to the many different development environments and operating systems, you may need to research some steps along the way. The point is to achieve the goal outlined.
+- When running the terminal commands, do not include any backticks `` or containing brackets < >
+- These instructions are coming from a system using Mac, Sublime Text, and Metamask. Convert instructions as needed to fit your development environment. 
 
 ### Step-by-Step Installation
 1. Open your terminal
@@ -57,11 +57,11 @@ URDEX uses Hardhat for development and deployment. Configuration is found in `/h
 ```bash
 git clone https://github.com/memery1446/DexAggregator <name-of-your-choice>
 ```
-3. cd, or c-hange d-irectory into your project root 
+3. cd, (c-hange d-irectory) into your project root 
 ```bash
-cd <your-chosen-name>
+cd <name-you-chose>
 ```
-The terminal should look something like: you@Your-MacBook-Pro PROJECTNAME %
+The terminal should look something like: you@Your-MacBook-Pro <name-you-chose> %
 
     Notice that the project name comes before the % sign.  
 
@@ -69,7 +69,7 @@ The terminal should look something like: you@Your-MacBook-Pro PROJECTNAME %
 ```bash
 git remote remove origin
 ```
-The terminal will not show anything, but the command was executed. 
+The terminal will not show anything, but the command was executed. The clone is no longer connected to the URDEX repository url.  
 
 5. Install dependencies
 ```bash
@@ -91,10 +91,10 @@ ETHERSCAN_API_KEY=your_etherscan_api_key
 ```bash
 node -v
 ```
-2. If needed, download or update Node.js from [nodejs.org](https://nodejs.org/en/download/package-manager)
+For help: [nodejs.org](https://nodejs.org/en/download/package-manager)
 
 ### Hardhat Setup
-1. Install Hardhat:
+2. Install Hardhat:
 ```bash
 npm install --save-dev hardhat
 ```
@@ -104,20 +104,14 @@ npm install --save-dev hardhat
 
 2. Connect a Web3 wallet like [MetaMask](https://metamask.io)
 
-3. Create a new Ethereum account or use an existing one, but choose which Ethereum account you want as your deployer. Copy the private key, enter in into the .env file and save. 
+3. Choose which Ethereum account you want as your deployer. Copy the private key, enter it into the .env file and save.  **Make sure this is not a Hardhat private key**
 
-4. Start local Hardhat node:
-```bash
-npx hardhat node
-```
-5. Find account -0- on the node terminal and copy the private key. In zero based accounting this is the the first account.  Account -0- will always be the deployer on Hardhat.
+4. Get an [Etherscan API key](https://etherscan.io/) for contract verification. Enter the API key into the .env file. This completes the .env file. 
 
-6. Add the Hardhat account private key to your Web3 wallet by selecting "add an account or hardware wallet" and pasting the private key. 
+The .env file is now complete. With private information, it will never be pushed to Github, and will remain where it originated. Remember to update the .env file any time the key or url information change. 
 
-7. Get an [Etherscan API key](https://etherscan.io/) for contract verification. Enter the API key into the .env file. This completes the .env file. 
-
-### Security Features
-The APP is now deployment-ready. While more in-depth security explanations come later, this is a great time to do a general review of security features:
+### Security Features 
+More in-depth security info follows, but here is a brief review of security features that offer developer-confidence in this base as a foundation to build on:
 
 - Reentrancy protection on all critical functions
 - Slippage protection mechanisms
@@ -132,27 +126,42 @@ The APP is now deployment-ready. While more in-depth security explanations come 
 ## 4. Usage
 
 ### Local Development Deployment
-
-1. Ensure your Web3 wallet is on Hardhat Network or choose "Add Network" and enter the well-documented Hardhat RPC info. The video tutorial shows this information. 
+1. Ensure your Web3 wallet is on Hardhat Network or choose "Add Network" and enter the well-documented Hardhat RPC info. In Metamask it's the icon in the upper left corner. The video tutorial shows the RPC information but it's also easy to get online. 
          [Hardhat](https://hardhat.org/)
 
-2. Deploy contracts locally:
+**Make sure to cd'd into the project root directory before starting the node. 
+
+2. Start local Hardhat node:
+```bash
+npx hardhat node
+```
+
+3. Find account 0 on the node terminal and copy the private key. In zero based accounting this is the the first account. Account 0 will always be the deployer on Hardhat.
+
+4. Paste the Hardhat account private key into your Web3 wallet by selecting "add an account or hardware wallet" and pasting the private key. 
+
+***The Hardhat node, accounts and private keys will remain consistent so it's best to name this account "Hardhat 0." You can also add more Hardhat accounts from the node to simulate users, varying permissions, etc.
+
+
+5. Deploy contracts locally:
 ```bash
 npx hardhat run scripts/deploy.js --network localhost
 ```
-3. Update deployment addresses in:
+6. Update deployment addresses in:
    - scripts/setup.js
    - scripts/addliquidity.js
    - scripts/check-balances.js
    - scripts/setup-check.js
    - scripts/verify-deployment.js
-
-   For the front end, also change addresses in: 
    - src/contracts/contractAddresses.js
 
-4. Import TK1 and TK2 tokens into your Web3 wallet. Use symbols TK1 and TK2 and 18 for decimals. You will see your initial minting balance. 
+***Deployment addresses and info are in the terminal that sent the deploy command. 
 
-6. Add liquidity:
+7. Import TK1 and TK2 tokens into your Web3 wallet by copying and pasting the contact addresses from the terminal. In Metamask the path is: tokens > import. Use symbols TK1 and TK2 and 18 for decimals. You will see your initial minting balance. 
+
+Now the AMMs need liquidity...
+
+8. Add liquidity:
 ```bash
 npx hardhat run scripts/add-liquidity.js --network localhost
 ```
@@ -162,11 +171,37 @@ From a terminal open to your project root directory, run:
 ```bash
 npm run start
 ```
-Access in a web browser at `localhost:3000`
+If it doesn't open immediately, open a web browser to: `localhost:3000`
 
+### Sepolia Testnet Deployment
+
+1. Initial Setup
+   - Connect your wallet to Sepolia Network
+   - If needed, update `.env` with your Ethereum wallet private key (NOT a Hardhat account private key)
+   - Get Sepolia ETH from [Chainlink Faucet](https://faucets.chain.link/sepolia)
+
+***Reminder to cd into your project root
+
+2. Deploy Contracts
+```bash
+npx hardhat run scripts/deploy.js --network sepolia
+```
+
+3. Update Deployment Addresses
+
+   Get addresses from the terminal and update these files:
+   - scripts/addliquidity.js
+   - scripts/check-balances.js
+   - scripts/setup-check.js
+   - scripts/verify-deployment.js 
+   - src/contracts/contractAddresses.js
+
+4. Deploy Frontend
+   Use [Vercel](https://vercel.com/) or similar provider (free tier is sufficient)
+   
 ## 5. Optional Deployments
 
-These deployments can provide valuable information during development but are not necessary for DEX operation.
+The following deployments can provide valuable information during development but are not necessary for DEX operation.
 
 ### Helper Scripts
 Update contract addresses in the scripts, then run:
@@ -182,32 +217,6 @@ npx hardhat run scripts/setup-check.js --network <hardhat or sepolia>
 ```bash
 npx hardhat run scripts/verify-deployment.js --network <hardhat or sepolia>
 ```
-
-### Sepolia Testnet Deployment
-
-1. Initial Setup
-   - Connect your wallet to Sepolia Network
-   - If needed, update `.env` with your Ethereum wallet private key (NOT a Hardhat account private key)
-   - Get Sepolia ETH from [Chainlink Faucet](https://faucets.chain.link/sepolia)
-
-2. Deploy Contracts
-```bash
-npx hardhat run scripts/deploy.js --network sepolia
-```
-
-3. Update Deployment Addresses
-
-   Get addresses from the terminal and update these files:
-   - scripts/addliquidity.js
-   - scripts/check-balances.js
-   - scripts/setup-check.js
-   - scripts/verify-deployment.js
-
-   For frontend also update addresses here: 
-   - src/contracts/contractAddresses.js
-
-4. Deploy Frontend
-   Use [Vercel](https://vercel.com/) or similar provider (free tier is sufficient)
 
 ## 6. Optional Frontend Components
 
