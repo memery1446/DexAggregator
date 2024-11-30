@@ -100,13 +100,13 @@ npm install --save-dev hardhat
 ```
 
 ### Sepolia Deployment Setup
-1. Obtain Sepolia testnet URL from [Alchemy](https://www.alchemy.com/) or [Infura](https://www.infura.io/) and paste it into your .env file. 
+1. Get an [Etherscan API key](https://etherscan.io/) for contract verification. Enter the API key into the .env file. This completes the .env file. 
 
-2. Connect a Web3 wallet like [MetaMask](https://metamask.io)
+2. Obtain Sepolia testnet URL from [Alchemy](https://www.alchemy.com/) or [Infura](https://www.infura.io/) and paste it into your .env file. 
 
-3. Choose which Ethereum account you want as your deployer. Copy the private key, enter it into the .env file and save.  **Make sure this is not a Hardhat private key**
+3. Connect a Web3 wallet like [MetaMask](https://metamask.io)
 
-4. Get an [Etherscan API key](https://etherscan.io/) for contract verification. Enter the API key into the .env file. This completes the .env file. 
+4. Choose which Ethereum account you want as your deployer. Copy the private key, enter it into the .env file and save.  **Make sure this is not a Hardhat private key**
 
 The .env file is now complete. With private information, it will never be pushed to Github, and will remain where it originated. Remember to update the .env file any time the key or url information change. 
 
