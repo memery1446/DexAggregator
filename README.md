@@ -153,6 +153,8 @@ npx hardhat run scripts/deploy.js --network localhost
    - scripts/check-balances.js
    - scripts/setup-check.js
    - scripts/verify-deployment.js
+
+***In the video, the address update to this file is done later. Fine to do it now. 
    - src/contracts/contractAddresses.js
 
 ***Deployment addresses and info are in the terminal that sent the deploy command. 
