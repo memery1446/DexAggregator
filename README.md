@@ -145,13 +145,13 @@ Here is a brief review of security features that offer developer-confidence in t
 ```bash
 npx hardhat node
 ```
-**Make sure to 'cd' into the project root directory before starting the node. 
+#### Make sure to 'cd' into the project root directory before starting the node. 
 
 3. Find Account 0 on the node terminal (toward the top) and copy the private key. In zero based accounting this is the the first account. Account 0 will always be the deployer on Hardhat.
 
 4. Paste the Hardhat account private key into your Web3 wallet by selecting the Account area, then selecting "add an account or hardware wallet." In Metamask, the Account section is dead center top. Paste in the private key. 
 
-# The Hardhat node, accounts and private keys will remain consistent so it's best to name this account "Hardhat 0." You can also add more Hardhat accounts from the node to simulate users, varying permissions, etc. NEVER send real crypto to a Hardhat Account. 
+#### The Hardhat node, accounts and private keys will remain consistent so it's best to name this account "Hardhat 0." You can also add more Hardhat accounts from the node to simulate users, varying permissions, etc. NEVER send real crypto to a Hardhat Account. 
 
 
 5. Deploy contracts locally:
@@ -166,7 +166,7 @@ npx hardhat run scripts/deploy.js --network localhost
    - scripts/verify-deployment.js
    - src/contracts/contractAddresses.js
 
-#### Deployment addresses are in the terminal that sent the deploy command. 
+##### Deployment addresses are in the terminal that sent the deploy command. 
 
 7. Import TK1 and TK2 tokens into your Web3 wallet by copying and pasting the contact addresses one-at-a-tme from the terminal. In Metamask the path is: tokens > import. Use symbols TK1 and TK2 and 18 for decimals. You will see your initial minting balance of 1 million TK1 and TK2. 
 
@@ -177,7 +177,7 @@ Now the AMMs need liquidity...
 npx hardhat run scripts/add-liquidity.js --network localhost
 ```
 
-### Deploy Frontend for Development
+#### Deploy Frontend for Development
 From a terminal open to your project root directory, run: 
 ```bash
 npm run start
@@ -324,7 +324,7 @@ event PriceUpdated(address amm, uint256 price, uint256 timestamp);
 - **Token.sol**: ERC20 token implementation with minting capabilities
 - **Attacker.sol**: Test contract for security measures and attack vectors
 
-## 9. Features
+## 10. FEATURES
 
 #### Core Functionality
 - Price comparison across AMM and AMM2 protocols
@@ -372,7 +372,7 @@ event PriceUpdated(address amm, uint256 price, uint256 timestamp);
    - Gradient background with glass-morphism UI
    - Redux-based loading states and error handling
 
-## 10. RUNNING TESTS
+## 11. RUNNING TESTS
 
 ### Basic Test Execution
 ```bash
@@ -383,7 +383,7 @@ npx hardhat test
 npx hardhat test test/<test-name>.js
 ```
 
-## 11. TESTING
+## 12. TESTING
 
 ### Test Categories
 1. **Backend Tests**
@@ -458,7 +458,7 @@ npx hardhat test test/<test-name>.js
    - Decimal precision handling
    - Reserve stability testing
 
-## 12. CONTRACT INTERACTION
+## 13. CONTRACT INTERACTION
 
 ### Core Functions
 
@@ -497,7 +497,7 @@ function getReserves() external view returns (
 )
 ```
 
-## 13. CONTRIBUTING
+## 14. CONTRIBUTING
 
 1. Fork the repository
 
@@ -515,7 +515,7 @@ git push origin feature/amazing-feature
 ```
 5. Open a Pull Request
 
-## 14. License
+## 15. License
 
 This project is licensed under the MIT License.
 
