@@ -6,7 +6,7 @@ Currently featuring real-time price tracking, intuitive swap interfaces, and com
 
 ## QUICK START - Follow this guide to swap on the deployed URDEX 
 
-   ## Prerequisites: 
+   ### Prerequisites: 
    You'll need a bit of Sepolia ETH [Chainlink Sepolia Faucet](https://faucets.chain.link/sepolia) 
    A Web3 wallet like [MetaMask](https://metamask.io)
 
@@ -19,12 +19,12 @@ Once you follow the link to URDEX, you'll be able to:
    - See a breakdown of the gas fee
    - Experience true production grade aggregator functionality
 
-## Go to: [URDEX](https://dex-aggregator-theta.vercel.app/swap)
+### Go to: [URDEX](https://dex-aggregator-theta.vercel.app/swap)
 
 
 ## CLONE URDEX - Follow this guide to clone or contribute 
 
-## Table of Contents
+### Table of Contents
 
 1. [Config/Security](#1-configsecurity)
 2. [Installation](#2-installation)
@@ -51,7 +51,7 @@ URDEX uses Hardhat for development and deployment. Configuration is found in `/h
 
 ## 2. INSTALLATION
 
-## Important Notes 
+### Important Notes 
 - When running the terminal commands, do not include any backticks `` or containing brackets < >
 - These instructions are coming from a system using Mac, Sublime Text, and Metamask. Convert instructions as needed to fit your development environment. 
 
@@ -115,14 +115,14 @@ Filling out the .env file...
 
 4. Choose which Ethereum account you want as your deployer. Copy the private key, enter it into the .env file and save. 
 
-## Make sure this is not a Hardhat private key 
+# Make sure this is not a Hardhat private key 
 
 The .env file is now complete. With private information, it will never be pushed to Github, and will remain where it originated. Remember to update the .env file any time the key or url information change. 
 
-##  Tip: 
+#  Tip: 
 Why will the .env not push to github? Because the extenstion .env is in the .gitignore file. 
 
-## Security Features At A Glance 
+# Security Features At A Glance 
 Here is a brief review of security features that offer developer-confidence in this base as a foundation to build on. More in-depth info follows:
 
 - Reentrancy protection on all critical functions
@@ -137,7 +137,7 @@ Here is a brief review of security features that offer developer-confidence in t
 
 ## 4. USAGE: DEVELOPMENT
 
-### Local Development Deployment
+# Local Development Deployment
 1. Ensure your Web3 wallet is on Hardhat Network or choose "Add Network" and enter the well-documented Hardhat RPC info. In Metamask it's the icon in the upper left corner. The video tutorial shows the RPC information but it's also easy to get online. [Hardhat](https://hardhat.org/)
 
 2. Start local Hardhat node:
@@ -150,7 +150,7 @@ npx hardhat node
 
 4. Paste the Hardhat account private key into your Web3 wallet by selecting the Account area, then selecting "add an account or hardware wallet." In Metamask, the Account section is dead center top. Paste in the private key. 
 
-### The Hardhat node, accounts and private keys will remain consistent so it's best to name this account "Hardhat 0." You can also add more Hardhat accounts from the node to simulate users, varying permissions, etc. NEVER send real crypto to a Hardhat Account. 
+# The Hardhat node, accounts and private keys will remain consistent so it's best to name this account "Hardhat 0." You can also add more Hardhat accounts from the node to simulate users, varying permissions, etc. NEVER send real crypto to a Hardhat Account. 
 
 
 5. Deploy contracts locally:
@@ -165,7 +165,7 @@ npx hardhat run scripts/deploy.js --network localhost
    - scripts/verify-deployment.js
    - src/contracts/contractAddresses.js
 
-### Deployment addresses are in the terminal that sent the deploy command. 
+# Deployment addresses are in the terminal that sent the deploy command. 
 
 7. Import TK1 and TK2 tokens into your Web3 wallet by copying and pasting the contact addresses one-at-a-tme from the terminal. In Metamask the path is: tokens > import. Use symbols TK1 and TK2 and 18 for decimals. You will see your initial minting balance of 1 million TK1 and TK2. 
 
@@ -176,7 +176,7 @@ Now the AMMs need liquidity...
 npx hardhat run scripts/add-liquidity.js --network localhost
 ```
 
-### Deploy Frontend for Development
+# Deploy Frontend for Development
 From a terminal open to your project root directory, run: 
 ```bash
 npm run start
@@ -188,7 +188,7 @@ If it doesn't open on its own, open a web browser to: `localhost:3000`
 
 The following deployments can provide valuable information but are not necessary for DEX operation.
 
-### Helper Scripts
+## Helper Scripts
 Update contract addresses in the scripts, then run:
 # Check balances
 ```bash
