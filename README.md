@@ -32,14 +32,15 @@ Once you follow the link to URDEX, you'll be able to:
 4. [Usage In Development](#4-usage-in-development)
 5. [Optional Deployments for Development](#5-optional-deployments-for-development)
 6. [Optional Frontend Components for Development](#6-optional-frontend-components-for-development)
-7. [URDEX Architecture at a Glance](#7-architecture-at-a-glance)
-8. [Contracts](#8-contracts)
-9. [Features](#9-features)
-10. [Running Tests](#10-running-tests)
-11. [Testing Description](#11-testing)
-12. [Contract Interaction](#12-contract-interaction)
-13. [Contribute to URDEX](#13-contributing)
-14. [License Info](#14-license)
+7. [Deployment on Sepolia](#7-deployment-on-sepolia)
+8. [URDEX Architecture at a Glance](#7-architecture-at-a-glance)
+9. [Contracts](#8-contracts)
+10. [Features](#9-features)
+11. [Running Tests](#10-running-tests)
+12. [Testing Description](#11-testing)
+13. [Contract Interaction](#12-contract-interaction)
+14. [Contribute to URDEX](#13-contributing)
+15. [License Info](#14-license)
 
 ## 1. CONFIG/SECURITY
 
@@ -115,14 +116,14 @@ Filling out the .env file...
 
 4. Choose which Ethereum account you want as your deployer. Copy the private key, enter it into the .env file and save. 
 
-# Make sure this is not a Hardhat private key 
+### Make sure this is not a Hardhat private key 
 
 The .env file is now complete. With private information, it will never be pushed to Github, and will remain where it originated. Remember to update the .env file any time the key or url information change. 
 
-#  Tip: 
+####  Tip: 
 Why will the .env not push to github? Because the extenstion .env is in the .gitignore file. 
 
-# Security Features At A Glance 
+### Security Features At A Glance 
 Here is a brief review of security features that offer developer-confidence in this base as a foundation to build on. More in-depth info follows:
 
 - Reentrancy protection on all critical functions
@@ -137,7 +138,7 @@ Here is a brief review of security features that offer developer-confidence in t
 
 ## 4. USAGE: DEVELOPMENT
 
-# Local Development Deployment
+### Local Development Deployment
 1. Ensure your Web3 wallet is on Hardhat Network or choose "Add Network" and enter the well-documented Hardhat RPC info. In Metamask it's the icon in the upper left corner. The video tutorial shows the RPC information but it's also easy to get online. [Hardhat](https://hardhat.org/)
 
 2. Start local Hardhat node:
@@ -165,7 +166,7 @@ npx hardhat run scripts/deploy.js --network localhost
    - scripts/verify-deployment.js
    - src/contracts/contractAddresses.js
 
-# Deployment addresses are in the terminal that sent the deploy command. 
+#### Deployment addresses are in the terminal that sent the deploy command. 
 
 7. Import TK1 and TK2 tokens into your Web3 wallet by copying and pasting the contact addresses one-at-a-tme from the terminal. In Metamask the path is: tokens > import. Use symbols TK1 and TK2 and 18 for decimals. You will see your initial minting balance of 1 million TK1 and TK2. 
 
@@ -176,7 +177,7 @@ Now the AMMs need liquidity...
 npx hardhat run scripts/add-liquidity.js --network localhost
 ```
 
-# Deploy Frontend for Development
+### Deploy Frontend for Development
 From a terminal open to your project root directory, run: 
 ```bash
 npm run start
@@ -188,22 +189,22 @@ If it doesn't open on its own, open a web browser to: `localhost:3000`
 
 The following deployments can provide valuable information but are not necessary for DEX operation.
 
-## Helper Scripts
+### Helper Scripts
 Update contract addresses in the scripts, then run:
-# Check balances
+#### Check balances
 ```bash
 npx hardhat run scripts/check-balance.js --network <hardhat or sepolia>
 ```
-# Verify setup
+#### Verify setup
 ```bash
 npx hardhat run scripts/setup-check.js --network <hardhat or sepolia>
 ```
-# Verify deployment
+#### Verify deployment
 ```bash
 npx hardhat run scripts/verify-deployment.js --network <hardhat or sepolia>
 ```
 
-## 6. Optional Frontend Components
+## 6. OPTIONAL FRONTEND COMPONENTS FOR DEVELOPMENT
 
 The frontend includes specialized test utilities for debugging, verification, and expansion. To use these components, import them to `App.js` and add them to the return statement, similar to how `PriceChart.js` is implemented.
 
@@ -245,18 +246,19 @@ The frontend includes specialized test utilities for debugging, verification, an
 - Message signing verification
 - Wallet error handling
 
-### Token Faucet Note
+## Token Faucet Note
 The Token Faucet can be removed from URDEX by removing the button and link from Navigation.js. It is a separate application alogether that can be cloned from [Token Faucet Repository](https://github.com/memery1446/TokenFaucet).
 
-## Important: Remember that your deployed TK1 and TK2 addresses will not match the existing URDEX Token Faucet addresses. 
-### Sepolia Testnet Deployment
+#### Important: Remember that your deployed TK1 and TK2 addresses will not match the existing URDEX Token Faucet addresses. 
+
+## 7. DEPLOYMENT ON SEPOLIA
 
 1. Initial Setup
    - Connect your wallet to Sepolia Network
    - If needed, update `.env` with your Ethereum wallet private key (remember, NOT a Hardhat account private key)
    - Get Sepolia ETH from [Chainlink Faucet](https://faucets.chain.link/sepolia)
 
-***ERRORS? Doublecheck that you are in your root directory. Clear your Metamask activity tab data. 
+#### ERRORS? Doublecheck that you are in your root directory. Clear your Metamask activity tab data. 
 
 2. Deploy Contracts
 ```bash
@@ -277,7 +279,7 @@ npx hardhat run scripts/deploy.js --network sepolia
    
 
 
-## 7. Architecture at a Glance
+## 8. ARCHITECTURE AT A GLANCE
 
 ### Route Aggregation Pattern
 URDEX implements a sophisticated routing system where:
@@ -287,13 +289,13 @@ URDEX implements a sophisticated routing system where:
 - Maintains price history for analysis
 
 ### AMM Implementations
-1. **AMM1**
+1. #### AMM1
    - 0.3% fee structure
    - Standard constant product formula
    - Reentrancy protection
    - Minimum liquidity requirements
 
-2. **AMM2**
+2. #### AMM2
    - 0.5% fee structure
    - Standard constant product formula
    - Reentrancy protection
@@ -313,7 +315,7 @@ event SwapExecuted(address amm, uint256 amountIn, uint256 amountOut);
 event PriceUpdated(address amm, uint256 price, uint256 timestamp);
 ```
 
-## 8. Contracts
+## 9. CONTRACTS
 
 ### Core Smart Contracts
 - **DexAggregator.sol**: Main aggregator contract that routes trades
@@ -324,19 +326,19 @@ event PriceUpdated(address amm, uint256 price, uint256 timestamp);
 
 ## 9. Features
 
-### Core Functionality
+#### Core Functionality
 - Price comparison across AMM and AMM2 protocols
 - Efficient trade execution using try-catch blocks
 - Separate price history tracking for each AMM
 - Support for forward and reverse token swaps
 
-### Security Features
+#### Security Features
 - Adjustable slippage protection
 - Protection against sandwich attacks
 - Price impact protection through reserve management
 - Price scaling protection
 
-### Performance
+#### Performance
 - Gas-efficient operations through:
   - Quote caching
   - Batched operations
@@ -344,7 +346,7 @@ event PriceUpdated(address amm, uint256 price, uint256 timestamp);
   - Size-independent efficiency
   - Hard cap implementation
 
-### User Interface
+#### User Interface
 - Real-time price charts with multiple time settings
 - Transaction history showing:
   - Transaction type
@@ -370,7 +372,7 @@ event PriceUpdated(address amm, uint256 price, uint256 timestamp);
    - Gradient background with glass-morphism UI
    - Redux-based loading states and error handling
 
-## 10. Running Tests
+## 10. RUNNING TESTS
 
 ### Basic Test Execution
 ```bash
@@ -381,7 +383,7 @@ npx hardhat test
 npx hardhat test test/<test-name>.js
 ```
 
-## 11. Testing
+## 11. TESTING
 
 ### Test Categories
 1. **Backend Tests**
@@ -456,7 +458,7 @@ npx hardhat test test/<test-name>.js
    - Decimal precision handling
    - Reserve stability testing
 
-## 12. Contract Interaction
+## 12. CONTRACT INTERACTION
 
 ### Core Functions
 
@@ -495,9 +497,10 @@ function getReserves() external view returns (
 )
 ```
 
-## 13. Contributing
+## 13. CONTRIBUTING
 
 1. Fork the repository
+
 2. Create your feature branch:
 ```bash
 git checkout -b feature/amazing-feature
@@ -516,7 +519,7 @@ git push origin feature/amazing-feature
 
 This project is licensed under the MIT License.
 
-### Contact
-Email: markemerydev@gmail.com
+## Contact
+Email: memery1446@gmail.com
 
 
