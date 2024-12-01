@@ -193,7 +193,7 @@ The following deployments can provide valuable information but are not necessary
 Update contract addresses in the scripts, then run:
 #### Check balances
 ```bash
-npx hardhat run scripts/check-balance.js --network localhost
+npx hardhat run scripts/check-balances.js --network localhost
 ```
 #### Verify setup
 ```bash
