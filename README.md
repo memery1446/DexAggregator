@@ -193,15 +193,15 @@ The following deployments can provide valuable information but are not necessary
 Update contract addresses in the scripts, then run:
 #### Check balances
 ```bash
-npx hardhat run scripts/check-balance.js --network <hardhat or sepolia>
+npx hardhat run scripts/check-balance.js --network localhost
 ```
 #### Verify setup
 ```bash
-npx hardhat run scripts/setup-check.js --network <hardhat or sepolia>
+npx hardhat run scripts/setup-check.js --network localhost
 ```
 #### Verify deployment
 ```bash
-npx hardhat run scripts/verify-deployment.js --network <hardhat or sepolia>
+npx hardhat run scripts/verify-deployment.js --network localhost
 ```
 
 ## 6. OPTIONAL FRONTEND COMPONENTS FOR DEVELOPMENT
