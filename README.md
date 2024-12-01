@@ -12,7 +12,7 @@ Currently featuring real-time price tracking, intuitive swap interfaces, and com
 
 Once you follow the link to URDEX, you'll be able to:
    - Import the token addresses into your metamask
-   - Get free TK1 and TK2 from the URDEX token faucet (the free Sepolia ETH pays the blockchain transaction fee)
+   - Get a free drip of TK1 and TK2 from the URDEX token faucet (the free Sepolia ETH pays the blockchain transaction fee)
    - Swap, setting slippage and observing gas fees
    - Watch the aggregator determine the transaction path
    - Observe pricechanges, market dynamics and transaction history
@@ -22,7 +22,7 @@ Once you follow the link to URDEX, you'll be able to:
 **Go to: [URDEX](https://dex-aggregator-theta.vercel.app/swap)
 
 
-## CLONE URDEX - Follow this guide to contribute, or to build out your own copy
+## CLONE URDEX - Follow this guide to clone or contribute 
 
 ## Table of Contents
 
@@ -47,7 +47,7 @@ URDEX uses Hardhat for development and deployment. Configuration is found in `/h
 - A local development network from Hardhat
 - Sepolia testnet deployment 
 - Solidity version 0.8.19
-- Custom artifact path for frontend integration and security
+- Custom artifact path for frontend integration for security
 
 ## 2. Installation
 
@@ -66,7 +66,7 @@ git clone https://github.com/memery1446/DexAggregator <name-of-your-choice>
 ```bash
 cd <name-you-chose>
 ```
-The terminal should look something like: you@Your-MacBook-Pro <name-you-chose> %
+The terminal should look something like: you@Your-MacBook-Pro name-you-chose %
 
     Notice that the project name comes before the % sign.  
 
