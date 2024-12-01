@@ -10,14 +10,13 @@ Currently featuring real-time price tracking, intuitive swap interfaces, and com
    You'll need a bit of Sepolia ETH [Chainlink Sepolia Faucet](https://faucets.chain.link/sepolia) 
    A Web3 wallet like [MetaMask](https://metamask.io)
 
-Once you follow the link to URDEX, you will:
+Once you follow the link to URDEX, you'll be able to:
    - Import the token addresses into your metamask
-   - Get free TK1 and TK2 from the URDEX token faucet (the Sepolia ETH pays the blockchain transaction fee)
-   - Execute and observe swaps
+   - Get free TK1 and TK2 from the URDEX token faucet (the free Sepolia ETH pays the blockchain transaction fee)
+   - Swap, setting slippage and observing gas fees
    - Watch the aggregator determine the transaction path
    - Observe pricechanges, market dynamics and transaction history
-   - Set slippage
-   - See a breakdown of where the gas fee is spent
+   - See a breakdown of the gas fee
    - Experience true production grade aggregator functionality
 
 **Go to: [URDEX](https://dex-aggregator-theta.vercel.app/swap)

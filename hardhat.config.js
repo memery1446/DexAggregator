@@ -8,7 +8,7 @@ module.exports = {
     artifacts: "./src/artifacts",
   },
   networks: {
-    hardhat: {  // Add this network configuration
+    hardhat: {  
       mining: {
         auto: true,
         interval: 1000,
@@ -19,7 +19,7 @@ module.exports = {
     },
     localhost: {
       url: "http://127.0.0.1:8545",
-      mining: {  // Add mining config here too
+      mining: {  
         auto: true,
         interval: 1000,
         mempool: {
