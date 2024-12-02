@@ -42,12 +42,14 @@ Once you follow the link to URDEX, you'll be able to:
 14. [Contribute to URDEX](#13-contributing)
 15. [License Info](#14-license)
 
-## [Step-By-Step Video Guide Playlist](https://www.youtube.com/playlist?list=PLFlTnaL2H_NGvk5I8wX7hTUDJj6guoZAK)
-
+------------------------------------------
+### Step-By-Step Video Guide, Full Playlist [Click Here](https://www.youtube.com/playlist?list=PLFlTnaL2H_NGvk5I8wX7hTUDJj6guoZAK)
+------------------------------------------
 
 ## 1. CONFIG/SECURITY  
-### [Step-By-Step Video 1](https://youtu.be/cKy8KNgiCEc)
-
+------------------------
+### Step-By-Step Video 1 [Click Here](https://youtu.be/cKy8KNgiCEc)
+------------------------
 
 URDEX uses Hardhat for development and deployment. Configuration is found in `/hardhat.config.js`, which supports the following:
 - A local development network from Hardhat
@@ -96,7 +98,9 @@ ETHERSCAN_API_KEY=your_etherscan_api_key
 ```
 
 ## 3. PREREQUISITES
-### [Step-By-Step Video 2](https://youtu.be/i3I28zjEp70)
+------------------------
+### Step-By-Step Video 2 [Click Here](https://youtu.be/i3I28zjEp70)
+------------------------
 
 ### Node.js Installation
 1. Check your Node.js version (should be 14+):
@@ -143,7 +147,9 @@ Here is a brief review of security features that offer developer-confidence in t
 - Extensive front end testing
 
 ## 4. USAGE: DEVELOPMENT
-### [Step-By-Step Video 3](https://youtu.be/3w-tGalvtF8)
+------------------------
+### Step-By-Step Video 3 [Click Here](https://youtu.be/3w-tGalvtF8)
+------------------------
 
 ### Local Development Deployment
 1. Ensure your Web3 wallet is on Hardhat Network or choose "Add Network" and enter the well-documented Hardhat RPC info. In Metamask it's the icon in the upper left corner. The video tutorial shows the RPC information but it's also easy to get online. [Hardhat](https://hardhat.org/)
@@ -192,7 +198,9 @@ If it doesn't open on its own, open a web browser to: `localhost:3000`
 
 
 ## 5. OPTIONAL DEPLOYMENTS FOR DEVELOPMENT
-### [Step-By-Step Video 4](https://youtu.be/p-WLoF9F-Jk)
+------------------------
+### Step-By-Step Video 4 [Click Here](https://youtu.be/p-WLoF9F-Jk)
+------------------------
 
 The following deployments can provide valuable information but are not necessary for DEX operation.
 
@@ -261,7 +269,9 @@ The Token Faucet can be removed from URDEX by removing the button and link from 
 #### Important: The testing environment allows for the possibility of name duplication. The Token Faucet for the original URDEX drips TK1 and TK2, but only for the original URDEX addresses.  Any URDEX clone will need it's own Token Faucet, should that operability be desired.   
 
 ## 7. DEPLOYMENT ON SEPOLIA
-### [Step-By-Step Video 5](https://youtu.be/vGakAm5XiNo)
+------------------------
+### Step-By-Step Video 5 [Click Here](https://youtu.be/vGakAm5XiNo)
+------------------------
 
 1. Initial Setup
    - Connect your wallet to Sepolia Network
