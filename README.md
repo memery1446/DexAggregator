@@ -165,8 +165,7 @@ npx hardhat run scripts/deploy.js --network localhost
    - scripts/setup-check.js
    - scripts/verify-deployment.js
    - src/contracts/contractAddresses.js
-
-##### Deployment addresses are in the terminal that sent the deploy command. 
+   - src/components/SwapCard.js
 
 7. Import TK1 and TK2 tokens into your Web3 wallet by copying and pasting the contact addresses one-at-a-tme from the terminal. In Metamask the path is: tokens > import. Use symbols TK1 and TK2 and 18 for decimals. You will see your initial minting balance of 1 million TK1 and TK2. 
 
@@ -210,7 +209,9 @@ The frontend includes specialized test utilities for debugging, verification, an
 
 ### Available Frontend Components
 
-#### AccountVerify (`AccountVerify.js`)
+#### AccountVerify (`AccountVerify.js`) 
+##### (Config'd for use in Hardhat development. Requires address updating if using on Sepolia)
+
 - Validates wallet connection status
 - Tests account switching functionality
 - Verifies account permissions and balances
@@ -249,7 +250,7 @@ The frontend includes specialized test utilities for debugging, verification, an
 ## Token Faucet Note
 The Token Faucet can be removed from URDEX by removing the button and link from Navigation.js. It is a separate application alogether that can be cloned from [Token Faucet Repository](https://github.com/memery1446/TokenFaucet).
 
-#### Important: Remember that your deployed TK1 and TK2 addresses will not match the existing URDEX Token Faucet addresses. 
+#### Important: The testing environment allows for the possibility of name duplication. The Token Faucet for the original URDEX drips TK1 and TK2, but only for the original URDEX addresses.  Any URDEX clone will need it's own Token Faucet, should that operability be desired.   
 
 ## 7. DEPLOYMENT ON SEPOLIA
 
@@ -268,11 +269,13 @@ npx hardhat run scripts/deploy.js --network sepolia
 3. Update Deployment Addresses
 
    Get addresses from the terminal and update these files:
+   - scripts/setup.js
    - scripts/addliquidity.js
    - scripts/check-balances.js
    - scripts/setup-check.js
-   - scripts/verify-deployment.js 
+   - scripts/verify-deployment.js
    - src/contracts/contractAddresses.js
+   - src/components/SwapCard.js
 
 4. Deploy Frontend on Sepolia
    Use [Vercel](https://vercel.com/) or similar provider (free tier is sufficient)
