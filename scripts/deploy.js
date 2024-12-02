@@ -45,19 +45,48 @@ async function main() {
     await dexAggregator.deployed();
     console.log("DexAggregator deployed to:", dexAggregator.address);
 
+    // Verification logs
+    console.log("\nChecking balances and allowances...");
+    const deployerBalance1 = await tk1.balanceOf(deployer.address);
+    const deployerBalance2 = await tk2.balanceOf(deployer.address);
+    console.log("Deployer TK1 balance:", ethers.utils.formatEther(deployerBalance1));
+    console.log("Deployer TK2 balance:", ethers.utils.formatEther(deployerBalance2));
+
+    const allowanceAMM1 = await tk1.allowance(deployer.address, amm.address);
+    const allowanceAMM2 = await tk2.allowance(deployer.address, amm.address);
+    console.log("AMM allowance for TK1:", ethers.utils.formatEther(allowanceAMM1));
+    console.log("AMM allowance for TK2:", ethers.utils.formatEther(allowanceAMM2));
+
     // Initialize liquidity pools
     console.log("\nInitializing liquidity pools...");
     const initLiquidityAmount = ethers.utils.parseEther("1000");
     
     // Mint tokens to deployer for initial liquidity
-    await tk1.mint(deployer.address, initLiquidityAmount.mul(2));
-    await tk2.mint(deployer.address, initLiquidityAmount.mul(2));
+    // await tk1.mint(deployer.address, initLiquidityAmount.mul(2));
+    // await tk2.mint(deployer.address, initLiquidityAmount.mul(2));
 
     // Approve AMMs to spend tokens
     await tk1.approve(amm.address, initLiquidityAmount);
     await tk2.approve(amm.address, initLiquidityAmount);
     await tk1.approve(amm2.address, initLiquidityAmount);
     await tk2.approve(amm2.address, initLiquidityAmount);
+
+    // Wait for approvals to be mined:
+    console.log("\nApproving tokens...");
+    await (await tk1.approve(amm.address, initLiquidityAmount)).wait();
+    await (await tk2.approve(amm.address, initLiquidityAmount)).wait();
+    await (await tk1.approve(amm2.address, initLiquidityAmount)).wait();
+    await (await tk2.approve(amm2.address, initLiquidityAmount)).wait();
+
+    // Check allowances again
+    console.log("\nVerifying allowances after approval...");
+    const newAllowanceAMM1 = await tk1.allowance(deployer.address, amm.address);
+    const newAllowanceAMM2 = await tk2.allowance(deployer.address, amm.address);
+    console.log("New AMM allowance for TK1:", ethers.utils.formatEther(newAllowanceAMM1));
+    console.log("New AMM allowance for TK2:", ethers.utils.formatEther(newAllowanceAMM2));
+
+    // Then try to add liquidity
+    console.log("\nAdding liquidity...");
 
     // Add initial liquidity
     await amm.addLiquidity(initLiquidityAmount, initLiquidityAmount);

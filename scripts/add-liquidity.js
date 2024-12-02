@@ -11,6 +11,9 @@ async function main() {
   };
 
   try {
+    // Get signer
+    const [signer] = await ethers.getSigners();
+
     // Get contract factories
     const AMM = await ethers.getContractFactory("AMM");
     const AMM2 = await ethers.getContractFactory("AMM2");
@@ -22,18 +25,36 @@ async function main() {
     const tk1 = Token.attach(ADDRESSES.TK1);
     const tk2 = Token.attach(ADDRESSES.TK2);
 
+    // Check initial balances
+    const tk1Balance = await tk1.balanceOf(signer.address);
+    const tk2Balance = await tk2.balanceOf(signer.address);
+    console.log("Initial token balances:", {
+      tk1: ethers.utils.formatEther(tk1Balance),
+      tk2: ethers.utils.formatEther(tk2Balance)
+    });
+
     const liquidityAmount = ethers.utils.parseEther("1000");
 
     // First approve AMM1
-    console.log("Approving tokens for AMM1...");
-    await tk1.approve(ADDRESSES.AMM1, liquidityAmount);
-    await tk2.approve(ADDRESSES.AMM1, liquidityAmount);
-    console.log("✓ AMM1 approved");
+    console.log("\nApproving tokens for AMM1...");
+    const approve1AMM1 = await tk1.approve(ADDRESSES.AMM1, liquidityAmount);
+    await approve1AMM1.wait();
+    const approve2AMM1 = await tk2.approve(ADDRESSES.AMM1, liquidityAmount);
+    await approve2AMM1.wait();
+    
+    // Verify AMM1 allowances
+    const amm1Allowance1 = await tk1.allowance(signer.address, ADDRESSES.AMM1);
+    const amm1Allowance2 = await tk2.allowance(signer.address, ADDRESSES.AMM1);
+    console.log("AMM1 Allowances after approval:", {
+      tk1: ethers.utils.formatEther(amm1Allowance1),
+      tk2: ethers.utils.formatEther(amm1Allowance2)
+    });
 
     // Add liquidity to AMM1
     console.log("\nAdding liquidity to AMM1...");
     try {
-      await amm1.addLiquidity(liquidityAmount, liquidityAmount);
+      const addLiquidityAMM1 = await amm1.addLiquidity(liquidityAmount, liquidityAmount);
+      await addLiquidityAMM1.wait();
       console.log("✓ Liquidity added to AMM1");
     } catch (error) {
       console.error("Failed to add liquidity to AMM1:", error.message);
@@ -41,14 +62,24 @@ async function main() {
 
     // Approve AMM2
     console.log("\nApproving tokens for AMM2...");
-    await tk1.approve(ADDRESSES.AMM2, liquidityAmount);
-    await tk2.approve(ADDRESSES.AMM2, liquidityAmount);
-    console.log("✓ AMM2 approved");
+    const approve1AMM2 = await tk1.approve(ADDRESSES.AMM2, liquidityAmount);
+    await approve1AMM2.wait();
+    const approve2AMM2 = await tk2.approve(ADDRESSES.AMM2, liquidityAmount);
+    await approve2AMM2.wait();
+
+    // Verify AMM2 allowances
+    const amm2Allowance1 = await tk1.allowance(signer.address, ADDRESSES.AMM2);
+    const amm2Allowance2 = await tk2.allowance(signer.address, ADDRESSES.AMM2);
+    console.log("AMM2 Allowances after approval:", {
+      tk1: ethers.utils.formatEther(amm2Allowance1),
+      tk2: ethers.utils.formatEther(amm2Allowance2)
+    });
 
     // Add liquidity to AMM2
     console.log("\nAdding liquidity to AMM2...");
     try {
-      await amm2.addLiquidity(liquidityAmount, liquidityAmount);
+      const addLiquidityAMM2 = await amm2.addLiquidity(liquidityAmount, liquidityAmount);
+      await addLiquidityAMM2.wait();
       console.log("✓ Liquidity added to AMM2");
     } catch (error) {
       console.error("Failed to add liquidity to AMM2:", error.message);
@@ -86,5 +117,3 @@ main()
     console.error(error);
     process.exit(1);
   });
-
-  
