@@ -15,7 +15,7 @@ Once you follow the link to URDEX, you'll be able to:
    - Get a free drip of TK1 and TK2 from the URDEX token faucet (the free Sepolia ETH pays the blockchain transaction fee)
    - Swap, setting slippage and observing gas fees
    - Watch the aggregator determine the transaction path
-   - Observe pricechanges, market dynamics and transaction history
+   - Observe price changes, market dynamics and transaction history
    - See a breakdown of the gas fee
    - Experience true production grade aggregator functionality
 
@@ -259,7 +259,7 @@ The Token Faucet can be removed from URDEX by removing the button and link from 
    - If needed, update `.env` with your Ethereum wallet private key (remember, NOT a Hardhat account private key)
    - Get Sepolia ETH from [Chainlink Faucet](https://faucets.chain.link/sepolia)
 
-#### ERRORS? Clear your Metamask activity tab data. 
+#### Common solutions to errors along the way: Make sure you deploy from your root directory. Clear your Metamask activity tab data and retry. Quit all terminals, open a fresh window and cd into your project root and retry. 
 
 2. Deploy Contracts
 ```bash
@@ -277,7 +277,9 @@ npx hardhat run scripts/deploy.js --network sepolia
    - src/contracts/contractAddresses.js
    - src/components/SwapCard.js
 
-4. Deploy Frontend on Sepolia
+4. Import TK1 and TK2 into your metamask wallet. You can pull the token contract addresses from scripts or the deployment terminal. 
+
+5. Deploy Frontend on Sepolia
    Use [Vercel](https://vercel.com/) or similar provider (free tier is sufficient)
    
 
@@ -378,11 +380,13 @@ event PriceUpdated(address amm, uint256 price, uint256 timestamp);
 ## 11. RUNNING TESTS
 
 ### Basic Test Execution
+#### Run all tests
 ```bash
-# Run all tests
 npx hardhat test
+```
 
-# Run specific test
+#### Run specific test
+```bash
 npx hardhat test test/<test-name>.js
 ```
 
