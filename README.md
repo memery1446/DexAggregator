@@ -259,7 +259,7 @@ The Token Faucet can be removed from URDEX by removing the button and link from 
    - If needed, update `.env` with your Ethereum wallet private key (remember, NOT a Hardhat account private key)
    - Get Sepolia ETH from [Chainlink Faucet](https://faucets.chain.link/sepolia)
 
-#### ERRORS? Doublecheck that you are in your root directory. Clear your Metamask activity tab data. 
+#### ERRORS? Clear your Metamask activity tab data. 
 
 2. Deploy Contracts
 ```bash
