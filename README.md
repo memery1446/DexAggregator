@@ -4,12 +4,12 @@ URDEX is a sophisticated, extensible decentralized exchange (DEX) aggregator bui
 
 Currently featuring real-time price tracking, intuitive swap interfaces, and comprehensive transaction monitoring, URDEX's design patterns and security measures (including reentrancy protection and slippage controls) provide a solid template for building advanced DEX functionality. Whether you're a user seeking the best swap rates, a developer building on top of the platform, or a project looking to fork and customize the codebase, URDEX offers a battle-tested foundation for decentralized trading infrastructure.
 
-## SWAP FOR FREE ON URDEX NOW - 
+## Swap at Udex now on the Sepolia Network! Offerring real blockchain interaction within the free and safe testnet environmant.
 
    ### Prerequisites: 
    Free Sepolia ETH [Chainlink Sepolia Faucet](https://faucets.chain.link/sepolia) 
    A Web3 wallet like [MetaMask](https://metamask.io)
-   
+
 -------------------------------------
 ## Follow the QUICK START VIDEO [Click Here](https://youtu.be/1XjKwKENxPI) 
 -------------------------------------
