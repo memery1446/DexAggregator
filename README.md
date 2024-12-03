@@ -11,7 +11,7 @@ Currently featuring real-time price tracking, intuitive swap interfaces, and com
    A Web3 wallet like [MetaMask](https://metamask.io)
 
 -------------------------------------
-## Follow the QUICK START VIDEO [Click Here](https://youtu.be/1XjKwKENxPI) 
+## Follow the QUICK START VIDEO AND GET SWAPPING! [Click Here](https://youtu.be/1XjKwKENxPI) 
 -------------------------------------
 
 Once you follow the link to URDEX, you'll be able to:
