@@ -4,6 +4,8 @@ URDEX is a sophisticated, extensible decentralized exchange (DEX) aggregator bui
 
 Currently featuring real-time price tracking, intuitive swap interfaces, and comprehensive transaction monitoring, URDEX's design patterns and security measures (including reentrancy protection and slippage controls) provide a solid template for building advanced DEX functionality. Whether you're a user seeking the best swap rates, a developer building on top of the platform, or a project looking to fork and customize the codebase, URDEX offers a battle-tested foundation for decentralized trading infrastructure.
 
+# QUICK START
+
 ## Swap at URDEX now on the Sepolia Network! Offering real blockchain interaction within the free and safe testnet environmant.
 
    ### Prerequisites: 
@@ -23,10 +25,15 @@ Once you follow the link to URDEX, you'll be able to:
    - See a breakdown of the gas fee
    - Experience true production grade aggregator functionality
 
+-------------------------
 ### Go directly to URDEX: [URDEX](https://dex-aggregator-theta.vercel.app/swap)
+-------------------------
 
+# CLONE/DEVELOP  
 
-## CLONE URDEX - Follow this guide to clone or contribute 
+------------------------------------------
+### Step-By-Step Videos for Cloning/Developing, Full Video Playlist [Click Here](https://www.youtube.com/playlist?list=PLFlTnaL2H_NGvk5I8wX7hTUDJj6guoZAK)
+------------------------------------------
 
 ### Table of Contents
 
@@ -45,10 +52,6 @@ Once you follow the link to URDEX, you'll be able to:
 13. [Contract Interaction](#12-contract-interaction)
 14. [Contribute to URDEX](#13-contributing)
 15. [License Info](#14-license)
-
-------------------------------------------
-### Step-By-Step Video Guide, Full Playlist [Click Here](https://www.youtube.com/playlist?list=PLFlTnaL2H_NGvk5I8wX7hTUDJj6guoZAK)
-------------------------------------------
 
 ## 1. CONFIG/SECURITY  
 ------------------------
