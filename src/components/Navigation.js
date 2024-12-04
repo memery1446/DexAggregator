@@ -39,8 +39,8 @@ const Navigation = () => {
           <div className="col-12">
             <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#594D5B', height: '60px' }}>
               <div className="container position-relative">
-                {/* Logo container with absolute positioning */}
-                <div className="position-absolute d-none d-sm-block" style={{ left: '0', top: '-16px', zIndex: 1000 }}>
+                {/* Logo container with adjusted left positioning */}
+                <div className="position-absolute d-none d-sm-block" style={{ left: '0', marginLeft: '-20px', top: '-16px', zIndex: 1000 }}>
                   <a href="/">
                     <img 
                       src={logo}
@@ -53,6 +53,7 @@ const Navigation = () => {
                 
                 {/* Main navigation content with proper spacing */}
                 <div className="d-flex align-items-center justify-content-between w-100">
+                  {/* Left side navigation links */}
                   <div className="d-flex align-items-center" style={{ marginLeft: '100px' }}>
                     <a 
                       href="/about.html" 
@@ -72,53 +73,55 @@ const Navigation = () => {
                     </a>
                   </div>
                   
-                  {/* Center content */}
-                  <a 
-                    href="https://token-faucet-azure.vercel.app/"
-                    className="btn btn-light"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Get Tokens for URDEX
-                  </a>
-                  
-                  {/* Wallet connection section */}
-                  <div>
-                    {address ? (
-                      <div className="d-flex align-items-center">
-                        <span className="me-2 text-white">Connected:</span>
-                        <div className="btn-group">
-                          <button 
-                            type="button" 
-                            className="btn btn-light btn-sm dropdown-toggle" 
-                            data-bs-toggle="dropdown" 
-                            aria-expanded="false"
-                          >
-                            <span className="badge bg-success me-2"></span>
-                            {truncateAddress(address)}
-                          </button>
-                          <ul className="dropdown-menu dropdown-menu-end">
-                            <li>
-                              <button 
-                                className="dropdown-item" 
-                                type="button" 
-                                onClick={handleDisconnect}
-                              >
-                                Disconnect
-                              </button>
-                            </li>
-                          </ul>
+                  {/* Right side buttons */}
+                  <div className="d-flex align-items-center">
+                    <a 
+                      href="https://token-faucet-azure.vercel.app/"
+                      className="btn btn-light me-3"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Get Tokens for URDEX
+                    </a>
+                    
+                    {/* Wallet connection section */}
+                    <div>
+                      {address ? (
+                        <div className="d-flex align-items-center">
+                          <span className="me-2 text-white">Connected:</span>
+                          <div className="btn-group">
+                            <button 
+                              type="button" 
+                              className="btn btn-light btn-sm dropdown-toggle" 
+                              data-bs-toggle="dropdown" 
+                              aria-expanded="false"
+                            >
+                              <span className="badge bg-success me-2"></span>
+                              {truncateAddress(address)}
+                            </button>
+                            <ul className="dropdown-menu dropdown-menu-end">
+                              <li>
+                                <button 
+                                  className="dropdown-item" 
+                                  type="button" 
+                                  onClick={handleDisconnect}
+                                >
+                                  Disconnect
+                                </button>
+                              </li>
+                            </ul>
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={handleConnect}
-                        className="btn btn-light"
-                        disabled={isLoading}
-                      >
-                        {isLoading ? 'Connecting...' : 'Connect Wallet'}
-                      </button>
-                    )}
+                      ) : (
+                        <button
+                          onClick={handleConnect}
+                          className="btn btn-light"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? 'Connecting...' : 'Connect Wallet'}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -135,3 +138,4 @@ const Navigation = () => {
 };
 
 export default Navigation;
+

@@ -4,284 +4,168 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About URDEX Aggregator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(225deg, #e3b778, #7F7D9C);
-            min-height: calc(100vh - 10px);
-            overflow-y: auto;
-            overflow-x: hidden;
-            margin: 0;
-            padding-top: 20px;
-            padding-bottom: 20px;
+            color: #333;
+            line-height: 1.6;
         }
-        .container {
-            background-color: rgba(255, 255, 255, 0.9);
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        .feature-card {
+            background: white;
             border-radius: 10px;
-            padding: 20px;
-            margin: 0 auto;
-            max-width: 800px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
         }
-        h1, h2 {
-            margin-top: 30px;
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .section-title {
+            color: #594D5B;
+            border-bottom: 3px solid #e3b778;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .highlight {
+            background: #e3b778;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="mb-4">About URDEX Aggregator</h1>
-        <h4 class="mb-4">Contact me: markemerydev@gmail.com</h4>
+    <div class="container main-container">
+        <h1 class="text-center mb-4">About URDEX Aggregator</h1>
+        <h5 class="text-center mb-5">Understanding DeFi Through Practice</h5>
 
-        <section>
-            <h2>DexAggregator Contract</h2>
-            <p>The DexAggregator contract is a price aggregator and router that connects to two different AMM (Automated Market Maker) implementations to find the best trading rates. Key features:</p>
-            <ol>
-                <li>
-                    <h3>Quote Finding:</h3>
-                    <ul>
-                        <li>Compares prices between two AMMs for any given trade</li>
-                        <li>Uses try-catch to handle potential failures in price fetching</li>
-                        <li>Implements maximum input amount checks</li>
-                    </ul>
-                </li>
-                <li>
-                    <h3>Swap Execution:</h3>
-                    <ul>
-                        <li>Routes trades to the AMM offering better rates</li>
-                        <li>Handles token approvals and transfers</li>
-                        <li>Includes slippage protection via minOutput parameter</li>
-                        <li>Updates price history after successful swaps</li>
-                    </ul>
-                </li>
-                <li>
-                    <h3>Price Tracking:</h3>
-                    <ul>
-                        <li>Maintains a rolling history of last 10 prices per AMM</li>
-                        <li>Records timestamp with each price point</li>
-                        <li>Emits events for price updates</li>
-                    </ul>
-                </li>
-                <li>
-                    <h3>Safety Features:</h3>
-                    <ul>
-                        <li>Input validation</li>
-                        <li>Explicit approval resets</li>
-                        <li>Balance checks before transfers</li>
-                        <li>Zero-address validation in constructor</li>
-                    </ul>
-                </li>
-            </ol>
+        <section class="mb-5">
+            <h2 class="section-title">What is URDEX?</h2>
+            <div class="feature-card">
+                <p class="lead">URDEX is an educational DEX aggregator running on the Sepolia testnet, designed to help users understand DeFi mechanics without financial risk.</p>
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <h5>🔍 Learn</h5>
+                        <p>Understand how DEX aggregators find the best prices across multiple liquidity pools</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>🔒 Practice Safely</h5>
+                        <p>Execute real trades using test tokens on Sepolia network</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>📊 Analyze</h5>
+                        <p>Monitor price impacts and trading mechanics in real-time</p>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <section>
-            <h2>AMM and AMM2 Contracts</h2>
-            <p>AMM and AMM2 are Automated Market Maker contracts that facilitate token swaps using a constant product formula (x * y = k). Key differences and similarities:</p>
-            <h3>Similarities:</h3>
-            <ul>
-                <li>Both handle two tokens (tokenA and tokenB)</li>
-                <li>Use liquidity pools with provider tracking</li>
-                <li>Implement ReentrancyGuard</li>
-                <li>Share basic LP token mechanics with MINIMUM_LIQUIDITY</li>
-                <li>Use similar square root calculation for initial LP tokens</li>
-            </ul>
-            <h3>Differences:</h3>
-            <ul>
-                <li>AMM2 has higher fees (0.5% vs 0.3% in AMM)</li>
-                <li>AMM2 implements price impact protection (limits swaps to 200% of reserve)</li>
-                <li>AMM2 has additional liquidity protection in swap function</li>
-                <li>AMM2 includes more extensive validation checks</li>
-            </ul>
-            <p>Both contracts represent standard AMM implementations with minor variations in their risk management and fee structures.</p>
+        <section class="mb-5">
+            <h2 class="section-title">Core Features</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="feature-card">
+                        <h4>Smart Routing</h4>
+                        <p>URDEX automatically compares prices between two AMMs:</p>
+                        <ul>
+                            <li>AMM1: 0.3% fee structure</li>
+                            <li>AMM2: 0.5% fee structure with enhanced price protection</li>
+                        </ul>
+                        <span class="highlight">Best price guaranteed for every trade</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="feature-card">
+                        <h4>Safety Features</h4>
+                        <ul>
+                            <li>Slippage protection</li>
+                            <li>Price impact warnings</li>
+                            <li>Maximum trade size limits</li>
+                            <li>Real-time price monitoring</li>
+                        </ul>
+                        <span class="highlight">Learn about DeFi safety mechanisms</span>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <section>
-            <h2>Attacker Contract and Testing</h2>
-            <p>The Attacker contract and its tests focus on testing security measures and potential attack vectors. Here's an analysis:</p>
-            <h3>Attacker.sol Features:</h3>
-            <ul>
-                <li>Recursive call counter (max 5 iterations)</li>
-                <li>Locking mechanism</li>
-                <li>Token balance validation</li>
-                <li>Attack initiation function</li>
-            </ul>
-            <h3>Test Suite Structure:</h3>
-            <ol>
-                <li>
-                    <h4>Basic Tests:</h4>
-                    <ul>
-                        <li>Deployment validation</li>
-                        <li>Counter initialization</li>
-                        <li>Token address verification</li>
-                    </ul>
-                </li>
-                <li>
-                    <h4>Attack Simulation Tests:</h4>
-                    <ul>
-                        <li>Recursive call limits</li>
-                        <li>Balance requirements</li>
-                        <li>Count integrity</li>
-                        <li>Token transfer handling</li>
-                    </ul>
-                </li>
-                <li>
-                    <h4>Advanced Tests:</h4>
-                    <ul>
-                        <li>DEX-specific attack scenarios</li>
-                        <li>Cross-AMM attack resistance</li>
-                        <li>Flash loan simulation</li>
-                        <li>Sandwich attack testing</li>
-                        <li>High-value transaction testing</li>
-                    </ul>
-                </li>
-            </ol>
-            <h3>Key Test Categories:</h3>
-            <ul>
-                <li>Basic functionality</li>
-                <li>Security measures</li>
-                <li>Attack vectors</li>
-                <li>Edge cases</li>
-                <li>Gas limitations</li>
-                <li>Cross-contract interactions</li>
-            </ul>
-            <p>The tests comprehensively verify both safety features and potential vulnerabilities in DeFi context.</p>
+        <section class="mb-5">
+            <h2 class="section-title">Getting Started</h2>
+            <div class="feature-card">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Step 1: Setup</h4>
+                        <ol>
+                            <li>Connect MetaMask to Sepolia network</li>
+                            <li>Get free test tokens from our faucet</li>
+                            <li>Ensure you have some Sepolia ETH for gas</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Step 2: Start Trading</h4>
+                        <ol>
+                            <li>Select your input and output tokens</li>
+                            <li>Enter the amount you want to trade</li>
+                            <li>Review the route and price impact</li>
+                            <li>Execute your first swap!</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <section>
-            <h2>AMM and AMM2 Testing</h2>
-            <p>Both AMM test suites cover similar core functionality but have key differences:</p>
-            <h3>Common Test Categories:</h3>
-            <ul>
-                <li>Deployment verification</li>
-                <li>Reserve tracking</li>
-                <li>Liquidity provision</li>
-                <li>Token approvals</li>
-                <li>Price calculations</li>
-                <li>Basic swap functionality</li>
-            </ul>
-            <h3>AMM2-Specific Tests:</h3>
-            <ul>
-                <li>0.5% fee verification vs AMM's 0.3%</li>
-                <li>Swap amount limits (200% reserve cap)</li>
-                <li>Comparative price impact analysis</li>
-                <li>Cross-AMM behavior testing</li>
-                <li>Large vs small trade handling</li>
-            </ul>
-            <h3>Key Differences:</h3>
-            <ul>
-                <li>AMM2 tests focus more on protective features</li>
-                <li>AMM2 includes direct comparisons with AMM1</li>
-                <li>AMM2 has additional price impact testing across different liquidity depths</li>
-                <li>AMM2 validates specific security constraints like swap limits</li>
-            </ul>
-            <p>The test suites effectively validate both common AMM functionality and the unique characteristics that differentiate AMM2 from AMM1.</p>
+        <section class="mb-5">
+            <h2 class="section-title">Technical Details</h2>
+            <div class="accordion" id="techAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                            Smart Contract Architecture
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#techAccordion">
+                        <div class="accordion-body">
+                            <ul>
+                                <li><strong>DexAggregator:</strong> Routes trades and finds best prices</li>
+                                <li><strong>AMM1:</strong> Standard AMM with 0.3% fee</li>
+                                <li><strong>AMM2:</strong> Enhanced AMM with 0.5% fee and extra protections</li>
+                                <li><strong>Test Tokens:</strong> ERC20 tokens for practice trading</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <section>
-            <h2>DexAggregator Testing</h2>
-            <p>The DexAggregator test suite demonstrates comprehensive system testing across several key areas:</p>
-            <ol>
-                <li>
-                    <h3>Cross-Contract Liquidity</h3>
-                    <ul>
-                        <li>Reserve consistency across AMMs</li>
-                        <li>Simultaneous liquidity changes</li>
-                        <li>Multi-operation reserve tracking</li>
-                    </ul>
-                </li>
-                <li>
-                    <h3>Price Impact and Routing</h3>
-                    <ul>
-                        <li>Large trade routing optimization</li>
-                        <li>Price divergence handling</li>
-                        <li>Best quote verification</li>
-                    </ul>
-                </li>
-                <li>
-                    <h3>Attack Resistance</h3>
-                    <ul>
-                        <li>Price impact limits</li>
-                        <li>Sandwich attack prevention</li>
-                        <li>Arbitrage diminishing returns</li>
-                        <li>Detailed profit tracking</li>
-                    </ul>
-                </li>
-                <li>
-                    <h3>Market Dynamics</h3>
-                    <ul>
-                        <li>High volume trading</li>
-                        <li>Price efficiency during volatility</li>
-                        <li>Reserve ratio maintenance</li>
-                        <li>Impact comparison between trade sizes</li>
-                    </ul>
-                </li>
-                <li>
-                    <h3>System Reliability</h3>
-                    <ul>
-                        <li>Concurrent quote handling</li>
-                        <li>High traffic quote accuracy</li>
-                        <li>Decimal precision</li>
-                        <li>Market stress testing</li>
-                    </ul>
-                </li>
-            </ol>
-            <p>The tests use a comprehensive fixture setup with tokens, AMMs, and the aggregator, validating both normal operations and edge cases while tracking important metrics like price impacts and reserve ratios.</p>
+        <section class="mb-5">
+            <h2 class="section-title">Contact & Support</h2>
+            <div class="feature-card text-center">
+                <h4>Questions or Feedback?</h4>
+                <p>Email: memery1446@gmail.com</p>
+                <p class="mt-3">
+                    <a href="/" class="btn btn-primary me-2">Back to Home</a>
+                    <a href="https://www.youtube.com/playlist?list=PLFlTnaL2H_NGvk5I8wX7hTUDJj6guoZAK" 
+                       class="btn btn-outline-primary" 
+                       target="_blank" 
+                       rel="noopener noreferrer">
+                        Watch Tutorial Videos
+                    </a>
+                </p>
+            </div>
         </section>
-
-        <section>
-            <h2>DexSystem Testing</h2>
-            <p>The DEX System Integration tests cover several critical areas:</p>
-            <ol>
-                <li>
-                    <h3>Cross-Contract Liquidity Tests</h3>
-                    <ul>
-                        <li>Reserve consistency across AMMs</li>
-                        <li>Simultaneous liquidity changes</li>
-                        <li>Multiple operation impacts</li>
-                    </ul>
-                </li>
-                <li>
-                    <h3>Advanced Attack Resistance</h3>
-                    <ul>
-                        <li>Flash loan attack prevention</li>
-                        <li>Sandwich attack protection</li>
-                        <li>Arbitrage diminishing returns</li>
-                        <li>Price manipulation resistance</li>
-                    </ul>
-                </li>
-                <li>
-                    <h3>Market Dynamics</h3>
-                    <ul>
-                        <li>High volume trading periods</li>
-                        <li>Price efficiency during volatility</li>
-                        <li>System stability under stress</li>
-                        <li>Reserve ratio maintenance</li>
-                    </ul>
-                </li>
-                <li>
-                    <h3>Edge Cases & Reliability</h3>
-                    <ul>
-                        <li>Decimal precision handling</li>
-                        <li>Concurrent quote consistency</li>
-                        <li>Failed swap recovery</li>
-                        <li>Imbalanced liquidity scenarios</li>
-                    </ul>
-                </li>
-                <li>
-                    <h3>Gas & Performance</h3>
-                    <ul>
-                        <li>Gas usage optimization</li>
-                        <li>Trade size scalability</li>
-                        <li>High traffic quote accuracy</li>
-                        <li>System recovery mechanisms</li>
-                    </ul>
-                </li>
-            </ol>
-            <p>The test suite employs detailed logging for performance metrics and uses comprehensive fixtures for system setup. It validates both normal operations and potential attack vectors while ensuring market stability and efficiency.</p>
-        </section>
-
-        <a href="/" class="btn btn-primary mt-4">Back to Home</a>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 
