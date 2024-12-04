@@ -54,7 +54,7 @@ const Navigation = () => {
                 {/* Main navigation content with proper spacing */}
                 <div className="d-flex align-items-center justify-content-between w-100">
                   {/* Left side navigation links */}
-                  <div className="d-flex align-items-center" style={{ marginLeft: '100px', height: '40px' }}>
+                  <div className="d-none d-lg-flex align-items-center" style={{ marginLeft: '100px', height: '40px' }}>
 
                     <a 
                       href="https://www.youtube.com/playlist?list=PLFlTnaL2H_NGvk5I8wX7hTUDJj6guoZAK" 
