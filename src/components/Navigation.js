@@ -54,23 +54,27 @@ const Navigation = () => {
                 {/* Main navigation content with proper spacing */}
                 <div className="d-flex align-items-center justify-content-between w-100">
                   {/* Left side navigation links */}
-                  <div className="d-flex align-items-center" style={{ marginLeft: '100px' }}>
-                    <a 
-                      href="/about.html" 
-                      className="text-white text-decoration-none h4 mb-0"
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
-                      About
-                    </a>
+                  <div className="d-flex align-items-center" style={{ marginLeft: '100px', height: '40px' }}>
+
                     <a 
                       href="https://www.youtube.com/playlist?list=PLFlTnaL2H_NGvk5I8wX7hTUDJj6guoZAK" 
-                      className="text-white text-decoration-none h4 mb-0 ms-4"
+                      className="text-white text-decoration-none h5 mb-0"
                       target="_blank" 
                       rel="noopener noreferrer"
-                    >
+                      style={{ lineHeight: '40px' }}
+                      >
                       Step-by-Step Videos
                     </a>
+                    <a 
+                      href="/about.html" 
+                      className="text-white text-decoration-none h5 mb-0 ms-4"
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      style={{ lineHeight: '40px' }}
+                      >
+                      About
+                    </a>
+
                   </div>
                   
                   {/* Right side buttons */}
@@ -80,7 +84,8 @@ const Navigation = () => {
                       className="btn btn-light me-3"
                       target="_blank"
                       rel="noopener noreferrer"
-                    >
+                      style={{ height: '40px', lineHeight: '28px' }}
+                      >
                       Get Tokens for URDEX
                     </a>
                     
@@ -95,7 +100,7 @@ const Navigation = () => {
                               className="btn btn-light btn-sm dropdown-toggle" 
                               data-bs-toggle="dropdown" 
                               aria-expanded="false"
-                            >
+                            style={{ height: '40px', lineHeight: '28px' }}>
                               <span className="badge bg-success me-2"></span>
                               {truncateAddress(address)}
                             </button>
@@ -117,7 +122,8 @@ const Navigation = () => {
                           onClick={handleConnect}
                           className="btn btn-light"
                           disabled={isLoading}
-                        >
+                          style={{ height: '40px', lineHeight: '28px' }}
+                          >
                           {isLoading ? 'Connecting...' : 'Connect Wallet'}
                         </button>
                       )}
