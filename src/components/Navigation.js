@@ -62,6 +62,14 @@ const Navigation = () => {
                     >
                       About
                     </a>
+                    <a 
+                      href="https://www.youtube.com/playlist?list=PLFlTnaL2H_NGvk5I8wX7hTUDJj6guoZAK" 
+                      className="text-white text-decoration-none h4 mb-0 ms-4"
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      Step-by-Step Videos
+                    </a>
                   </div>
                   
                   {/* Center content */}
